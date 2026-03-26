@@ -1,0 +1,74 @@
+{
+  "@@locale": "he",
+  "appTitle": "HUSH",
+  "loginTitle": "ברוכים הבאים ל-HUSH",
+  "loginSubtitle": "הרשת החברתית הגיאו-אקוסטית",
+  "signInWithGoogle": "התחברות עם Google",
+  "signInWithApple": "התחברות עם Apple",
+  "feedTitle": "סודות בקרבת מקום",
+  "feedEmpty": "אין סודות בסביבה... הסתובב כדי לגלות לחישות נסתרות",
+  "feedLoading": "מאזין לסודות...",
+  "mapTitle": "מפת הד",
+  "createTitle": "הטמן סוד",
+  "profileTitle": "פרופיל",
+  "adminTitle": "פאנל ניהול",
+  "secretPlaceholder": "כתוב את הסוד שלך... (עד 140 תווים)",
+  "recordVoice": "הקלט סוד קולי",
+  "stopRecording": "עצור הקלטה",
+  "publishSecret": "הטמן סוד",
+  "regularSecret": "סוד רגיל",
+  "groupSecret": "סוד קבוצתי",
+  "selectTier": "בחר דרגה מינימלית",
+  "likes": "לייקים",
+  "dislikes": "דיסלייקים",
+  "listens": "האזנות",
+  "save": "שמור",
+  "saved": "נשמר",
+  "report": "דווח",
+  "reveal": "התקרב כדי לחשוף...",
+  "revealed": "הסוד נחשף!",
+  "metersAway": "{distance} מטר",
+  "@metersAway": {
+    "placeholders": {
+      "distance": { "type": "int" }
+    }
+  },
+  "publishedSecrets": "סודות שפורסמו",
+  "savedSecrets": "סודות שנשמרו",
+  "distinguished": "מצטיינים",
+  "tier": "דרגה {level}",
+  "@tier": {
+    "placeholders": {
+      "level": { "type": "int" }
+    }
+  },
+  "cloutLevel": "רמת השפעה",
+  "signOut": "התנתקות",
+  "language": "שפה",
+  "locationPermissionDenied": "הרשאת מיקום נדחתה. HUSH צריך את המיקום שלך כדי לגלות סודות בסביבה.",
+  "locationUnavailable": "מיקום לא זמין",
+  "enableLocation": "אפשר מיקום",
+  "retry": "נסה שוב",
+  "cancel": "ביטול",
+  "delete": "מחיקה",
+  "confirm": "אישור",
+  "appeals": "ערעורים",
+  "reports": "דיווחים",
+  "ghostMode": "מצב רוח רפאים",
+  "noReports": "אין דיווחים ממתינים",
+  "noAppeals": "אין ערעורים ממתינים",
+  "maxChars": "{count}/140",
+  "@maxChars": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recordingTime": "{seconds} שניות / 60 שניות",
+  "@recordingTime": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "mapboxNotConfigured": "המפה לא מוגדרת",
+  "tapToReveal": "הקש כדי לחשוף כשתהיה קרוב מספיק"
+}

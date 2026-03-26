@@ -1,0 +1,74 @@
+{
+  "@@locale": "en",
+  "appTitle": "HUSH",
+  "loginTitle": "Welcome to HUSH",
+  "loginSubtitle": "The geo-acoustic social network",
+  "signInWithGoogle": "Sign in with Google",
+  "signInWithApple": "Sign in with Apple",
+  "feedTitle": "Nearby Secrets",
+  "feedEmpty": "No secrets nearby... Walk around to discover hidden whispers",
+  "feedLoading": "Listening for secrets...",
+  "mapTitle": "Echo Map",
+  "createTitle": "Drop a Secret",
+  "profileTitle": "Profile",
+  "adminTitle": "Admin Panel",
+  "secretPlaceholder": "Type your secret... (max 140 chars)",
+  "recordVoice": "Record Voice Secret",
+  "stopRecording": "Stop Recording",
+  "publishSecret": "Drop Secret",
+  "regularSecret": "Regular Secret",
+  "groupSecret": "Group Secret",
+  "selectTier": "Select Minimum Tier",
+  "likes": "Likes",
+  "dislikes": "Dislikes",
+  "listens": "Listens",
+  "save": "Save",
+  "saved": "Saved",
+  "report": "Report",
+  "reveal": "Get closer to reveal...",
+  "revealed": "Secret Revealed!",
+  "metersAway": "{distance}m away",
+  "@metersAway": {
+    "placeholders": {
+      "distance": { "type": "int" }
+    }
+  },
+  "publishedSecrets": "Published Secrets",
+  "savedSecrets": "Saved Secrets",
+  "distinguished": "Distinguished",
+  "tier": "Tier {level}",
+  "@tier": {
+    "placeholders": {
+      "level": { "type": "int" }
+    }
+  },
+  "cloutLevel": "Clout Level",
+  "signOut": "Sign Out",
+  "language": "Language",
+  "locationPermissionDenied": "Location permission denied. HUSH needs your location to discover nearby secrets.",
+  "locationUnavailable": "Location unavailable",
+  "enableLocation": "Enable Location",
+  "retry": "Retry",
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "confirm": "Confirm",
+  "appeals": "Appeals",
+  "reports": "Reports",
+  "ghostMode": "Ghost Mode",
+  "noReports": "No reports pending",
+  "noAppeals": "No appeals pending",
+  "maxChars": "{count}/140",
+  "@maxChars": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "recordingTime": "{seconds}s / 60s",
+  "@recordingTime": {
+    "placeholders": {
+      "seconds": { "type": "int" }
+    }
+  },
+  "mapboxNotConfigured": "Map not configured",
+  "tapToReveal": "Tap to reveal when close enough"
+}

@@ -1,0 +1,65 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+/// User profile model — matches Firestore 'users' collection schema
+class HushUser {
+  final String uid;
+  final String? displayName;
+  final String? email;
+  final String? photoURL;
+  final int tierLevel;
+  final List<int> tierSuccesses;
+  final int totalPublished;
+  final int distinguishedCount;
+  final List<String> savedSecretIds;
+  final bool isGhostMode;
+  final DateTime? ghostModeUntil;
+  final DateTime createdAt;
+
+  HushUser({
+    required this.uid,
+    this.displayName,
+    this.email,
+    this.photoURL,
+    this.tierLevel = 1,
+    this.tierSuccesses = const [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    this.totalPublished = 0,
+    this.distinguishedCount = 0,
+    this.savedSecretIds = const [],
+    this.isGhostMode = false,
+    this.ghostModeUntil,
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
+
+  factory HushUser.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return HushUser(
+      uid: data['uid'] ?? doc.id,
+      displayName: data['displayName'],
+      email: data['email'],
+      photoURL: data['photoURL'],
+      tierLevel: data['tierLevel'] ?? 1,
+      tierSuccesses: List<int>.from(data['tierSuccesses'] ?? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+      totalPublished: data['totalPublished'] ?? 0,
+      distinguishedCount: data['distinguishedCount'] ?? 0,
+      savedSecretIds: List<String>.from(data['savedSecretIds'] ?? []),
+      isGhostMode: data['isGhostMode'] ?? false,
+      ghostModeUntil: (data['ghostModeUntil'] as Timestamp?)?.toDate(),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+    );
+  }
+
+  Map<String, dynamic> toFirestore() => {
+    'uid': uid,
+    'displayName': displayName,
+    'email': email,
+    'photoURL': photoURL,
+    'tierLevel': tierLevel,
+    'tierSuccesses': tierSuccesses,
+    'totalPublished': totalPublished,
+    'distinguishedCount': distinguishedCount,
+    'savedSecretIds': savedSecretIds,
+    'isGhostMode': isGhostMode,
+    'ghostModeUntil': ghostModeUntil != null ? Timestamp.fromDate(ghostModeUntil!) : null,
+    'createdAt': Timestamp.fromDate(createdAt),
+  };
+}
