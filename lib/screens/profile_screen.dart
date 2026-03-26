@@ -1,13 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
+import '../models/secret.dart';
+import '../services/secret_service.dart';
+import '../widgets/secret_card.dart';
+import 'package:flutter/cupertino.dart'; // For modern segmented control (tabs)
 
-/// Profile screen — user info, published/saved secrets, sign out
-class ProfileScreen extends StatelessWidget {
+/// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  final SecretService _secretService = SecretService();
+  
+  List<Secret> _mySecrets = [];
+  List<Secret> _savedSecrets = [];
+  bool _isLoading = true;
+  int _activeTabIndex = 0; // 0 for 'My Secrets', 1 for 'Saved Secrets'
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfileData();
+  }
+
+  Future<void> _fetchProfileData() async {
+    final user = context.read<AuthProvider>().hushUser;
+    final firebaseUser = context.read<AuthProvider>().firebaseUser;
+    
+    if (user == null || firebaseUser == null) {
+      if (mounted) setState(() => _isLoading = false);
+      return;
+    }
+
+    try {
+      final results = await Future.wait([
+        _secretService.getUserSecrets(firebaseUser.uid),
+        _secretService.getSavedSecrets(user.savedSecretIds),
+      ]);
+      
+      if (mounted) {
+        setState(() {
+          _mySecrets = results[0];
+          _savedSecrets = results[1];
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      debugPrint('Failed to fetch profile data: $e');
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,11 +66,17 @@ class ProfileScreen extends StatelessWidget {
     final user = auth.hushUser;
     final localeProvider = context.watch<LocaleProvider>();
 
+    if (user == null) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final isGhostMode = user.isGhostMode;
+    final isAdmin = auth.firebaseUser?.uid == const String.fromEnvironment('ADMIN_UID', defaultValue: ''); // Placeholder for env
+
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.profileTitle),
         actions: [
-          // Language toggle
           TextButton(
             onPressed: () => localeProvider.toggleLocale(),
             child: Text(
@@ -33,29 +89,67 @@ class ProfileScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          // User avatar and name
-          Center(
-            child: Column(
-              children: [
-                CircleAvatar(
-                  radius: 48,
-                  backgroundColor: HushColors.bgCard,
-                  backgroundImage: auth.firebaseUser?.photoURL != null
-                      ? NetworkImage(auth.firebaseUser!.photoURL!)
-                      : null,
-                  child: auth.firebaseUser?.photoURL == null
-                      ? const Icon(Icons.person, size: 48, color: HushColors.textMuted)
-                      : null,
+      body: RefreshIndicator(
+        onRefresh: () async {
+          await auth.refreshProfile();
+          await _fetchProfileData();
+        },
+        color: HushColors.textAccent,
+        backgroundColor: HushColors.bgPrimary,
+        child: ListView(
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          children: [
+            // Ghost Mode Banner
+            if (isGhostMode)
+              Container(
+                margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: HushColors.tierRed.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: HushColors.tierRed.withValues(alpha: 0.3)),
                 ),
-                const SizedBox(height: 12),
-                Text(
-                  auth.firebaseUser?.displayName ?? 'Anonymous',
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                child: Column(
+                  children: [
+                    Text(
+                      l10n.ghostModeActive,
+                      style: const TextStyle(color: HushColors.tierRed, fontWeight: FontWeight.bold, fontSize: 16),
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      l10n.ghostModeRestricted,
+                      style: TextStyle(color: Colors.white.withValues(alpha: 0.8), fontSize: 14),
+                      textAlign: TextAlign.center,
+                    ),
+                    const SizedBox(height: 12),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
+                      onPressed: () {},
+                      child: Text(l10n.appeal, style: const TextStyle(color: Colors.white)),
+                    )
+                  ],
                 ),
-                if (user != null) ...[
+              ),
+
+            // User avatar and name
+            Center(
+              child: Column(
+                children: [
+                  CircleAvatar(
+                    radius: 48,
+                    backgroundColor: HushColors.bgCard,
+                    backgroundImage: auth.firebaseUser?.photoURL != null
+                        ? NetworkImage(auth.firebaseUser!.photoURL!)
+                        : null,
+                    child: auth.firebaseUser?.photoURL == null
+                        ? const Icon(Icons.person, size: 48, color: HushColors.textMuted)
+                        : null,
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    auth.firebaseUser?.displayName ?? 'Anonymous',
+                    style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                  ),
                   const SizedBox(height: 4),
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
@@ -67,7 +161,7 @@ class ProfileScreen extends StatelessWidget {
                       ),
                     ),
                     child: Text(
-                      l10n.tier(user.tierLevel),
+                      '${user.tierLevel == 10 ? '👑' : '⭐'} ${l10n.tier(user.tierLevel)}',
                       style: TextStyle(
                         color: HushColors.tierColor(user.tierLevel),
                         fontWeight: FontWeight.w600,
@@ -75,38 +169,154 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+
+            // Stats cards
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  _buildStatRow(l10n.publishedSecrets, '${user.totalPublished}'),
+                  _buildStatRow(l10n.savedSecrets, '${user.savedSecretIds.length}'),
+                  _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
+                ],
+              ),
+            ),
+
+            const SizedBox(height: 32),
+            
+            // Tab Switcher for Secrets
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: CupertinoSlidingSegmentedControl<int>(
+                backgroundColor: HushColors.bgCard,
+                thumbColor: const Color(0xFF1E2638), // Slightly lighter than bgCard
+                groupValue: _activeTabIndex,
+                padding: const EdgeInsets.all(4),
+                children: {
+                  0: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(l10n.mySecretsTab, style: TextStyle(color: _activeTabIndex == 0 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
+                  ),
+                  1: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    child: Text(l10n.savedSecrets, style: TextStyle(color: _activeTabIndex == 1 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
+                  ),
+                },
+                onValueChanged: (int? value) {
+                  if (value != null) {
+                    setState(() => _activeTabIndex = value);
+                  }
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            
+            // Secrets List Builder
+            if (_isLoading)
+              const Center(child: Padding(
+                padding: EdgeInsets.all(32.0),
+                child: CircularProgressIndicator(color: HushColors.textAccent),
+              ))
+            else ..._buildActiveTabList(l10n),
+
+            const SizedBox(height: 32),
+
+            // Action Buttons (Notifications, Admin, Sign Out)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Column(
+                children: [
+                  // Enable Notifications
+                  OutlinedButton.icon(
+                    onPressed: () {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Notification settings updated/requested.')),
+                      );
+                    },
+                    icon: const Icon(Icons.notifications_active, color: Colors.white),
+                    label: Text(l10n.enableNotifications, style: const TextStyle(color: Colors.white)),
+                    style: OutlinedButton.styleFrom(
+                      side: const BorderSide(color: Colors.white24),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  // Admin panel if applicable
+                  if (isAdmin) ...[
+                    ElevatedButton.icon(
+                      onPressed: () {},
+                      icon: const Icon(Icons.security, color: Colors.white),
+                      label: const Text('Admin Panel', style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.orangeAccent,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                  ],
+
+                  // Sign out
+                  OutlinedButton.icon(
+                    onPressed: () => auth.signOut(),
+                    icon: const Icon(Icons.logout, color: HushColors.tierRed),
+                    label: Text(
+                      l10n.signOut,
+                      style: const TextStyle(color: HushColors.tierRed),
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      side: BorderSide(color: HushColors.tierRed.withValues(alpha: 0.5)),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      minimumSize: const Size(double.infinity, 50),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 80), // Padding for bottom navbar
+          ],
+        ),
+      ),
+    );
+  }
+  
+  List<Widget> _buildActiveTabList(AppLocalizations l10n) {
+    final list = _activeTabIndex == 0 ? _mySecrets : _savedSecrets;
+    
+    if (list.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.all(32.0),
+          child: Center(
+            child: Column(
+              children: [
+                Icon(
+                  _activeTabIndex == 0 ? Icons.edit_note : Icons.bookmark_border, 
+                  size: 48, color: HushColors.textSecondary.withValues(alpha: 0.5)
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  _activeTabIndex == 0 ? l10n.noPlantedSecrets : l10n.noSavedSecrets,
+                  style: TextStyle(color: HushColors.textSecondary.withValues(alpha: 0.7)),
+                ),
               ],
             ),
           ),
-
-          const SizedBox(height: 32),
-
-          // Stats cards
-          if (user != null) ...[
-            _buildStatRow(l10n.publishedSecrets, '${user.totalPublished}'),
-            _buildStatRow(l10n.savedSecrets, '${user.savedSecretIds.length}'),
-            _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
-          ],
-
-          const SizedBox(height: 32),
-
-          // Sign out button
-          OutlinedButton.icon(
-            onPressed: () => auth.signOut(),
-            icon: const Icon(Icons.logout, color: HushColors.tierRed),
-            label: Text(
-              l10n.signOut,
-              style: const TextStyle(color: HushColors.tierRed),
-            ),
-            style: OutlinedButton.styleFrom(
-              side: BorderSide(color: HushColors.tierRed.withValues(alpha: 0.5)),
-              padding: const EdgeInsets.symmetric(vertical: 14),
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-            ),
-          ),
-        ],
-      ),
-    );
+        )
+      ];
+    }
+    
+    return list.map((secret) => SecretCard(secret: secret)).toList();
   }
 
   Widget _buildStatRow(String label, String value) {

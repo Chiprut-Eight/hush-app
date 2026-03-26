@@ -30,23 +30,23 @@ class AuthProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> signInWithGoogle() async {
+  Future<String?> signInWithGoogle() async {
     try {
       final user = await _authService.signInWithGoogle();
-      return user != null;
+      return user != null ? null : 'User cancelled sign in';
     } catch (e) {
       debugPrint('Google sign-in error: $e');
-      return false;
+      return e.toString();
     }
   }
 
-  Future<bool> signInWithApple() async {
+  Future<String?> signInWithApple() async {
     try {
       final user = await _authService.signInWithApple();
-      return user != null;
+      return user != null ? null : 'User cancelled sign in';
     } catch (e) {
       debugPrint('Apple sign-in error: $e');
-      return false;
+      return e.toString();
     }
   }
 

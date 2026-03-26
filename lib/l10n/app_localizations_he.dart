@@ -45,7 +45,8 @@ class AppLocalizationsHe extends AppLocalizations {
   String get adminTitle => 'פאנל ניהול';
 
   @override
-  String get secretPlaceholder => 'כתוב את הסוד שלך... (עד 140 תווים)';
+  String get secretPlaceholder =>
+      'מה עובר לך בראש? שמור את זה בסוד... (עד 140 תווים)';
 
   @override
   String get recordVoice => 'הקלט סוד קולי';
@@ -57,13 +58,51 @@ class AppLocalizationsHe extends AppLocalizations {
   String get publishSecret => 'הטמן סוד';
 
   @override
+  String get hideSecretAction => '🤫 הטמן סוד';
+
+  @override
   String get regularSecret => 'סוד רגיל';
+
+  @override
+  String get regularSecretDesc => 'גלוי לכולם בקרבת מקום באופן מיידי.';
 
   @override
   String get groupSecret => 'סוד קבוצתי';
 
   @override
+  String get groupSecretDesc => 'דורש מספר אנשים בקרבת מקום כדי להיפתח.';
+
+  @override
   String get selectTier => 'בחר דרגה מינימלית';
+
+  @override
+  String get secretType => 'סוג הסוד';
+
+  @override
+  String get peopleRequired => 'כמות אנשים נדרשת';
+
+  @override
+  String timeWindow(int minutes) {
+    return 'חלון זמן: $minutes דקות';
+  }
+
+  @override
+  String get textTab => '✍️ טקסט';
+
+  @override
+  String get voiceTab => '🎙️ קול';
+
+  @override
+  String get secretReady => 'הסוד מוכן';
+
+  @override
+  String get tapToRecord => 'הקש כדי להקליט';
+
+  @override
+  String get recordingLabel => 'מקליט...';
+
+  @override
+  String get audioPreview => 'תצוגה מקדימה קולית';
 
   @override
   String get likes => 'לייקים';
@@ -95,10 +134,38 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
+  String get outOfRange => 'מחוץ לטווח';
+
+  @override
+  String get contentWarning => 'אזהרת תוכן';
+
+  @override
+  String get downvotedWarning => 'סוד זה קיבל הרבה דיסלייקים.';
+
+  @override
+  String get viewAnyway => 'הצג בכל זאת';
+
+  @override
+  String get saveLimitWarning =>
+      'ניתן לשמור עד 50 סודות שלך או של משתמשים אחרים';
+
+  @override
   String get publishedSecrets => 'סודות שפורסמו';
 
   @override
   String get savedSecrets => 'סודות שנשמרו';
+
+  @override
+  String get mySecretsTab => 'הסודות שלי';
+
+  @override
+  String get noPlantedSecrets => 'טרם הטמנת סודות.';
+
+  @override
+  String get noSavedSecrets => 'לא נמצאו סודות שמורים.';
+
+  @override
+  String get enableNotifications => 'אפשר התראות';
 
   @override
   String get distinguished => 'מצטיינים';
@@ -140,6 +207,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get confirm => 'אישור';
 
   @override
+  String get appeal => 'ערעור';
+
+  @override
   String get appeals => 'ערעורים';
 
   @override
@@ -147,6 +217,15 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get ghostMode => 'מצב רוח רפאים';
+
+  @override
+  String get ghostModeActive => '👻 מצב רוח רפאים פעיל';
+
+  @override
+  String get ghostModeRestricted => 'פעולות החשבון שלך מוגבלות.';
+
+  @override
+  String get cannotPlantGhost => 'אינך יכול להטמין סודות כרגע.';
 
   @override
   String get noReports => 'אין דיווחים ממתינים';
@@ -168,5 +247,5 @@ class AppLocalizationsHe extends AppLocalizations {
   String get mapboxNotConfigured => 'המפה לא מוגדרת';
 
   @override
-  String get tapToReveal => 'הקש כדי לחשוף כשתהיה קרוב מספיק';
+  String get tapToReveal => 'הקש כדי לחשוף';
 }

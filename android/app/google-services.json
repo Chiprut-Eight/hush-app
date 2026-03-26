@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "187237532355-rqikbss7r7dcs618f50j8bveebs0tmp4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hush.hush_app",
+            "certificate_hash": "003b92059955efb1d1635fb80a0c4470daa0cadb"
+          }
+        },
+        {
           "client_id": "187237532355-r7q2cijbe14kmrehuj0k843aivbgesa5.apps.googleusercontent.com",
           "client_type": 3
         }

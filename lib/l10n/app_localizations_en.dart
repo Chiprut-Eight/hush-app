@@ -46,7 +46,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get adminTitle => 'Admin Panel';
 
   @override
-  String get secretPlaceholder => 'Type your secret... (max 140 chars)';
+  String get secretPlaceholder =>
+      'What\'s on your mind? Keep it secret... (max 140 chars)';
 
   @override
   String get recordVoice => 'Record Voice Secret';
@@ -58,13 +59,51 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishSecret => 'Drop Secret';
 
   @override
+  String get hideSecretAction => '🤫 Hide Secret';
+
+  @override
   String get regularSecret => 'Regular Secret';
+
+  @override
+  String get regularSecretDesc => 'Visible to everyone nearby immediately.';
 
   @override
   String get groupSecret => 'Group Secret';
 
   @override
+  String get groupSecretDesc => 'Requires multiple people nearby to unlock.';
+
+  @override
   String get selectTier => 'Select Minimum Tier';
+
+  @override
+  String get secretType => 'Secret Type';
+
+  @override
+  String get peopleRequired => 'People Required';
+
+  @override
+  String timeWindow(int minutes) {
+    return 'Time Window: $minutes minutes';
+  }
+
+  @override
+  String get textTab => '✍️ Text';
+
+  @override
+  String get voiceTab => '🎙️ Voice';
+
+  @override
+  String get secretReady => 'Secret Ready';
+
+  @override
+  String get tapToRecord => 'Tap to Record';
+
+  @override
+  String get recordingLabel => 'Recording...';
+
+  @override
+  String get audioPreview => 'Audio Preview';
 
   @override
   String get likes => 'Likes';
@@ -96,10 +135,37 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get outOfRange => 'Out of range';
+
+  @override
+  String get contentWarning => 'Content Warning';
+
+  @override
+  String get downvotedWarning => 'This secret has been heavily downvoted.';
+
+  @override
+  String get viewAnyway => 'View Anyway';
+
+  @override
+  String get saveLimitWarning => 'You can save up to 50 secrets combined.';
+
+  @override
   String get publishedSecrets => 'Published Secrets';
 
   @override
   String get savedSecrets => 'Saved Secrets';
+
+  @override
+  String get mySecretsTab => 'My Secrets';
+
+  @override
+  String get noPlantedSecrets => 'You haven\'t planted any secrets yet.';
+
+  @override
+  String get noSavedSecrets => 'No saved secrets found.';
+
+  @override
+  String get enableNotifications => 'Enable Notifications';
 
   @override
   String get distinguished => 'Distinguished';
@@ -141,6 +207,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirm => 'Confirm';
 
   @override
+  String get appeal => 'Appeal';
+
+  @override
   String get appeals => 'Appeals';
 
   @override
@@ -148,6 +217,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get ghostMode => 'Ghost Mode';
+
+  @override
+  String get ghostModeActive => '👻 Ghost Mode Active';
+
+  @override
+  String get ghostModeRestricted => 'Your account features are restricted.';
+
+  @override
+  String get cannotPlantGhost => 'You cannot plant secrets right now.';
 
   @override
   String get noReports => 'No reports pending';
@@ -169,5 +247,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapboxNotConfigured => 'Map not configured';
 
   @override
-  String get tapToReveal => 'Tap to reveal when close enough';
+  String get tapToReveal => 'Tap to reveal';
 }

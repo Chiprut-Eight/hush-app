@@ -12,13 +12,30 @@
   "createTitle": "הטמן סוד",
   "profileTitle": "פרופיל",
   "adminTitle": "פאנל ניהול",
-  "secretPlaceholder": "כתוב את הסוד שלך... (עד 140 תווים)",
+  "secretPlaceholder": "מה עובר לך בראש? שמור את זה בסוד... (עד 140 תווים)",
   "recordVoice": "הקלט סוד קולי",
   "stopRecording": "עצור הקלטה",
   "publishSecret": "הטמן סוד",
+  "hideSecretAction": "🤫 הטמן סוד",
   "regularSecret": "סוד רגיל",
+  "regularSecretDesc": "גלוי לכולם בקרבת מקום באופן מיידי.",
   "groupSecret": "סוד קבוצתי",
+  "groupSecretDesc": "דורש מספר אנשים בקרבת מקום כדי להיפתח.",
   "selectTier": "בחר דרגה מינימלית",
+  "secretType": "סוג הסוד",
+  "peopleRequired": "כמות אנשים נדרשת",
+  "timeWindow": "חלון זמן: {minutes} דקות",
+  "@timeWindow": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "textTab": "✍️ טקסט",
+  "voiceTab": "🎙️ קול",
+  "secretReady": "הסוד מוכן",
+  "tapToRecord": "הקש כדי להקליט",
+  "recordingLabel": "מקליט...",
+  "audioPreview": "תצוגה מקדימה קולית",
   "likes": "לייקים",
   "dislikes": "דיסלייקים",
   "listens": "האזנות",
@@ -33,8 +50,17 @@
       "distance": { "type": "int" }
     }
   },
+  "outOfRange": "מחוץ לטווח",
+  "contentWarning": "אזהרת תוכן",
+  "downvotedWarning": "סוד זה קיבל הרבה דיסלייקים.",
+  "viewAnyway": "הצג בכל זאת",
+  "saveLimitWarning": "ניתן לשמור עד 50 סודות שלך או של משתמשים אחרים",
   "publishedSecrets": "סודות שפורסמו",
   "savedSecrets": "סודות שנשמרו",
+  "mySecretsTab": "הסודות שלי",
+  "noPlantedSecrets": "טרם הטמנת סודות.",
+  "noSavedSecrets": "לא נמצאו סודות שמורים.",
+  "enableNotifications": "אפשר התראות",
   "distinguished": "מצטיינים",
   "tier": "דרגה {level}",
   "@tier": {
@@ -52,9 +78,13 @@
   "cancel": "ביטול",
   "delete": "מחיקה",
   "confirm": "אישור",
+  "appeal": "ערעור",
   "appeals": "ערעורים",
   "reports": "דיווחים",
   "ghostMode": "מצב רוח רפאים",
+  "ghostModeActive": "👻 מצב רוח רפאים פעיל",
+  "ghostModeRestricted": "פעולות החשבון שלך מוגבלות.",
+  "cannotPlantGhost": "אינך יכול להטמין סודות כרגע.",
   "noReports": "אין דיווחים ממתינים",
   "noAppeals": "אין ערעורים ממתינים",
   "maxChars": "{count}/140",
@@ -70,5 +100,5 @@
     }
   },
   "mapboxNotConfigured": "המפה לא מוגדרת",
-  "tapToReveal": "הקש כדי לחשוף כשתהיה קרוב מספיק"
+  "tapToReveal": "הקש כדי לחשוף"
 }

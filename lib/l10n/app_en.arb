@@ -12,13 +12,30 @@
   "createTitle": "Drop a Secret",
   "profileTitle": "Profile",
   "adminTitle": "Admin Panel",
-  "secretPlaceholder": "Type your secret... (max 140 chars)",
+  "secretPlaceholder": "What's on your mind? Keep it secret... (max 140 chars)",
   "recordVoice": "Record Voice Secret",
   "stopRecording": "Stop Recording",
   "publishSecret": "Drop Secret",
+  "hideSecretAction": "🤫 Hide Secret",
   "regularSecret": "Regular Secret",
+  "regularSecretDesc": "Visible to everyone nearby immediately.",
   "groupSecret": "Group Secret",
+  "groupSecretDesc": "Requires multiple people nearby to unlock.",
   "selectTier": "Select Minimum Tier",
+  "secretType": "Secret Type",
+  "peopleRequired": "People Required",
+  "timeWindow": "Time Window: {minutes} minutes",
+  "@timeWindow": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "textTab": "✍️ Text",
+  "voiceTab": "🎙️ Voice",
+  "secretReady": "Secret Ready",
+  "tapToRecord": "Tap to Record",
+  "recordingLabel": "Recording...",
+  "audioPreview": "Audio Preview",
   "likes": "Likes",
   "dislikes": "Dislikes",
   "listens": "Listens",
@@ -33,8 +50,17 @@
       "distance": { "type": "int" }
     }
   },
+  "outOfRange": "Out of range",
+  "contentWarning": "Content Warning",
+  "downvotedWarning": "This secret has been heavily downvoted.",
+  "viewAnyway": "View Anyway",
+  "saveLimitWarning": "You can save up to 50 secrets combined.",
   "publishedSecrets": "Published Secrets",
   "savedSecrets": "Saved Secrets",
+  "mySecretsTab": "My Secrets",
+  "noPlantedSecrets": "You haven't planted any secrets yet.",
+  "noSavedSecrets": "No saved secrets found.",
+  "enableNotifications": "Enable Notifications",
   "distinguished": "Distinguished",
   "tier": "Tier {level}",
   "@tier": {
@@ -52,9 +78,13 @@
   "cancel": "Cancel",
   "delete": "Delete",
   "confirm": "Confirm",
+  "appeal": "Appeal",
   "appeals": "Appeals",
   "reports": "Reports",
   "ghostMode": "Ghost Mode",
+  "ghostModeActive": "👻 Ghost Mode Active",
+  "ghostModeRestricted": "Your account features are restricted.",
+  "cannotPlantGhost": "You cannot plant secrets right now.",
   "noReports": "No reports pending",
   "noAppeals": "No appeals pending",
   "maxChars": "{count}/140",
@@ -70,5 +100,5 @@
     }
   },
   "mapboxNotConfigured": "Map not configured",
-  "tapToReveal": "Tap to reveal when close enough"
+  "tapToReveal": "Tap to reveal"
 }

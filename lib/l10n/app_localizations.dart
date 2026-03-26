@@ -173,7 +173,7 @@ abstract class AppLocalizations {
   /// No description provided for @secretPlaceholder.
   ///
   /// In en, this message translates to:
-  /// **'Type your secret... (max 140 chars)'**
+  /// **'What\'s on your mind? Keep it secret... (max 140 chars)'**
   String get secretPlaceholder;
 
   /// No description provided for @recordVoice.
@@ -194,11 +194,23 @@ abstract class AppLocalizations {
   /// **'Drop Secret'**
   String get publishSecret;
 
+  /// No description provided for @hideSecretAction.
+  ///
+  /// In en, this message translates to:
+  /// **'🤫 Hide Secret'**
+  String get hideSecretAction;
+
   /// No description provided for @regularSecret.
   ///
   /// In en, this message translates to:
   /// **'Regular Secret'**
   String get regularSecret;
+
+  /// No description provided for @regularSecretDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Visible to everyone nearby immediately.'**
+  String get regularSecretDesc;
 
   /// No description provided for @groupSecret.
   ///
@@ -206,11 +218,71 @@ abstract class AppLocalizations {
   /// **'Group Secret'**
   String get groupSecret;
 
+  /// No description provided for @groupSecretDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Requires multiple people nearby to unlock.'**
+  String get groupSecretDesc;
+
   /// No description provided for @selectTier.
   ///
   /// In en, this message translates to:
   /// **'Select Minimum Tier'**
   String get selectTier;
+
+  /// No description provided for @secretType.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret Type'**
+  String get secretType;
+
+  /// No description provided for @peopleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'People Required'**
+  String get peopleRequired;
+
+  /// No description provided for @timeWindow.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Window: {minutes} minutes'**
+  String timeWindow(int minutes);
+
+  /// No description provided for @textTab.
+  ///
+  /// In en, this message translates to:
+  /// **'✍️ Text'**
+  String get textTab;
+
+  /// No description provided for @voiceTab.
+  ///
+  /// In en, this message translates to:
+  /// **'🎙️ Voice'**
+  String get voiceTab;
+
+  /// No description provided for @secretReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Secret Ready'**
+  String get secretReady;
+
+  /// No description provided for @tapToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to Record'**
+  String get tapToRecord;
+
+  /// No description provided for @recordingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recording...'**
+  String get recordingLabel;
+
+  /// No description provided for @audioPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Audio Preview'**
+  String get audioPreview;
 
   /// No description provided for @likes.
   ///
@@ -266,6 +338,36 @@ abstract class AppLocalizations {
   /// **'{distance}m away'**
   String metersAway(int distance);
 
+  /// No description provided for @outOfRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Out of range'**
+  String get outOfRange;
+
+  /// No description provided for @contentWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Content Warning'**
+  String get contentWarning;
+
+  /// No description provided for @downvotedWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'This secret has been heavily downvoted.'**
+  String get downvotedWarning;
+
+  /// No description provided for @viewAnyway.
+  ///
+  /// In en, this message translates to:
+  /// **'View Anyway'**
+  String get viewAnyway;
+
+  /// No description provided for @saveLimitWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'You can save up to 50 secrets combined.'**
+  String get saveLimitWarning;
+
   /// No description provided for @publishedSecrets.
   ///
   /// In en, this message translates to:
@@ -277,6 +379,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Saved Secrets'**
   String get savedSecrets;
+
+  /// No description provided for @mySecretsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'My Secrets'**
+  String get mySecretsTab;
+
+  /// No description provided for @noPlantedSecrets.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t planted any secrets yet.'**
+  String get noPlantedSecrets;
+
+  /// No description provided for @noSavedSecrets.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved secrets found.'**
+  String get noSavedSecrets;
+
+  /// No description provided for @enableNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get enableNotifications;
 
   /// No description provided for @distinguished.
   ///
@@ -350,6 +476,12 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
+  /// No description provided for @appeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal'**
+  String get appeal;
+
   /// No description provided for @appeals.
   ///
   /// In en, this message translates to:
@@ -367,6 +499,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ghost Mode'**
   String get ghostMode;
+
+  /// No description provided for @ghostModeActive.
+  ///
+  /// In en, this message translates to:
+  /// **'👻 Ghost Mode Active'**
+  String get ghostModeActive;
+
+  /// No description provided for @ghostModeRestricted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account features are restricted.'**
+  String get ghostModeRestricted;
+
+  /// No description provided for @cannotPlantGhost.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot plant secrets right now.'**
+  String get cannotPlantGhost;
 
   /// No description provided for @noReports.
   ///
@@ -401,7 +551,7 @@ abstract class AppLocalizations {
   /// No description provided for @tapToReveal.
   ///
   /// In en, this message translates to:
-  /// **'Tap to reveal when close enough'**
+  /// **'Tap to reveal'**
   String get tapToReveal;
 }
 

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 import 'config/firebase_options.dart';
 import 'config/theme.dart';
 import 'providers/auth_provider.dart';
@@ -36,12 +35,7 @@ class HushApp extends StatelessWidget {
             theme: hushTheme(),
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,
-            localizationsDelegates: const [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
             home: Consumer<AuthProvider>(
               builder: (context, auth, _) {
                 if (auth.loading) {

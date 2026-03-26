@@ -19,6 +19,8 @@ class Secret {
   final int dislikes;
   final bool isGroup;
   final int? minTierLevel;
+  final int? requiredUsers;
+  final int? timeWindowMinutes;
   final int reportCount;
   final bool isHidden;
   final DateTime createdAt;
@@ -42,6 +44,8 @@ class Secret {
     this.dislikes = 0,
     this.isGroup = false,
     this.minTierLevel,
+    this.requiredUsers,
+    this.timeWindowMinutes,
     this.reportCount = 0,
     this.isHidden = false,
     DateTime? createdAt,
@@ -69,6 +73,8 @@ class Secret {
       dislikes: data['dislikes'] ?? 0,
       isGroup: data['isGroup'] ?? false,
       minTierLevel: data['minTierLevel'],
+      requiredUsers: data['requiredUsers'],
+      timeWindowMinutes: data['timeWindowMinutes'],
       reportCount: data['reportCount'] ?? 0,
       isHidden: data['isHidden'] ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -93,6 +99,8 @@ class Secret {
     'dislikes': dislikes,
     'isGroup': isGroup,
     'minTierLevel': minTierLevel,
+    'requiredUsers': requiredUsers,
+    'timeWindowMinutes': timeWindowMinutes,
     'reportCount': reportCount,
     'isHidden': isHidden,
     'createdAt': Timestamp.fromDate(createdAt),

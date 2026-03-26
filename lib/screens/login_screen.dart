@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -36,17 +37,27 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
 
   Future<void> _signInWithGoogle() async {
     setState(() => _isLoading = true);
-    final success = await context.read<AuthProvider>().signInWithGoogle();
-    if (!success && mounted) {
+    final error = await context.read<AuthProvider>().signInWithGoogle();
+    if (mounted) {
       setState(() => _isLoading = false);
+      if (error != null && error != 'User cancelled sign in') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
     }
   }
 
   Future<void> _signInWithApple() async {
     setState(() => _isLoading = true);
-    final success = await context.read<AuthProvider>().signInWithApple();
-    if (!success && mounted) {
+    final error = await context.read<AuthProvider>().signInWithApple();
+    if (mounted) {
       setState(() => _isLoading = false);
+      if (error != null && error != 'User cancelled sign in') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(error)),
+        );
+      }
     }
   }
 
@@ -68,104 +79,118 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
           ),
         ),
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 32),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // Logo with pulse animation
-                  AnimatedBuilder(
-                    animation: _pulseAnimation,
-                    builder: (context, child) {
-                      return Transform.scale(
-                        scale: _pulseAnimation.value,
-                        child: child,
-                      );
-                    },
-                    child: Container(
-                      width: 140,
-                      height: 140,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: HushColors.textAccent.withValues(alpha: 0.2),
-                            blurRadius: 40,
-                            spreadRadius: 10,
+          child: Stack(
+            children: [
+              Center(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(horizontal: 32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // Logo with pulse animation
+                      AnimatedBuilder(
+                        animation: _pulseAnimation,
+                        builder: (context, child) {
+                          return Transform.scale(
+                            scale: _pulseAnimation.value,
+                            child: child,
+                          );
+                        },
+                        child: Container(
+                          width: 140,
+                          height: 140,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: HushColors.textAccent.withValues(alpha: 0.2),
+                                blurRadius: 40,
+                                spreadRadius: 10,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
-                      child: ClipOval(
-                        child: Image.asset(
-                          'assets/images/logo.png',
-                          fit: BoxFit.cover,
+                          child: ClipOval(
+                            child: Image.asset(
+                              'assets/images/logo.png',
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
 
-                  const SizedBox(height: 32),
+                      const SizedBox(height: 32),
 
-                  // Title
-                  ShaderMask(
-                    shaderCallback: (bounds) => HushColors.brandGradient.createShader(bounds),
-                    child: Text(
-                      l10n.loginTitle,
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+                      // Title
+                      ShaderMask(
+                        shaderCallback: (bounds) => HushColors.brandGradient.createShader(bounds),
+                        child: Text(
+                          l10n.loginTitle,
+                          style: const TextStyle(
+                            fontSize: 28,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
                       ),
-                      textAlign: TextAlign.center,
-                    ),
+
+                      const SizedBox(height: 8),
+
+                      // Subtitle
+                      Text(
+                        l10n.loginSubtitle,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: HushColors.textSecondary,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+
+                      const SizedBox(height: 48),
+
+                      if (_isLoading)
+                        const CircularProgressIndicator(color: HushColors.textAccent)
+                      else ...[
+                        // Google Sign-In button
+                        _buildSignInButton(
+                          onPressed: _signInWithGoogle,
+                          icon: Icons.g_mobiledata,
+                          label: l10n.signInWithGoogle,
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black87,
+                        ),
+
+                        const SizedBox(height: 16),
+
+                        // Apple Sign-In button
+                        _buildSignInButton(
+                          onPressed: _signInWithApple,
+                          icon: Icons.apple,
+                          label: l10n.signInWithApple,
+                          backgroundColor: Colors.white,
+                          textColor: Colors.black87,
+                        ),
+                      ],
+
+                      const SizedBox(height: 48),
+
+                      // Decorative wave lines (matching web)
+                      _buildSoundWaves(),
+                    ],
                   ),
-
-                  const SizedBox(height: 8),
-
-                  // Subtitle
-                  Text(
-                    l10n.loginSubtitle,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      color: HushColors.textSecondary,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  if (_isLoading)
-                    const CircularProgressIndicator(color: HushColors.textAccent)
-                  else ...[
-                    // Google Sign-In button
-                    _buildSignInButton(
-                      onPressed: _signInWithGoogle,
-                      icon: Icons.g_mobiledata,
-                      label: l10n.signInWithGoogle,
-                      backgroundColor: Colors.white,
-                      textColor: Colors.black87,
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    // Apple Sign-In button
-                    _buildSignInButton(
-                      onPressed: _signInWithApple,
-                      icon: Icons.apple,
-                      label: l10n.signInWithApple,
-                      backgroundColor: Colors.white,
-                      textColor: Colors.black87,
-                    ),
-                  ],
-
-                  const SizedBox(height: 48),
-
-                  // Decorative wave lines (matching web)
-                  _buildSoundWaves(),
-                ],
+                ),
               ),
-            ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: IconButton(
+                  icon: const Icon(Icons.language, color: Colors.white),
+                  onPressed: () {
+                    context.read<LocaleProvider>().toggleLocale();
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),

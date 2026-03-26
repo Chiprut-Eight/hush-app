@@ -35,6 +35,33 @@ class SecretService {
     return secrets;
   }
 
+  /// Fetch all secrets created by a specific user
+  Future<List<Secret>> getUserSecrets(String userId) async {
+    final snapshot = await _secretsRef
+        .where('creatorId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    return snapshot.docs.map((doc) => Secret.fromFirestore(doc)).toList();
+  }
+
+  /// Fetch saved secrets by ID list
+  Future<List<Secret>> getSavedSecrets(List<String> secretIds) async {
+    if (secretIds.isEmpty) return [];
+    
+    // Fetch in chunks of 10 for Firestore 'in' query limitation
+    List<Secret> results = [];
+    for (var i = 0; i < secretIds.length; i += 10) {
+      final chunk = secretIds.sublist(i, i + 10 > secretIds.length ? secretIds.length : i + 10);
+      final snapshot = await _secretsRef.where(FieldPath.documentId, whereIn: chunk).get();
+      results.addAll(snapshot.docs.map((doc) => Secret.fromFirestore(doc)));
+    }
+    
+    // Sort by most recently created
+    results.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return results;
+  }
+
   /// Create a new text secret
   Future<String> createTextSecret({
     required String content,
@@ -42,6 +69,8 @@ class SecretService {
     required double lng,
     bool isGroup = false,
     int? minTierLevel,
+    int? requiredUsers,
+    int? timeWindowMinutes,
   }) async {
     final user = _auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
@@ -64,6 +93,8 @@ class SecretService {
       lng: lng,
       isGroup: isGroup,
       minTierLevel: minTierLevel,
+      requiredUsers: requiredUsers,
+      timeWindowMinutes: timeWindowMinutes,
     );
 
     await docRef.set(secret.toFirestore());
@@ -84,6 +115,8 @@ class SecretService {
     required double lng,
     bool isGroup = false,
     int? minTierLevel,
+    int? requiredUsers,
+    int? timeWindowMinutes,
   }) async {
     final user = _auth.currentUser;
     if (user == null) throw Exception('Not authenticated');
@@ -106,6 +139,8 @@ class SecretService {
       lng: lng,
       isGroup: isGroup,
       minTierLevel: minTierLevel,
+      requiredUsers: requiredUsers,
+      timeWindowMinutes: timeWindowMinutes,
     );
 
     await docRef.set(secret.toFirestore());
