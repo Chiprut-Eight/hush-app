@@ -130,9 +130,9 @@ class _FollowingScreenState extends State<FollowingScreen> {
     );
   }
 
-  Widget _buildSearchResults() {
+  Widget _buildSearchResults(AppLocalizations l10n) {
     if (_searchResults.isEmpty) {
-      return const Center(child: Text('No users found', style: TextStyle(color: Colors.white54)));
+      return Center(child: Text(l10n.noUsersFound, style: const TextStyle(color: Colors.white54)));
     }
 
     final currentUserFollowing = context.watch<AuthProvider>().hushUser?.followingIds ?? [];

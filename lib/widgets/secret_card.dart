@@ -214,7 +214,7 @@ class _SecretCardState extends State<SecretCard> {
 
                       // --- CONTENT BLUR/REVEAL ---
                       if (_revealed || !isInRange)
-                        _buildContent(isInRange)
+                        _buildContent(isInRange, l10n)
                       else if (isInRange && !_revealed)
                         _buildTapToReveal(l10n),
 
@@ -342,7 +342,7 @@ class _SecretCardState extends State<SecretCard> {
     );
   }
 
-  Widget _buildContent(bool isInRange) {
+  Widget _buildContent(bool isInRange, AppLocalizations l10n) {
     if (!isInRange || !_revealed) {
       // Blurred Fake Text / Waveform (Web parity)
       return ClipRect(
