@@ -7,6 +7,7 @@ import 'feed_screen.dart';
 import 'map_screen.dart';
 import 'create_screen.dart';
 import 'profile_screen.dart';
+import 'following_screen.dart';
 
 /// Main app shell with bottom navigation — matches the web AppShell component
 class AppShell extends StatefulWidget {
@@ -23,6 +24,7 @@ class _AppShellState extends State<AppShell> {
     FeedScreen(),
     MapScreen(),
     CreateScreen(),
+    FollowingScreen(),
     ProfileScreen(),
   ];
 
@@ -85,6 +87,13 @@ class _AppShellState extends State<AppShell> {
                 child: const Icon(Icons.add, color: Colors.white, size: 28),
               ),
               label: '',
+            ),
+            BottomNavigationBarItem(
+              icon: const Padding(
+                padding: EdgeInsets.only(bottom: 4.0),
+                child: Icon(Icons.people_outline),
+              ),
+              label: 'Following',
             ),
             BottomNavigationBarItem(
               icon: const Padding(

@@ -9,7 +9,6 @@ import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
 import 'package:flutter/cupertino.dart'; // For modern segmented control (tabs)
 import 'admin_screen.dart';
-import 'following_screen.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -241,22 +240,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     },
                     icon: const Icon(Icons.notifications_active, color: Colors.white),
                     label: Text(l10n.enableNotifications, style: const TextStyle(color: Colors.white)),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.white24),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Following Screen
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const FollowingScreen()));
-                    },
-                    icon: const Icon(Icons.group_add, color: Colors.white),
-                    label: const Text('Following', style: TextStyle(color: Colors.white)),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white24),
                       padding: const EdgeInsets.symmetric(vertical: 14),
