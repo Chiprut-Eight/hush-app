@@ -248,4 +248,87 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get tapToReveal => 'הקש כדי לחשוף';
+
+  @override
+  String get onboardingTitle => 'השלם את הפרופיל שלך';
+
+  @override
+  String get onboardingWelcome => 'ברוכים הבאים ל-HUSH!';
+
+  @override
+  String get onboardingSub => 'אנא ספק כמה פרטים בסיסיים לפני שנתחיל במסע.';
+
+  @override
+  String get firstName => 'שם פרטי';
+
+  @override
+  String get lastName => 'שם משפחה';
+
+  @override
+  String get dateOfBirth => 'תאריך לידה';
+
+  @override
+  String get selectDate => 'בחר תאריך';
+
+  @override
+  String get gender => 'מגדר';
+
+  @override
+  String get genderMale => 'זכר';
+
+  @override
+  String get genderFemale => 'נקבה';
+
+  @override
+  String get genderOther => 'אחר';
+
+  @override
+  String get hidePhoto => 'הסתר תמונת פרופיל';
+
+  @override
+  String get hidePhotoSub => 'השתמש בלוגו הגנרי של HUSH במקום בתמונה שלי';
+
+  @override
+  String get completeReg => 'סיים הרשמה';
+
+  @override
+  String get firstNameReq => 'שם פרטי הוא חובה';
+
+  @override
+  String get lastNameReq => 'שם משפחה הוא חובה';
+
+  @override
+  String get dobReq => 'אנא בחר את תאריך הלידה שלך';
+
+  @override
+  String get followingTabTitle => 'נעקבים';
+
+  @override
+  String get searchUsersHint => 'חיפוש משתמשים...';
+
+  @override
+  String get noUsersFound => 'לא נמצאו משתמשים';
+
+  @override
+  String get notFollowingAnyone => 'אינך עוקב אחרי אף אחד כרגע.';
+
+  @override
+  String get followBtn => 'עקוב';
+
+  @override
+  String get unfollowBtn => 'הסר עוקב';
+
+  @override
+  String publishedSecretAgo(int hours) {
+    return 'פורסם סוד לפני $hours שעות';
+  }
+
+  @override
+  String get tapToViewMap => 'לחץ לצפייה במפה';
+
+  @override
+  String get noActiveSecrets => 'אין סודות פעילים';
+
+  @override
+  String get anonymousUser => 'אנונימי';
 }

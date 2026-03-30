@@ -216,7 +216,7 @@ class _SecretCardState extends State<SecretCard> {
                       if (_revealed || !isInRange)
                         _buildContent(isInRange)
                       else if (isInRange && !_revealed)
-                        _buildTapToReveal(),
+                        _buildTapToReveal(l10n),
 
                       const SizedBox(height: 16),
 
@@ -285,7 +285,7 @@ class _SecretCardState extends State<SecretCard> {
                                   children: [
                                     Text(userSaved ? '🔖' : '📌', style: const TextStyle(fontSize: 16)),
                                     const SizedBox(width: 4),
-                                    Text(userSaved ? 'Saved' : 'Save', style: TextStyle(color: userSaved ? HushColors.textAccent : HushColors.textSecondary, fontSize: 12)),
+                                    Text(userSaved ? l10n.saved : l10n.save, style: TextStyle(color: userSaved ? HushColors.textAccent : HushColors.textSecondary, fontSize: 12)),
                                   ],
                                 ),
                               ),
@@ -382,7 +382,7 @@ class _SecretCardState extends State<SecretCard> {
                     borderRadius: BorderRadius.circular(16),
                   ),
                   child: Text(
-                    isInRange ? 'Tap to reveal' : 'Out of range',
+                    isInRange ? l10n.tapToReveal : l10n.outOfRange,
                     style: const TextStyle(color: Colors.white, fontSize: 12),
                   ),
                 )
@@ -431,7 +431,7 @@ class _SecretCardState extends State<SecretCard> {
     }
   }
 
-  Widget _buildTapToReveal() {
+  Widget _buildTapToReveal(AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 24),
       decoration: BoxDecoration(
@@ -444,7 +444,7 @@ class _SecretCardState extends State<SecretCard> {
           children: [
             const Icon(Icons.touch_app, color: HushColors.textAccent, size: 32),
             const SizedBox(height: 8),
-            const Text('Tap to Reveal', style: TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold)),
+            Text(l10n.tapToReveal, style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold)),
           ],
         ),
       ),

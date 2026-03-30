@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -82,12 +83,13 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
       appBar: AppBar(
-        title: const Text('Complete Your Profile'),
+        title: Text(l10n.onboardingTitle),
         automaticallyImplyLeading: false, // Prevents back button to login page blindly
       ),
       body: SingleChildScrollView(
@@ -97,33 +99,33 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const Text('Welcome to HUSH!', style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
+              Text(l10n.onboardingWelcome, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 8),
-              const Text('Please provide some basic details before starting your journey.', style: TextStyle(color: Colors.white70)),
+              Text(l10n.onboardingSub, style: const TextStyle(color: Colors.white70)),
               const SizedBox(height: 32),
 
               TextFormField(
                 controller: _firstNameController,
-                decoration: const InputDecoration(labelText: 'First Name'),
-                validator: (val) => val == null || val.isEmpty ? 'First name is required' : null,
+                decoration: InputDecoration(labelText: l10n.firstName),
+                validator: (val) => val == null || val.isEmpty ? l10n.firstNameReq : null,
               ),
               const SizedBox(height: 16),
 
               TextFormField(
                 controller: _lastNameController,
-                decoration: const InputDecoration(labelText: 'Last Name'),
-                validator: (val) => val == null || val.isEmpty ? 'Last name is required' : null,
+                decoration: InputDecoration(labelText: l10n.lastName),
+                validator: (val) => val == null || val.isEmpty ? l10n.lastNameReq : null,
               ),
               const SizedBox(height: 24),
 
               InkWell(
                 onTap: () => _pickDate(context),
                 child: InputDecorator(
-                  decoration: const InputDecoration(labelText: 'Date of Birth'),
+                  decoration: InputDecoration(labelText: l10n.dateOfBirth),
                   child: Text(
                     _dateOfBirth != null 
                         ? '${_dateOfBirth!.day}/${_dateOfBirth!.month}/${_dateOfBirth!.year}' 
-                        : 'Select date',
+                        : l10n.selectDate,
                     style: TextStyle(color: _dateOfBirth != null ? Colors.white : Colors.white54),
                   ),
                 ),
@@ -132,11 +134,11 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
               DropdownButtonFormField<String>(
                 value: _gender,
-                decoration: const InputDecoration(labelText: 'Gender'),
-                items: const [
-                  DropdownMenuItem(value: 'male', child: Text('Male')),
-                  DropdownMenuItem(value: 'female', child: Text('Female')),
-                  DropdownMenuItem(value: 'other', child: Text('Other')),
+                decoration: InputDecoration(labelText: l10n.gender),
+                items: [
+                  DropdownMenuItem(value: 'male', child: Text(l10n.genderMale)),
+                  DropdownMenuItem(value: 'female', child: Text(l10n.genderFemale)),
+                  DropdownMenuItem(value: 'other', child: Text(l10n.genderOther)),
                 ],
                 onChanged: (val) => setState(() => _gender = val!),
               ),
@@ -145,8 +147,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Card(
                 color: HushColors.bgCard,
                 child: SwitchListTile(
-                  title: const Text('Hide Profile Photo'),
-                  subtitle: const Text('Use generic HUSH logo instead of my Gmail/Apple photo', style: TextStyle(fontSize: 12)),
+                  title: Text(l10n.hidePhoto),
+                  subtitle: Text(l10n.hidePhotoSub, style: const TextStyle(fontSize: 12)),
                   value: _useGenericPhoto,
                   activeColor: HushColors.textAccent,
                   onChanged: (val) => setState(() => _useGenericPhoto = val),
@@ -161,7 +163,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 ),
                 child: _isSubmitting
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('Complete Registration', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
+                    : Text(l10n.completeReg, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ],
           ),

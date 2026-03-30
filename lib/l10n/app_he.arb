@@ -100,5 +100,37 @@
     }
   },
   "mapboxNotConfigured": "המפה לא מוגדרת",
-  "tapToReveal": "הקש כדי לחשוף"
+  "tapToReveal": "הקש כדי לחשוף",
+  "onboardingTitle": "השלם את הפרופיל שלך",
+  "onboardingWelcome": "ברוכים הבאים ל-HUSH!",
+  "onboardingSub": "אנא ספק כמה פרטים בסיסיים לפני שנתחיל במסע.",
+  "firstName": "שם פרטי",
+  "lastName": "שם משפחה",
+  "dateOfBirth": "תאריך לידה",
+  "selectDate": "בחר תאריך",
+  "gender": "מגדר",
+  "genderMale": "זכר",
+  "genderFemale": "נקבה",
+  "genderOther": "אחר",
+  "hidePhoto": "הסתר תמונת פרופיל",
+  "hidePhotoSub": "השתמש בלוגו הגנרי של HUSH במקום בתמונה שלי",
+  "completeReg": "סיים הרשמה",
+  "firstNameReq": "שם פרטי הוא חובה",
+  "lastNameReq": "שם משפחה הוא חובה",
+  "dobReq": "אנא בחר את תאריך הלידה שלך",
+  "followingTabTitle": "נעקבים",
+  "searchUsersHint": "חיפוש משתמשים...",
+  "noUsersFound": "לא נמצאו משתמשים",
+  "notFollowingAnyone": "אינך עוקב אחרי אף אחד כרגע.",
+  "followBtn": "עקוב",
+  "unfollowBtn": "הסר עוקב",
+  "publishedSecretAgo": "פורסם סוד לפני {hours} שעות",
+  "@publishedSecretAgo": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "tapToViewMap": "לחץ לצפייה במפה",
+  "noActiveSecrets": "אין סודות פעילים",
+  "anonymousUser": "אנונימי"
 }

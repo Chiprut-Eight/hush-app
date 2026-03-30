@@ -100,5 +100,37 @@
     }
   },
   "mapboxNotConfigured": "Map not configured",
-  "tapToReveal": "Tap to reveal"
+  "tapToReveal": "Tap to reveal",
+  "onboardingTitle": "Complete Your Profile",
+  "onboardingWelcome": "Welcome to HUSH!",
+  "onboardingSub": "Please provide some basic details before starting your journey.",
+  "firstName": "First Name",
+  "lastName": "Last Name",
+  "dateOfBirth": "Date of Birth",
+  "selectDate": "Select date",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "hidePhoto": "Hide Profile Photo",
+  "hidePhotoSub": "Use generic HUSH logo instead of my photo",
+  "completeReg": "Complete Registration",
+  "firstNameReq": "First name is required",
+  "lastNameReq": "Last name is required",
+  "dobReq": "Please select your Date of Birth",
+  "followingTabTitle": "Following",
+  "searchUsersHint": "Search users...",
+  "noUsersFound": "No users found",
+  "notFollowingAnyone": "You are not following anyone yet.",
+  "followBtn": "Follow",
+  "unfollowBtn": "Unfollow",
+  "publishedSecretAgo": "Published a secret {hours}h ago",
+  "@publishedSecretAgo": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "tapToViewMap": "Tap to view on map",
+  "noActiveSecrets": "No active secrets",
+  "anonymousUser": "Anonymous"
 }

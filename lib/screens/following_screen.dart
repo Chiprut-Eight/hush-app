@@ -5,6 +5,7 @@ import '../models/hush_user.dart';
 import '../providers/auth_provider.dart';
 import '../services/social_service.dart';
 import 'map_screen.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 
 class FollowingScreen extends StatefulWidget {
   const FollowingScreen({super.key});
@@ -86,16 +87,13 @@ class _FollowingScreenState extends State<FollowingScreen> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
-    // We can use localizations or fallback to english strings since l10n wasn't updated with these keys yet
-    const title = 'Following';
-    const searchHint = 'Search users...';
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
       appBar: AppBar(
-        title: const Text(title),
+        title: Text(l10n.followingTabTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
       ),
@@ -108,7 +106,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
               onChanged: _performSearch,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                hintText: searchHint,
+                hintText: l10n.searchUsersHint,
                 hintStyle: const TextStyle(color: Colors.white54),
                 prefixIcon: const Icon(Icons.search, color: HushColors.textAccent),
                 filled: true,
@@ -124,8 +122,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
             child: _isLoading
                 ? const Center(child: CircularProgressIndicator(color: HushColors.textAccent))
                 : _isSearching
-                    ? _buildSearchResults()
-                    : _buildFollowedFeed(),
+                    ? _buildSearchResults(l10n)
+                    : _buildFollowedFeed(l10n),
           ),
         ],
       ),
@@ -151,25 +149,25 @@ class _FollowingScreenState extends State<FollowingScreen> {
             backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
             child: (user.useGenericPhoto || user.photoURL == null) ? const Icon(Icons.person, color: Colors.white) : null,
           ),
-          title: Text('${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? 'Anonymous'), style: const TextStyle(color: Colors.white)),
-          subtitle: Text('Tier ${user.tierLevel}', style: const TextStyle(color: HushColors.textAccent)),
+          title: Text('${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser), style: const TextStyle(color: Colors.white)),
+          subtitle: Text(l10n.tier(user.tierLevel), style: const TextStyle(color: HushColors.textAccent)),
           trailing: ElevatedButton(
             onPressed: () => _toggleFollow(user),
             style: ElevatedButton.styleFrom(
               backgroundColor: isFollowing ? Colors.transparent : HushColors.textAccent,
               side: isFollowing ? const BorderSide(color: HushColors.textAccent) : null,
             ),
-            child: Text(isFollowing ? 'Unfollow' : 'Follow', style: TextStyle(color: isFollowing ? HushColors.textAccent : Colors.white)),
+            child: Text(isFollowing ? l10n.unfollowBtn : l10n.followBtn, style: TextStyle(color: isFollowing ? HushColors.textAccent : Colors.white)),
           ),
         );
       },
     );
   }
 
-  Widget _buildFollowedFeed() {
+  Widget _buildFollowedFeed(AppLocalizations l10n) {
     if (_followedFeed.isEmpty) {
-      return const Center(
-        child: Text('You are not following anyone yet.', style: TextStyle(color: Colors.white54)),
+      return Center(
+        child: Text(l10n.notFollowingAnyone, style: const TextStyle(color: Colors.white54)),
       );
     }
 
@@ -209,7 +207,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? 'Anonymous'),
+                          '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser),
                           style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
                         ),
                         const SizedBox(height: 4),
@@ -220,7 +218,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
-                                  'Published a secret ${DateTime.now().difference(secret.createdAt).inHours}h ago',
+                                  l10n.publishedSecretAgo(DateTime.now().difference(secret.createdAt).inHours),
                                   style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -228,9 +226,9 @@ class _FollowingScreenState extends State<FollowingScreen> {
                             ],
                           ),
                           const SizedBox(height: 4),
-                          const Text('Tap to view on map', style: TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                          Text(l10n.tapToViewMap, style: const TextStyle(color: HushColors.textAccent, fontSize: 12)),
                         ] else ...[
-                          const Text('No active secrets', style: TextStyle(color: HushColors.textMuted, fontSize: 12)),
+                          Text(l10n.noActiveSecrets, style: const TextStyle(color: HushColors.textMuted, fontSize: 12)),
                         ]
                       ],
                     ),

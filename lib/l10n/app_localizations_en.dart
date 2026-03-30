@@ -248,4 +248,88 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tapToReveal => 'Tap to reveal';
+
+  @override
+  String get onboardingTitle => 'Complete Your Profile';
+
+  @override
+  String get onboardingWelcome => 'Welcome to HUSH!';
+
+  @override
+  String get onboardingSub =>
+      'Please provide some basic details before starting your journey.';
+
+  @override
+  String get firstName => 'First Name';
+
+  @override
+  String get lastName => 'Last Name';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get hidePhoto => 'Hide Profile Photo';
+
+  @override
+  String get hidePhotoSub => 'Use generic HUSH logo instead of my photo';
+
+  @override
+  String get completeReg => 'Complete Registration';
+
+  @override
+  String get firstNameReq => 'First name is required';
+
+  @override
+  String get lastNameReq => 'Last name is required';
+
+  @override
+  String get dobReq => 'Please select your Date of Birth';
+
+  @override
+  String get followingTabTitle => 'Following';
+
+  @override
+  String get searchUsersHint => 'Search users...';
+
+  @override
+  String get noUsersFound => 'No users found';
+
+  @override
+  String get notFollowingAnyone => 'You are not following anyone yet.';
+
+  @override
+  String get followBtn => 'Follow';
+
+  @override
+  String get unfollowBtn => 'Unfollow';
+
+  @override
+  String publishedSecretAgo(int hours) {
+    return 'Published a secret ${hours}h ago';
+  }
+
+  @override
+  String get tapToViewMap => 'Tap to view on map';
+
+  @override
+  String get noActiveSecrets => 'No active secrets';
+
+  @override
+  String get anonymousUser => 'Anonymous';
 }

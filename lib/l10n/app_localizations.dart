@@ -553,6 +553,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to reveal'**
   String get tapToReveal;
+
+  /// No description provided for @onboardingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Your Profile'**
+  String get onboardingTitle;
+
+  /// No description provided for @onboardingWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to HUSH!'**
+  String get onboardingWelcome;
+
+  /// No description provided for @onboardingSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Please provide some basic details before starting your journey.'**
+  String get onboardingSub;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// No description provided for @lastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get lastName;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemale;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get genderOther;
+
+  /// No description provided for @hidePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Hide Profile Photo'**
+  String get hidePhoto;
+
+  /// No description provided for @hidePhotoSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Use generic HUSH logo instead of my photo'**
+  String get hidePhotoSub;
+
+  /// No description provided for @completeReg.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete Registration'**
+  String get completeReg;
+
+  /// No description provided for @firstNameReq.
+  ///
+  /// In en, this message translates to:
+  /// **'First name is required'**
+  String get firstNameReq;
+
+  /// No description provided for @lastNameReq.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name is required'**
+  String get lastNameReq;
+
+  /// No description provided for @dobReq.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select your Date of Birth'**
+  String get dobReq;
+
+  /// No description provided for @followingTabTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Following'**
+  String get followingTabTitle;
+
+  /// No description provided for @searchUsersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users...'**
+  String get searchUsersHint;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @notFollowingAnyone.
+  ///
+  /// In en, this message translates to:
+  /// **'You are not following anyone yet.'**
+  String get notFollowingAnyone;
+
+  /// No description provided for @followBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow'**
+  String get followBtn;
+
+  /// No description provided for @unfollowBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Unfollow'**
+  String get unfollowBtn;
+
+  /// No description provided for @publishedSecretAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'Published a secret {hours}h ago'**
+  String publishedSecretAgo(int hours);
+
+  /// No description provided for @tapToViewMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to view on map'**
+  String get tapToViewMap;
+
+  /// No description provided for @noActiveSecrets.
+  ///
+  /// In en, this message translates to:
+  /// **'No active secrets'**
+  String get noActiveSecrets;
+
+  /// No description provided for @anonymousUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get anonymousUser;
 }
 
 class _AppLocalizationsDelegate
