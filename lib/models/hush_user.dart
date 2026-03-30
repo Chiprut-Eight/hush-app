@@ -14,6 +14,14 @@ class HushUser {
   final bool isGhostMode;
   final DateTime? ghostModeUntil;
   final DateTime createdAt;
+  
+  // Onboarding
+  final bool isOnboarded;
+  final String? firstName;
+  final String? lastName;
+  final DateTime? dateOfBirth;
+  final String? gender;
+  final bool useGenericPhoto;
 
   HushUser({
     required this.uid,
@@ -28,6 +36,12 @@ class HushUser {
     this.isGhostMode = false,
     this.ghostModeUntil,
     DateTime? createdAt,
+    this.isOnboarded = false,
+    this.firstName,
+    this.lastName,
+    this.dateOfBirth,
+    this.gender,
+    this.useGenericPhoto = false,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory HushUser.fromFirestore(DocumentSnapshot doc) {
@@ -45,6 +59,12 @@ class HushUser {
       isGhostMode: data['isGhostMode'] ?? false,
       ghostModeUntil: (data['ghostModeUntil'] as Timestamp?)?.toDate(),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      isOnboarded: data['isOnboarded'] ?? false,
+      firstName: data['firstName'],
+      lastName: data['lastName'],
+      dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
+      gender: data['gender'],
+      useGenericPhoto: data['useGenericPhoto'] ?? false,
     );
   }
 
@@ -61,5 +81,11 @@ class HushUser {
     'isGhostMode': isGhostMode,
     'ghostModeUntil': ghostModeUntil != null ? Timestamp.fromDate(ghostModeUntil!) : null,
     'createdAt': Timestamp.fromDate(createdAt),
+    'isOnboarded': isOnboarded,
+    'firstName': firstName,
+    'lastName': lastName,
+    'dateOfBirth': dateOfBirth != null ? Timestamp.fromDate(dateOfBirth!) : null,
+    'gender': gender,
+    'useGenericPhoto': useGenericPhoto,
   };
 }

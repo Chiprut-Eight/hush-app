@@ -62,7 +62,6 @@ class _AppealsList extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('appeals')
           .where('status', isEqualTo: 'pending')
-          .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -84,9 +83,18 @@ class _AppealsList extends StatelessWidget {
           );
         }
 
+        final docs = snapshot.data!.docs.toList();
+        docs.sort((a, b) {
+          final da = (a.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+          final db = (b.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+          final ta = da?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final tb = db?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return tb.compareTo(ta); // Descending (Newest first)
+        });
+
         return ListView(
           padding: const EdgeInsets.all(16),
-          children: snapshot.data!.docs.map((doc) {
+          children: docs.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
             final date = (data['createdAt'] as Timestamp?)?.toDate();
             final userId = data['userId'] ?? '';
@@ -167,7 +175,6 @@ class _ReportsList extends StatelessWidget {
       stream: FirebaseFirestore.instance
           .collection('reports')
           .where('status', isEqualTo: 'pending')
-          .orderBy('createdAt', descending: true)
           .snapshots(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
@@ -189,9 +196,18 @@ class _ReportsList extends StatelessWidget {
           );
         }
 
+        final docs = snapshot.data!.docs.toList();
+        docs.sort((a, b) {
+          final da = (a.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+          final db = (b.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
+          final ta = da?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+          final tb = db?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
+          return tb.compareTo(ta); // Descending (Newest first)
+        });
+
         return ListView(
           padding: const EdgeInsets.all(16),
-          children: snapshot.data!.docs.map((doc) {
+          children: docs.map((doc) {
             final data = doc.data() as Map<String, dynamic>;
             final date = (data['createdAt'] as Timestamp?)?.toDate();
             final secretId = data['secretId'] ?? '';

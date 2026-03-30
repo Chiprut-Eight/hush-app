@@ -83,8 +83,10 @@ class SecretService {
     final secret = Secret(
       id: docRef.id,
       creatorId: user.uid,
-      creatorName: user.displayName,
-      creatorPhotoURL: user.photoURL,
+      creatorName: '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty 
+          ? '${userData['firstName']} ${userData['lastName']}'.trim() 
+          : user.displayName,
+      creatorPhotoURL: userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
       creatorTierLevel: userData['tierLevel'] ?? 1,
       creatorTierColor: _tierLevelToColor(userData['tierLevel'] ?? 1),
       type: 'text',
@@ -128,8 +130,10 @@ class SecretService {
     final secret = Secret(
       id: docRef.id,
       creatorId: user.uid,
-      creatorName: user.displayName,
-      creatorPhotoURL: user.photoURL,
+      creatorName: '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty 
+          ? '${userData['firstName']} ${userData['lastName']}'.trim() 
+          : user.displayName,
+      creatorPhotoURL: userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
       creatorTierLevel: userData['tierLevel'] ?? 1,
       creatorTierColor: _tierLevelToColor(userData['tierLevel'] ?? 1),
       type: 'voice',

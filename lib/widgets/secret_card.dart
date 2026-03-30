@@ -165,15 +165,42 @@ class _SecretCardState extends State<SecretCard> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                            decoration: BoxDecoration(
-                              border: Border.all(color: isGroup ? _getTierColor() : HushColors.borderSubtle),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              isGroup ? '🔐 Group Secret' : '🤫 Regular Secret',
-                              style: const TextStyle(color: Colors.white, fontSize: 12),
+                          Expanded(
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 18,
+                                  backgroundColor: _getTierColor(),
+                                  child: CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: HushColors.bgPrimary,
+                                    backgroundImage: widget.secret.creatorPhotoURL != null && widget.secret.creatorPhotoURL != 'generic'
+                                        ? NetworkImage(widget.secret.creatorPhotoURL!)
+                                        : null,
+                                    child: widget.secret.creatorPhotoURL == 'generic' || widget.secret.creatorPhotoURL == null
+                                        ? const Icon(Icons.person, size: 18, color: Colors.white54)
+                                        : null,
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        widget.secret.creatorName ?? 'Anonymous',
+                                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        isGroup ? '🔐 Group Secret' : '🤫 Regular Secret',
+                                        style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                           if (distance != null)

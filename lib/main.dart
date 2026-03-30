@@ -8,6 +8,7 @@ import 'providers/auth_provider.dart';
 import 'providers/locale_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
+import 'screens/onboarding_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +47,14 @@ class HushApp extends StatelessWidget {
                   );
                 }
                 if (auth.isAuthenticated) {
+                  if (auth.hushUser == null) {
+                    return const Scaffold(
+                      body: Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  if (!auth.hushUser!.isOnboarded) {
+                    return const OnboardingScreen();
+                  }
                   return const AppShell();
                 }
                 return const LoginScreen();
