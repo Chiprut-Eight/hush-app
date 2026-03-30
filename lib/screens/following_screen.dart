@@ -83,10 +83,13 @@ class _FollowingScreenState extends State<FollowingScreen> {
       await _fetchFollowedFeed(); // Re-fetch feed to order the secrets
       
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 

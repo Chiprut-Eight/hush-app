@@ -77,12 +77,15 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       await authParams.refreshProfile();
 
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     
@@ -133,7 +136,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               const SizedBox(height: 24),
 
               DropdownButtonFormField<String>(
-                value: _gender,
+                initialValue: _gender,
                 decoration: InputDecoration(labelText: l10n.gender),
                 items: [
                   DropdownMenuItem(value: 'male', child: Text(l10n.genderMale)),
@@ -150,7 +153,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                   title: Text(l10n.hidePhoto),
                   subtitle: Text(l10n.hidePhotoSub, style: const TextStyle(fontSize: 12)),
                   value: _useGenericPhoto,
-                  activeColor: HushColors.textAccent,
+                  activeThumbColor: HushColors.textAccent,
                   onChanged: (val) => setState(() => _useGenericPhoto = val),
                 ),
               ),
