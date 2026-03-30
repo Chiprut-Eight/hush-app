@@ -8,6 +8,7 @@ import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
 import 'package:flutter/cupertino.dart'; // For modern segmented control (tabs)
+import 'admin_screen.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -71,7 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     final isGhostMode = user.isGhostMode;
-    final isAdmin = auth.firebaseUser?.uid == const String.fromEnvironment('ADMIN_UID', defaultValue: ''); // Placeholder for env
+    final isAdmin = auth.firebaseUser?.uid == const String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2');
 
     return Scaffold(
       appBar: AppBar(
@@ -251,9 +252,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Admin panel if applicable
                   if (isAdmin) ...[
                     ElevatedButton.icon(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
+                      },
                       icon: const Icon(Icons.security, color: Colors.white),
-                      label: const Text('Admin Panel', style: TextStyle(color: Colors.white)),
+                      label: Text(l10n.adminTitle, style: const TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orangeAccent,
                         padding: const EdgeInsets.symmetric(vertical: 14),

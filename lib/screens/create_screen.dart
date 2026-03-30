@@ -33,7 +33,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   String _secretType = 'regular'; // 'regular' or 'group'
   double _requiredUsers = 3;
 
-  TextEditingController _textController = TextEditingController();
+  final TextEditingController _textController = TextEditingController();
 
   bool _isRecording = false;
   bool _isPublishing = false;
@@ -143,6 +143,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   Future<void> _publishSecret() async {
     if (!_canSubmit()) return;
 
+    final tierLevel = context.read<AuthProvider>().hushUser?.tierLevel ?? 1;
+
     setState(() => _isPublishing = true);
 
     try {
@@ -160,7 +162,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       int? requiredU = isGroup ? _requiredUsers.toInt() : null;
       int? timeWindow;
       if (isGroup) {
-        final currentTier = HushTiers.getTier(context.read<AuthProvider>().hushUser?.tierLevel ?? 1);
+        final currentTier = HushTiers.getTier(tierLevel);
         timeWindow = currentTier.timeWindowMinutes;
       }
 
