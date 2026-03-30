@@ -109,8 +109,7 @@ class _MapScreenState extends State<MapScreen> {
 
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final bool isOverlay = widget.targetLat != null;
-
+    
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -143,6 +142,8 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildMapBody() {
+    final bool isOverlay = widget.targetLat != null;
+    
     if (_isLoading && _currentPosition == null) {
       return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
     }
