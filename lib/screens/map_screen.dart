@@ -10,7 +10,14 @@ import '../config/theme.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final double? targetLat;
+  final double? targetLng;
+
+  const MapScreen({
+    super.key,
+    this.targetLat,
+    this.targetLng,
+  });
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -66,6 +73,13 @@ class _MapScreenState extends State<MapScreen> {
           _secrets = secrets;
           _isLoading = false;
         });
+
+        // If target was passed, jump camera there
+        if (widget.targetLat != null && widget.targetLng != null) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _mapController.move(LatLng(widget.targetLat!, widget.targetLng!), 18.0);
+          });
+        }
       }
     } catch (e) {
       if (mounted) {
@@ -93,9 +107,9 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final bool isOverlay = widget.targetLat != null;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -251,6 +265,18 @@ class _MapScreenState extends State<MapScreen> {
                 height: 24,
                 child: CircularProgressIndicator(strokeWidth: 2, color: HushColors.textAccent),
               ),
+            ),
+          ),
+          
+        if (isOverlay)
+          Positioned(
+            top: 48,
+            left: 16,
+            child: FloatingActionButton.small(
+              onPressed: () => Navigator.pop(context),
+              backgroundColor: HushColors.bgCard,
+              elevation: 4,
+              child: const Icon(Icons.arrow_back, color: HushColors.textAccent),
             ),
           )
       ],
