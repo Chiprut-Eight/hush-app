@@ -93,7 +93,7 @@ class _AppShellState extends State<AppShell> {
                 padding: EdgeInsets.only(bottom: 4.0),
                 child: Icon(Icons.people_outline),
               ),
-              label: 'Following',
+              label: l10n.followingTabTitle,
             ),
             BottomNavigationBarItem(
               icon: const Padding(

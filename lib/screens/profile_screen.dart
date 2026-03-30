@@ -183,6 +183,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   _buildStatRow(l10n.publishedSecrets, '${user.totalPublished}'),
                   _buildStatRow(l10n.savedSecrets, '${user.savedSecretIds.length}'),
                   _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
+                  _buildStatRow(l10n.followers, '${user.followerIds.length}'),
                 ],
               ),
             ),

@@ -39,16 +39,26 @@ class SocialService {
 
   /// Follow a specific user
   Future<void> followUser(String currentUserId, String targetUserId) async {
-    await _firestore.collection('users').doc(currentUserId).update({
+    final batch = _firestore.batch();
+    batch.update(_firestore.collection('users').doc(currentUserId), {
       'followingIds': FieldValue.arrayUnion([targetUserId])
     });
+    batch.update(_firestore.collection('users').doc(targetUserId), {
+      'followerIds': FieldValue.arrayUnion([currentUserId])
+    });
+    await batch.commit();
   }
 
   /// Unfollow a specific user
   Future<void> unfollowUser(String currentUserId, String targetUserId) async {
-    await _firestore.collection('users').doc(currentUserId).update({
+    final batch = _firestore.batch();
+    batch.update(_firestore.collection('users').doc(currentUserId), {
       'followingIds': FieldValue.arrayRemove([targetUserId])
     });
+    batch.update(_firestore.collection('users').doc(targetUserId), {
+      'followerIds': FieldValue.arrayRemove([currentUserId])
+    });
+    await batch.commit();
   }
 
   /// Get formatted list of followed users merged with their latest secret

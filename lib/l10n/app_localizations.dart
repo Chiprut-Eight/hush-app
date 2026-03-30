@@ -715,6 +715,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Anonymous'**
   String get anonymousUser;
+
+  /// No description provided for @followers.
+  ///
+  /// In en, this message translates to:
+  /// **'Followers'**
+  String get followers;
 }
 
 class _AppLocalizationsDelegate

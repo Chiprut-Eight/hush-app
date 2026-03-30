@@ -332,4 +332,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get anonymousUser => 'Anonymous';
+
+  @override
+  String get followers => 'Followers';
 }

@@ -301,7 +301,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get dobReq => 'אנא בחר את תאריך הלידה שלך';
 
   @override
-  String get followingTabTitle => 'נעקבים';
+  String get followingTabTitle => 'במעקב';
 
   @override
   String get searchUsersHint => 'חיפוש משתמשים...';
@@ -331,4 +331,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get anonymousUser => 'אנונימי';
+
+  @override
+  String get followers => 'עוקבים';
 }

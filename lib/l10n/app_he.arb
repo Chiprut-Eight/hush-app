@@ -118,7 +118,7 @@
   "firstNameReq": "שם פרטי הוא חובה",
   "lastNameReq": "שם משפחה הוא חובה",
   "dobReq": "אנא בחר את תאריך הלידה שלך",
-  "followingTabTitle": "נעקבים",
+  "followingTabTitle": "במעקב",
   "searchUsersHint": "חיפוש משתמשים...",
   "noUsersFound": "לא נמצאו משתמשים",
   "notFollowingAnyone": "אינך עוקב אחרי אף אחד כרגע.",
@@ -132,5 +132,6 @@
   },
   "tapToViewMap": "לחץ לצפייה במפה",
   "noActiveSecrets": "אין סודות פעילים",
-  "anonymousUser": "אנונימי"
+  "anonymousUser": "אנונימי",
+  "followers": "עוקבים"
 }

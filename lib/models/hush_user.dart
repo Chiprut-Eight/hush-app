@@ -25,6 +25,7 @@ class HushUser {
   
   // Follow System
   final List<String> followingIds;
+  final List<String> followerIds;
 
   HushUser({
     required this.uid,
@@ -46,6 +47,7 @@ class HushUser {
     this.gender,
     this.useGenericPhoto = false,
     this.followingIds = const [],
+    this.followerIds = const [],
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory HushUser.fromFirestore(DocumentSnapshot doc) {
@@ -70,6 +72,7 @@ class HushUser {
       gender: data['gender'],
       useGenericPhoto: data['useGenericPhoto'] ?? false,
       followingIds: List<String>.from(data['followingIds'] ?? []),
+      followerIds: List<String>.from(data['followerIds'] ?? []),
     );
   }
 
@@ -93,5 +96,6 @@ class HushUser {
     'gender': gender,
     'useGenericPhoto': useGenericPhoto,
     'followingIds': followingIds,
+    'followerIds': followerIds,
   };
 }
