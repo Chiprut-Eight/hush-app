@@ -148,14 +148,22 @@ class _SecretCardState extends State<SecretCard> {
               children: [
                 Text(l10n.reportReason, style: const TextStyle(color: HushColors.textSecondary)),
                 const SizedBox(height: 12),
-                ...reasons.map((reason) => RadioListTile<String>(
-                  title: Text(reason, style: const TextStyle(color: Colors.white, fontSize: 14)),
-                  value: reason,
-                  groupValue: selectedReason,
-                  activeColor: HushColors.textAccent,
-                  onChanged: (val) => setDialogState(() => selectedReason = val),
-                  contentPadding: EdgeInsets.zero,
-                  dense: true,
+                ...reasons.map((reason) => GestureDetector(
+                  onTap: () => setDialogState(() => selectedReason = reason),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          selectedReason == reason ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                          color: selectedReason == reason ? HushColors.textAccent : HushColors.textSecondary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(reason, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                      ],
+                    ),
+                  ),
                 )),
               ],
             ),
@@ -166,13 +174,14 @@ class _SecretCardState extends State<SecretCard> {
               ),
               ElevatedButton(
                 onPressed: selectedReason == null ? null : () async {
+                  final messenger = ScaffoldMessenger.of(context);
                   await _secretService.reportSecretWithDetails(
                     widget.secret.id, 
                     selectedReason!,
                   );
                   if (ctx.mounted) Navigator.pop(ctx);
                   if (mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
+                    messenger.showSnackBar(
                       SnackBar(content: Text(l10n.reportSuccess)),
                     );
                   }

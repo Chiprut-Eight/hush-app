@@ -391,10 +391,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
             onPressed: () async {
               final reason = reasonController.text.trim();
               if (reason.isEmpty) return;
+              final messenger = ScaffoldMessenger.of(context);
               await _secretService.submitAppeal(reason);
               if (ctx.mounted) Navigator.pop(ctx);
               if (mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
+                messenger.showSnackBar(
                   SnackBar(content: Text(l10n.appealSuccess)),
                 );
               }
