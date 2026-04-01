@@ -242,6 +242,29 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
+              // Content Area (text or voice)
+              if (_activeTab == 0) _buildTextTab(l10n) else _buildVoiceTab(l10n),
+
+              const SizedBox(height: 16),
+
+              // --- TASK 10: Submit button moved here, between content and tabs ---
+              SizedBox(
+                height: 56,
+                child: ElevatedButton(
+                  onPressed: _canSubmit() ? _publishSecret : null,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: HushColors.textAccent,
+                    disabledBackgroundColor: HushColors.textAccent.withValues(alpha: 0.3),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                  ),
+                  child: _isPublishing 
+                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                    : Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                ),
+              ),
+
+              const SizedBox(height: 24),
+
               // Tabs
               CupertinoSlidingSegmentedControl<int>(
                 backgroundColor: HushColors.bgCard,
@@ -255,11 +278,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                 onValueChanged: (int? value) => setState(() => _activeTab = value!),
               ),
               
-              const SizedBox(height: 32),
-
-              // Content Area
-              if (_activeTab == 0) _buildTextTab(l10n) else _buildVoiceTab(l10n),
-
               const SizedBox(height: 32),
 
               // Secret Type
@@ -322,24 +340,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                   ),
                 ),
               ],
-
-              const SizedBox(height: 40),
-
-              // Submit
-              SizedBox(
-                height: 56,
-                child: ElevatedButton(
-                  onPressed: _canSubmit() ? _publishSecret : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: HushColors.textAccent,
-                    disabledBackgroundColor: HushColors.textAccent.withValues(alpha: 0.3),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  child: _isPublishing 
-                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ),
 
               const SizedBox(height: 48), // Bottom nav padding
             ],
@@ -419,22 +419,26 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
               )
             : Column(
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      IconButton(
-                        icon: Icon(_isPlayingPreview ? Icons.pause_circle_filled : Icons.play_circle_fill, color: HushColors.textAccent, size: 48),
-                        onPressed: _togglePreview,
-                      ),
-                      const SizedBox(width: 16),
-                      // Fake waveform
-                      ...List.generate(6, (i) => Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 2),
-                        width: 4,
-                        height: 12.0 + (i % 3) * 8,
-                        color: HushColors.textAccent,
-                      )),
-                    ],
+                  // Task 5: Force LTR for audio playback preview
+                  Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        IconButton(
+                          icon: Icon(_isPlayingPreview ? Icons.pause_circle_filled : Icons.play_circle_fill, color: HushColors.textAccent, size: 48),
+                          onPressed: _togglePreview,
+                        ),
+                        const SizedBox(width: 16),
+                        // Fake waveform
+                        ...List.generate(6, (i) => Container(
+                          margin: const EdgeInsets.symmetric(horizontal: 2),
+                          width: 4,
+                          height: 12.0 + (i % 3) * 8,
+                          color: HushColors.textAccent,
+                        )),
+                      ],
+                    ),
                   ),
                   const SizedBox(height: 16),
                   TextButton.icon(

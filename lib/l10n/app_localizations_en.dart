@@ -335,4 +335,103 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get followers => 'Followers';
+
+  @override
+  String timeAgoSeconds(int count) {
+    return '${count}s ago';
+  }
+
+  @override
+  String timeAgoMinutes(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String timeAgoHours(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String timeAgoDays(int count) {
+    return '${count}d ago';
+  }
+
+  @override
+  String timeAgoWeeks(int count) {
+    return '${count}w ago';
+  }
+
+  @override
+  String timeAgoMonths(int count) {
+    return '${count}mo ago';
+  }
+
+  @override
+  String timeAgoYears(int count) {
+    return '${count}y ago';
+  }
+
+  @override
+  String get reportTitle => 'Report Secret';
+
+  @override
+  String get reportReason => 'Why are you reporting this?';
+
+  @override
+  String get reportReasonHate => 'Hate speech';
+
+  @override
+  String get reportReasonSpam => 'Spam';
+
+  @override
+  String get reportReasonHarassment => 'Harassment';
+
+  @override
+  String get reportReasonViolence => 'Violence';
+
+  @override
+  String get reportReasonOther => 'Other';
+
+  @override
+  String get reportSuccess => 'Report submitted. Thank you.';
+
+  @override
+  String get reportConfirm => 'Report';
+
+  @override
+  String get appealTitle => 'Submit Appeal';
+
+  @override
+  String get appealReason => 'Explain why you are appealing:';
+
+  @override
+  String get appealSuccess => 'Appeal submitted. We\'ll review your case.';
+
+  @override
+  String get appealSubmit => 'Submit Appeal';
+
+  @override
+  String get deleteSecretTitle => 'Delete Secret';
+
+  @override
+  String get deleteSecretConfirm =>
+      'Are you sure you want to delete this secret? This cannot be undone.';
+
+  @override
+  String get comments => 'Comments';
+
+  @override
+  String get addComment => 'Add a comment...';
+
+  @override
+  String get noComments => 'No comments yet. Be the first!';
+
+  @override
+  String get deleteComment => 'Delete Comment';
+
+  @override
+  String get commentPlaceholder => 'Write a comment...';
+
+  @override
+  String get directionToSecret => 'Direction to secret';
 }

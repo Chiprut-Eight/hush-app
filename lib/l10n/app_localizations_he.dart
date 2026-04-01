@@ -334,4 +334,103 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get followers => 'עוקבים';
+
+  @override
+  String timeAgoSeconds(int count) {
+    return 'לפני $count שנ׳';
+  }
+
+  @override
+  String timeAgoMinutes(int count) {
+    return 'לפני $count דק׳';
+  }
+
+  @override
+  String timeAgoHours(int count) {
+    return 'לפני $count שע׳';
+  }
+
+  @override
+  String timeAgoDays(int count) {
+    return 'לפני $count ימ׳';
+  }
+
+  @override
+  String timeAgoWeeks(int count) {
+    return 'לפני $count שב׳';
+  }
+
+  @override
+  String timeAgoMonths(int count) {
+    return 'לפני $count חד׳';
+  }
+
+  @override
+  String timeAgoYears(int count) {
+    return 'לפני $count שנ׳';
+  }
+
+  @override
+  String get reportTitle => 'דיווח על סוד';
+
+  @override
+  String get reportReason => 'מדוע את/ה מדווח/ת?';
+
+  @override
+  String get reportReasonHate => 'שיח שנאה';
+
+  @override
+  String get reportReasonSpam => 'ספאם';
+
+  @override
+  String get reportReasonHarassment => 'הטרדה';
+
+  @override
+  String get reportReasonViolence => 'אלימות';
+
+  @override
+  String get reportReasonOther => 'אחר';
+
+  @override
+  String get reportSuccess => 'הדיווח נשלח. תודה.';
+
+  @override
+  String get reportConfirm => 'דווח';
+
+  @override
+  String get appealTitle => 'הגש ערעור';
+
+  @override
+  String get appealReason => 'הסבר מדוע את/ה מערער/ת:';
+
+  @override
+  String get appealSuccess => 'הערעור נשלח. נבדוק את המקרה שלך.';
+
+  @override
+  String get appealSubmit => 'שלח ערעור';
+
+  @override
+  String get deleteSecretTitle => 'מחיקת סוד';
+
+  @override
+  String get deleteSecretConfirm =>
+      'האם אתה בטוח שברצונך למחוק את הסוד? לא ניתן לבטל פעולה זו.';
+
+  @override
+  String get comments => 'תגובות';
+
+  @override
+  String get addComment => 'הוסף תגובה...';
+
+  @override
+  String get noComments => 'אין תגובות עדיין. היה הראשון!';
+
+  @override
+  String get deleteComment => 'מחק תגובה';
+
+  @override
+  String get commentPlaceholder => 'כתוב תגובה...';
+
+  @override
+  String get directionToSecret => 'כיוון אל הסוד';
 }

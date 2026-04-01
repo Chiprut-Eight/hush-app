@@ -183,6 +183,41 @@ class SecretService {
     });
   }
 
+  /// Report a secret with details — creates a report document
+  Future<void> reportSecretWithDetails(String secretId, String reason) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    // Increment report count on the secret
+    await _secretsRef.doc(secretId).update({
+      'reportCount': FieldValue.increment(1),
+    });
+
+    // Create a report document
+    await _firestore.collection('reports').add({
+      'secretId': secretId,
+      'reporterId': user.uid,
+      'reporterName': user.displayName,
+      'reason': reason,
+      'status': 'pending',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Submit an appeal for ghost mode
+  Future<void> submitAppeal(String reason) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    await _firestore.collection('appeals').add({
+      'userId': user.uid,
+      'userName': user.displayName,
+      'reason': reason,
+      'status': 'pending',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   /// Save a secret to user's saved list
   Future<void> saveSecret(String secretId) async {
     final uid = _auth.currentUser?.uid;
@@ -205,7 +240,59 @@ class SecretService {
 
   /// Delete a secret (creator only)
   Future<void> deleteSecret(String secretId) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+    
     await _secretsRef.doc(secretId).delete();
+    
+    // Decrement published count
+    await _firestore.collection('users').doc(user.uid).update({
+      'totalPublished': FieldValue.increment(-1),
+    });
+  }
+
+  /// Add a comment to a secret
+  Future<void> addComment(String secretId, String text) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    final userDoc = await _firestore.collection('users').doc(user.uid).get();
+    final userData = userDoc.data() ?? {};
+
+    await _secretsRef.doc(secretId).collection('comments').add({
+      'userId': user.uid,
+      'userName': '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty
+          ? '${userData['firstName']} ${userData['lastName']}'.trim()
+          : user.displayName,
+      'userPhotoURL': userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
+      'text': text,
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
+  /// Get comments stream for a secret
+  Stream<List<Map<String, dynamic>>> getCommentsStream(String secretId) {
+    return _secretsRef
+        .doc(secretId)
+        .collection('comments')
+        .orderBy('createdAt', descending: false)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map((doc) {
+              final data = doc.data();
+              return {
+                'id': doc.id,
+                'userId': data['userId'],
+                'userName': data['userName'],
+                'userPhotoURL': data['userPhotoURL'],
+                'text': data['text'],
+                'createdAt': (data['createdAt'] as Timestamp?)?.toDate(),
+              };
+            }).toList());
+  }
+
+  /// Delete a comment
+  Future<void> deleteComment(String secretId, String commentId) async {
+    await _secretsRef.doc(secretId).collection('comments').doc(commentId).delete();
   }
 
   /// Get all secrets for map display
@@ -235,3 +322,4 @@ class SecretService {
     return colors[(level - 1).clamp(0, 9)];
   }
 }
+

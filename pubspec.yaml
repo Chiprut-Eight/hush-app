@@ -64,15 +64,18 @@ flutter:
 
 flutter_native_splash:
   color: "#0D1320"
-  image: "assets/images/logo.png"
+  image: "assets/images/logo_hushhh.jpeg"
   android: true
   ios: true
+  android_gravity: center
+  ios_content_mode: center
   android_12:
     color: "#0D1320"
-    image: "assets/images/logo.png"
+    image: "assets/images/logo_hushhh.jpeg"
+    icon_background_color: "#0D1320"
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo.png"
+  image_path: "assets/images/logo_hushhh.jpeg"
   min_sdk_android: 23

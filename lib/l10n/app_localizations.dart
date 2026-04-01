@@ -721,6 +721,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Followers'**
   String get followers;
+
+  /// No description provided for @timeAgoSeconds.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}s ago'**
+  String timeAgoSeconds(int count);
+
+  /// No description provided for @timeAgoMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}m ago'**
+  String timeAgoMinutes(int count);
+
+  /// No description provided for @timeAgoHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}h ago'**
+  String timeAgoHours(int count);
+
+  /// No description provided for @timeAgoDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}d ago'**
+  String timeAgoDays(int count);
+
+  /// No description provided for @timeAgoWeeks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}w ago'**
+  String timeAgoWeeks(int count);
+
+  /// No description provided for @timeAgoMonths.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}mo ago'**
+  String timeAgoMonths(int count);
+
+  /// No description provided for @timeAgoYears.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}y ago'**
+  String timeAgoYears(int count);
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Secret'**
+  String get reportTitle;
+
+  /// No description provided for @reportReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you reporting this?'**
+  String get reportReason;
+
+  /// No description provided for @reportReasonHate.
+  ///
+  /// In en, this message translates to:
+  /// **'Hate speech'**
+  String get reportReasonHate;
+
+  /// No description provided for @reportReasonSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Spam'**
+  String get reportReasonSpam;
+
+  /// No description provided for @reportReasonHarassment.
+  ///
+  /// In en, this message translates to:
+  /// **'Harassment'**
+  String get reportReasonHarassment;
+
+  /// No description provided for @reportReasonViolence.
+  ///
+  /// In en, this message translates to:
+  /// **'Violence'**
+  String get reportReasonViolence;
+
+  /// No description provided for @reportReasonOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get reportReasonOther;
+
+  /// No description provided for @reportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report submitted. Thank you.'**
+  String get reportSuccess;
+
+  /// No description provided for @reportConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Report'**
+  String get reportConfirm;
+
+  /// No description provided for @appealTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Appeal'**
+  String get appealTitle;
+
+  /// No description provided for @appealReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why you are appealing:'**
+  String get appealReason;
+
+  /// No description provided for @appealSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Appeal submitted. We\'ll review your case.'**
+  String get appealSuccess;
+
+  /// No description provided for @appealSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Appeal'**
+  String get appealSubmit;
+
+  /// No description provided for @deleteSecretTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Secret'**
+  String get deleteSecretTitle;
+
+  /// No description provided for @deleteSecretConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this secret? This cannot be undone.'**
+  String get deleteSecretConfirm;
+
+  /// No description provided for @comments.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments'**
+  String get comments;
+
+  /// No description provided for @addComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a comment...'**
+  String get addComment;
+
+  /// No description provided for @noComments.
+  ///
+  /// In en, this message translates to:
+  /// **'No comments yet. Be the first!'**
+  String get noComments;
+
+  /// No description provided for @deleteComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Comment'**
+  String get deleteComment;
+
+  /// No description provided for @commentPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Write a comment...'**
+  String get commentPlaceholder;
+
+  /// No description provided for @directionToSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Direction to secret'**
+  String get directionToSecret;
 }
 
 class _AppLocalizationsDelegate

@@ -133,5 +133,46 @@
   "tapToViewMap": "לחץ לצפייה במפה",
   "noActiveSecrets": "אין סודות פעילים",
   "anonymousUser": "אנונימי",
-  "followers": "עוקבים"
+  "followers": "עוקבים",
+
+  "timeAgoSeconds": "לפני {count} שנ׳",
+  "@timeAgoSeconds": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoMinutes": "לפני {count} דק׳",
+  "@timeAgoMinutes": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoHours": "לפני {count} שע׳",
+  "@timeAgoHours": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoDays": "לפני {count} ימ׳",
+  "@timeAgoDays": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoWeeks": "לפני {count} שב׳",
+  "@timeAgoWeeks": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoMonths": "לפני {count} חד׳",
+  "@timeAgoMonths": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoYears": "לפני {count} שנ׳",
+  "@timeAgoYears": { "placeholders": { "count": { "type": "int" } } },
+
+  "reportTitle": "דיווח על סוד",
+  "reportReason": "מדוע את/ה מדווח/ת?",
+  "reportReasonHate": "שיח שנאה",
+  "reportReasonSpam": "ספאם",
+  "reportReasonHarassment": "הטרדה",
+  "reportReasonViolence": "אלימות",
+  "reportReasonOther": "אחר",
+  "reportSuccess": "הדיווח נשלח. תודה.",
+  "reportConfirm": "דווח",
+
+  "appealTitle": "הגש ערעור",
+  "appealReason": "הסבר מדוע את/ה מערער/ת:",
+  "appealSuccess": "הערעור נשלח. נבדוק את המקרה שלך.",
+  "appealSubmit": "שלח ערעור",
+
+  "deleteSecretTitle": "מחיקת סוד",
+  "deleteSecretConfirm": "האם אתה בטוח שברצונך למחוק את הסוד? לא ניתן לבטל פעולה זו.",
+
+  "comments": "תגובות",
+  "addComment": "הוסף תגובה...",
+  "noComments": "אין תגובות עדיין. היה הראשון!",
+  "deleteComment": "מחק תגובה",
+  "commentPlaceholder": "כתוב תגובה...",
+
+  "directionToSecret": "כיוון אל הסוד"
 }

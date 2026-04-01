@@ -7,7 +7,7 @@ import '../providers/locale_provider.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
-import 'package:flutter/cupertino.dart'; // For modern segmented control (tabs)
+import 'package:flutter/cupertino.dart';
 import 'admin_screen.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
@@ -125,7 +125,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     const SizedBox(height: 12),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
-                      onPressed: () {},
+                      onPressed: () => _showAppealDialog(context, l10n),
                       child: Text(l10n.appeal, style: const TextStyle(color: Colors.white)),
                     )
                   ],
@@ -320,7 +320,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ];
     }
     
-    return list.map((secret) => SecretCard(secret: secret)).toList();
+    return list.map((secret) => SecretCard(
+      secret: secret,
+      onDelete: _fetchProfileData,
+    )).toList();
   }
 
   Widget _buildStatRow(String label, String value) {
@@ -347,6 +350,59 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  void _showAppealDialog(BuildContext context, AppLocalizations l10n) {
+    final TextEditingController reasonController = TextEditingController();
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: HushColors.bgCard,
+        title: Text(l10n.appealTitle, style: const TextStyle(color: Colors.white)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(l10n.appealReason, style: const TextStyle(color: HushColors.textSecondary)),
+            const SizedBox(height: 12),
+            TextField(
+              controller: reasonController,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                filled: true,
+                fillColor: HushColors.bgPrimary,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+              ),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(l10n.cancel, style: const TextStyle(color: HushColors.textSecondary)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final reason = reasonController.text.trim();
+              if (reason.isEmpty) return;
+              await _secretService.submitAppeal(reason);
+              if (ctx.mounted) Navigator.pop(ctx);
+              if (mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.appealSuccess)),
+                );
+              }
+            },
+            style: ElevatedButton.styleFrom(backgroundColor: HushColors.textAccent),
+            child: Text(l10n.appealSubmit, style: const TextStyle(color: Colors.white)),
+          ),
+        ],
       ),
     );
   }

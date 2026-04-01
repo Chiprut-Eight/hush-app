@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
@@ -9,6 +10,12 @@ import 'providers/locale_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
 import 'screens/onboarding_screen.dart';
+
+/// Admin UID — same constant used in profile_screen.dart
+const String _adminUid = String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2');
+
+/// MethodChannel for screenshot prevention (Android native FLAG_SECURE)
+const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +46,9 @@ class HushApp extends StatelessWidget {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             home: Consumer<AuthProvider>(
               builder: (context, auth, _) {
+                // Task 12: Screenshot prevention — enable FLAG_SECURE for non-admin
+                _applyScreenshotPolicy(auth);
+
                 if (auth.loading) {
                   return const Scaffold(
                     body: Center(
@@ -64,5 +74,17 @@ class HushApp extends StatelessWidget {
         },
       ),
     );
+  }
+
+  /// Apply screenshot prevention policy based on admin status
+  void _applyScreenshotPolicy(AuthProvider auth) {
+    if (auth.isAuthenticated && auth.firebaseUser != null) {
+      final isAdmin = auth.firebaseUser!.uid == _adminUid;
+      if (isAdmin) {
+        _screenshotChannel.invokeMethod('disableScreenshotPrevention');
+      } else {
+        _screenshotChannel.invokeMethod('enableScreenshotPrevention');
+      }
+    }
   }
 }

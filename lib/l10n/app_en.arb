@@ -133,5 +133,46 @@
   "tapToViewMap": "Tap to view on map",
   "noActiveSecrets": "No active secrets",
   "anonymousUser": "Anonymous",
-  "followers": "Followers"
+  "followers": "Followers",
+
+  "timeAgoSeconds": "{count}s ago",
+  "@timeAgoSeconds": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoMinutes": "{count}m ago",
+  "@timeAgoMinutes": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoHours": "{count}h ago",
+  "@timeAgoHours": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoDays": "{count}d ago",
+  "@timeAgoDays": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoWeeks": "{count}w ago",
+  "@timeAgoWeeks": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoMonths": "{count}mo ago",
+  "@timeAgoMonths": { "placeholders": { "count": { "type": "int" } } },
+  "timeAgoYears": "{count}y ago",
+  "@timeAgoYears": { "placeholders": { "count": { "type": "int" } } },
+
+  "reportTitle": "Report Secret",
+  "reportReason": "Why are you reporting this?",
+  "reportReasonHate": "Hate speech",
+  "reportReasonSpam": "Spam",
+  "reportReasonHarassment": "Harassment",
+  "reportReasonViolence": "Violence",
+  "reportReasonOther": "Other",
+  "reportSuccess": "Report submitted. Thank you.",
+  "reportConfirm": "Report",
+
+  "appealTitle": "Submit Appeal",
+  "appealReason": "Explain why you are appealing:",
+  "appealSuccess": "Appeal submitted. We'll review your case.",
+  "appealSubmit": "Submit Appeal",
+
+  "deleteSecretTitle": "Delete Secret",
+  "deleteSecretConfirm": "Are you sure you want to delete this secret? This cannot be undone.",
+
+  "comments": "Comments",
+  "addComment": "Add a comment...",
+  "noComments": "No comments yet. Be the first!",
+  "deleteComment": "Delete Comment",
+  "commentPlaceholder": "Write a comment...",
+
+  "directionToSecret": "Direction to secret"
 }
