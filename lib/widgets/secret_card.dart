@@ -546,17 +546,19 @@ class _SecretCardState extends State<SecretCard> {
                                   Text('${widget.secret.listens}', style: const TextStyle(color: HushColors.textSecondary)),
                                 ],
                               ),
-                              // --- COMMENTS BUTTON ---
-                              const SizedBox(width: 12),
-                              GestureDetector(
-                                onTap: () => _showCommentsSheet(context, l10n),
-                                child: const Row(
-                                  children: [
-                                    Text('💬', style: TextStyle(fontSize: 14)),
-                                    SizedBox(width: 4),
-                                  ],
+                              // --- COMMENTS BUTTON (only if revealed) ---
+                              if (_revealed) ...[
+                                const SizedBox(width: 12),
+                                GestureDetector(
+                                  onTap: () => _showCommentsSheet(context, l10n),
+                                  child: const Row(
+                                    children: [
+                                      Text('💬', style: TextStyle(fontSize: 14)),
+                                      SizedBox(width: 4),
+                                    ],
+                                  ),
                                 ),
-                              ),
+                              ],
                             ],
                           ),
                           Row(
