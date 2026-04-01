@@ -44,6 +44,29 @@ class HushApp extends StatelessWidget {
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
+            builder: (context, child) {
+              return Stack(
+                children: [
+                  if (child != null) child,
+                  Positioned(
+                    top: MediaQuery.of(context).padding.top + 16,
+                    left: 20, // Always left, regardless of LTR/RTL
+                    child: IgnorePointer(
+                      child: Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: SafeArea(
+                          child: Image.asset(
+                            'assets/images/top_banner.jpeg',
+                            height: 28, // Narrow and proportional
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            },
             home: Consumer<AuthProvider>(
               builder: (context, auth, _) {
                 // Task 12: Screenshot prevention — enable FLAG_SECURE for non-admin
