@@ -46,12 +46,14 @@
 		<key>UIApplicationSupportsIndirectInputEvents</key>
 		<true/>
 		<key>UIStatusBarHidden</key>
-		<false/>
+		<true/>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string>HUSH requires access to your location to discover and plant secrets nearby.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>HUSH requires access to your location to alert you about nearby secrets.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>HUSH needs microphone access for you to record voice secrets.</string>
+		<key>UIViewControllerBasedStatusBarAppearance</key>
+		<false/>
 	</dict>
 </plist>
