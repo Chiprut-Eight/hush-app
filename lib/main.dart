@@ -45,26 +45,34 @@ class HushApp extends StatelessWidget {
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             builder: (context, child) {
-              return Stack(
-                children: [
-                  child ?? const SizedBox.shrink(),
-                  Positioned(
-                    top: MediaQuery.of(context).padding.top + 16,
-                    left: 20, // Always left, regardless of LTR/RTL
-                    child: IgnorePointer(
-                      child: Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: SafeArea(
+              return Material(
+                color: HushColors.bgPrimary,
+                child: Column(
+                  children: [
+                    SafeArea(
+                      bottom: false,
+                      child: Container(
+                        padding: const EdgeInsets.only(left: 20.0, top: 4.0, bottom: 4.0),
+                        alignment: Alignment.centerLeft, // Always physical left regardless of RTL
+                        child: Directionality(
+                          textDirection: TextDirection.ltr,
                           child: Image.asset(
                             'assets/images/top_banner.jpeg',
-                            height: 28, // Narrow and proportional
+                            width: MediaQuery.of(context).size.width * 0.55,
                             fit: BoxFit.contain,
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: MediaQuery.removePadding(
+                        context: context,
+                        removeTop: true,
+                        child: child ?? const SizedBox.shrink(),
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
             home: Consumer<AuthProvider>(
