@@ -47,7 +47,7 @@ class HushApp extends StatelessWidget {
             builder: (context, child) {
               return Stack(
                 children: [
-                  if (child != null) child,
+                  child ?? const SizedBox.shrink(),
                   Positioned(
                     top: MediaQuery.of(context).padding.top + 16,
                     left: 20, // Always left, regardless of LTR/RTL
