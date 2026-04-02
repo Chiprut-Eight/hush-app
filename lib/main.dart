@@ -57,8 +57,8 @@ class HushApp extends StatelessWidget {
                         child: Directionality(
                           textDirection: TextDirection.ltr,
                           child: Image.asset(
-                            'assets/images/top_banner.jpeg',
-                            width: MediaQuery.of(context).size.width * 0.55,
+                            'assets/images/top_banner.png',
+                            width: MediaQuery.of(context).size.width * 0.45,
                             fit: BoxFit.contain,
                           ),
                         ),
