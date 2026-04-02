@@ -1,61 +1,62 @@
-/// Centralized SVG icon paths for the HUSH app.
-/// All icons are 24×24 Lucide-style with stroke-width 2.
+import 'package:flutter/widgets.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+/// Centralized icon constants for the HUSH app.
+/// Powered by Phosphor Icons (Light style unless filled).
 class HushIcons {
   HushIcons._();
 
-  static const String _base = 'assets/icons';
-
   // --- Secret Types & User Status ---
-  static const String groupLock    = '$_base/group_lock.svg';
-  static const String shh          = '$_base/shh.svg';
-  static const String penTool      = '$_base/pen_tool.svg';
-  static const String mic          = '$_base/mic.svg';
-  static const String micOff       = '$_base/mic_off.svg';
-  static const String ghost        = '$_base/ghost.svg';
-  static const String star         = '$_base/star.svg';
-  static const String starFilled   = '$_base/star_filled.svg';
-  static const String crown        = '$_base/crown.svg';
-  static const String bookmark     = '$_base/bookmark.svg';
-  static const String bookmarkFilled = '$_base/bookmark_filled.svg';
-  static const String pin          = '$_base/pin.svg';
+  static const IconData groupLock    = PhosphorIconsLight.usersThree;
+  static const IconData shh          = PhosphorIconsLight.smileyBlank;
+  static const IconData penTool      = PhosphorIconsLight.penNib;
+  static const IconData mic          = PhosphorIconsLight.microphone;
+  static const IconData micOff       = PhosphorIconsLight.microphoneSlash;
+  static const IconData ghost        = PhosphorIconsLight.ghost;
+  static const IconData star         = PhosphorIconsLight.star;
+  static const IconData starFilled   = PhosphorIconsFill.star;
+  static const IconData crown        = PhosphorIconsLight.crown;
+  static const IconData bookmark     = PhosphorIconsLight.bookmarkSimple;
+  static const IconData bookmarkFilled = PhosphorIconsFill.bookmarkSimple;
+  static const IconData pin          = PhosphorIconsLight.pushPin;
 
   // --- Actions ---
-  static const String flag         = '$_base/flag.svg';
-  static const String comment      = '$_base/comment.svg';
-  static const String warning      = '$_base/warning.svg';
-  static const String touch        = '$_base/touch.svg';
-  static const String send         = '$_base/send.svg';
-  static const String trash        = '$_base/trash.svg';
-  static const String stop         = '$_base/stop.svg';
+  static const IconData flag         = PhosphorIconsLight.flag;
+  static const IconData comment      = PhosphorIconsLight.chatCircle;
+  static const IconData warning      = PhosphorIconsLight.warning;
+  static const IconData touch        = PhosphorIconsLight.handTap;
+  static const IconData send         = PhosphorIconsLight.paperPlaneRight;
+  static const IconData trash        = PhosphorIconsLight.trash;
+  static const IconData stop         = PhosphorIconsLight.stopCircle;
 
   // --- Media Player ---
-  static const String play         = '$_base/play.svg';
-  static const String pause        = '$_base/pause.svg';
-  static const String audioLines   = '$_base/audio_lines.svg';
+  static const IconData play         = PhosphorIconsLight.playCircle;
+  static const IconData pause        = PhosphorIconsLight.pauseCircle;
+  static const IconData audioLines   = PhosphorIconsLight.waveform;
 
   // --- Navigation ---
-  static const String feed         = '$_base/feed.svg';
-  static const String map          = '$_base/map.svg';
-  static const String plusCircle   = '$_base/plus_circle.svg';
-  static const String users        = '$_base/users.svg';
-  static const String userCircle   = '$_base/user_circle.svg';
-  static const String person       = '$_base/person.svg';
+  static const IconData feed         = PhosphorIconsLight.squaresFour;
+  static const IconData map          = PhosphorIconsLight.mapTrifold;
+  static const IconData plusCircle   = PhosphorIconsLight.plusCircle;
+  static const IconData users        = PhosphorIconsLight.users;
+  static const IconData userCircle   = PhosphorIconsLight.userCircle;
+  static const IconData person       = PhosphorIconsLight.user;
 
   // --- Location ---
-  static const String mapPin       = '$_base/map_pin.svg';
-  static const String navigation   = '$_base/navigation.svg';
-  static const String target       = '$_base/target.svg';
+  static const IconData mapPin       = PhosphorIconsLight.mapPin;
+  static const IconData navigation   = PhosphorIconsLight.navigationArrow;
+  static const IconData target       = PhosphorIconsLight.crosshair;
 
   // --- Utility ---
-  static const String search       = '$_base/search.svg';
-  static const String arrowLeft    = '$_base/arrow_left.svg';
-  static const String chevronRight = '$_base/chevron_right.svg';
-  static const String refresh      = '$_base/refresh.svg';
-  static const String globe        = '$_base/globe.svg';
-  static const String shield       = '$_base/shield.svg';
-  static const String logout       = '$_base/logout.svg';
-  static const String bell         = '$_base/bell.svg';
-  static const String error        = '$_base/error.svg';
-  static const String hearingOff   = '$_base/hearing_off.svg';
-  static const String textSnippet  = '$_base/text_snippet.svg';
+  static const IconData search       = PhosphorIconsLight.magnifyingGlass;
+  static const IconData arrowLeft    = PhosphorIconsLight.arrowLeft;
+  static const IconData chevronRight = PhosphorIconsLight.caretRight;
+  static const IconData refresh      = PhosphorIconsLight.arrowsClockwise;
+  static const IconData globe        = PhosphorIconsLight.globe;
+  static const IconData shield       = PhosphorIconsLight.shieldCheck;
+  static const IconData logout       = PhosphorIconsLight.signOut;
+  static const IconData bell         = PhosphorIconsLight.bell;
+  static const IconData error        = PhosphorIconsLight.warningCircle;
+  static const IconData hearingOff   = PhosphorIconsLight.earSlash;
+  static const IconData textSnippet  = PhosphorIconsLight.fileText;
 }
