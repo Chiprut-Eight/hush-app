@@ -7,6 +7,8 @@ import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
 import '../config/theme.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
@@ -120,7 +122,7 @@ class _MapScreenState extends State<MapScreen> {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.my_location),
+            icon: const HushIcon(HushIcons.target, size: 20, color: Colors.white),
             onPressed: () {
               if (_currentPosition != null) {
                 _mapController.move(
@@ -133,7 +135,7 @@ class _MapScreenState extends State<MapScreen> {
             },
           ),
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const HushIcon(HushIcons.refresh, size: 20, color: Colors.white),
             onPressed: _fetchMapData,
           ),
         ],
@@ -156,7 +158,7 @@ class _MapScreenState extends State<MapScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.explore_off, size: 48, color: Colors.amber),
+              HushIcon(HushIcons.error, size: 48, color: Colors.amber),
               const SizedBox(height: 16),
               Text(
                 _error!,
@@ -192,6 +194,7 @@ class _MapScreenState extends State<MapScreen> {
               urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
               subdomains: const ['a', 'b', 'c', 'd'],
               userAgentPackageName: 'com.hush.app',
+              retinaMode: MediaQuery.of(context).devicePixelRatio > 1.0,
             ),
             MarkerLayer(
               markers: [
@@ -278,7 +281,7 @@ class _MapScreenState extends State<MapScreen> {
               onPressed: () => Navigator.pop(context),
               backgroundColor: HushColors.bgCard,
               elevation: 4,
-              child: const Icon(Icons.arrow_back, color: HushColors.textAccent),
+              child: const HushIcon(HushIcons.arrowLeft, size: 24, color: HushColors.textAccent),
             ),
           )
       ],

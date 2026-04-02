@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../config/theme.dart';
+import '../core/constants/icons.dart';
 import '../models/hush_user.dart';
 import '../providers/auth_provider.dart';
 import '../services/social_service.dart';
+import '../widgets/hush_icon_widget.dart';
 import 'map_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
@@ -111,7 +113,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
               decoration: InputDecoration(
                 hintText: l10n.searchUsersHint,
                 hintStyle: const TextStyle(color: Colors.white54),
-                prefixIcon: const Icon(Icons.search, color: HushColors.textAccent),
+                prefixIcon: const HushIcon(HushIcons.search, size: 20, color: HushColors.textAccent),
                 filled: true,
                 fillColor: HushColors.bgCard,
                 border: OutlineInputBorder(
@@ -150,7 +152,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
           leading: CircleAvatar(
             backgroundColor: HushColors.bgCard,
             backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
-            child: (user.useGenericPhoto || user.photoURL == null) ? const Icon(Icons.person, color: Colors.white) : null,
+            child: (user.useGenericPhoto || user.photoURL == null) ? const HushIcon(HushIcons.person, size: 18, color: Colors.white) : null,
           ),
           title: Text('${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser), style: const TextStyle(color: Colors.white)),
           subtitle: Text(l10n.tier(user.tierLevel), style: const TextStyle(color: HushColors.textAccent)),
@@ -217,7 +219,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                         if (secret != null) ...[
                           Row(
                             children: [
-                              Icon(secret.type == 'voice' ? Icons.mic : Icons.text_snippet, size: 14, color: HushColors.textAccent),
+                              HushIcon(secret.type == 'voice' ? HushIcons.mic : HushIcons.textSnippet, size: 14, color: HushColors.textAccent),
                               const SizedBox(width: 4),
                               Expanded(
                                 child: Text(
@@ -236,7 +238,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                       ],
                     ),
                   ),
-                  const Icon(Icons.chevron_right, color: Colors.white24),
+                  const HushIcon(HushIcons.chevronRight, size: 20, color: Colors.white24),
                 ],
               ),
             ),

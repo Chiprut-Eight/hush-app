@@ -12,6 +12,8 @@ import '../providers/auth_provider.dart';
 import 'package:uuid/uuid.dart';
 import 'dart:async';
 import 'package:flutter/cupertino.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 /// Web-aligned Create Screen
 class CreateScreen extends StatefulWidget {
@@ -217,7 +219,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Text('👻', style: TextStyle(fontSize: 48)),
+              const HushIcon(HushIcons.ghost, size: 48, color: HushColors.tierRed),
               const SizedBox(height: 16),
               Text(l10n.ghostModeActive, style: const TextStyle(fontSize: 22, color: HushColors.tierRed, fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
@@ -407,8 +409,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                           border: Border.all(color: HushColors.tierRed, width: 2),
                           color: _isRecording ? HushColors.tierRed.withValues(alpha: 0.2) : Colors.transparent,
                         ),
-                        child: Icon(
-                          _isRecording ? Icons.stop_rounded : Icons.mic_none,
+                        child: HushIcon(
+                          _isRecording ? HushIcons.stop : HushIcons.mic,
                           color: HushColors.tierRed,
                           size: 40,
                         ),
@@ -426,7 +428,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         IconButton(
-                          icon: Icon(_isPlayingPreview ? Icons.pause_circle_filled : Icons.play_circle_fill, color: HushColors.textAccent, size: 48),
+                          icon: HushIcon(_isPlayingPreview ? HushIcons.pause : HushIcons.play, size: 48, color: HushColors.textAccent),
                           onPressed: _togglePreview,
                         ),
                         const SizedBox(width: 16),
@@ -443,7 +445,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                   const SizedBox(height: 16),
                   TextButton.icon(
                     onPressed: _discardRecording,
-                    icon: const Icon(Icons.delete, color: HushColors.tierRed),
+                    icon: const HushIcon(HushIcons.trash, size: 20, color: HushColors.tierRed),
                     label: Text(l10n.delete, style: const TextStyle(color: HushColors.tierRed)),
                   )
                 ],

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 import 'feed_screen.dart';
 import 'map_screen.dart';
@@ -56,16 +58,16 @@ class _AppShellState extends State<AppShell> {
           unselectedFontSize: 12,
           items: [
             BottomNavigationBarItem(
-              icon: const Padding(
-                padding: EdgeInsets.only(bottom: 4.0),
-                child: Icon(Icons.grid_view_rounded),
+              icon: Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: HushIcon(HushIcons.feed, size: 22, color: _currentIndex == 0 ? HushColors.textAccent : HushColors.textSecondary),
               ),
               label: l10n.feedTitle,
             ),
             BottomNavigationBarItem(
-              icon: const Padding(
-                padding: EdgeInsets.only(bottom: 4.0),
-                child: Icon(Icons.adjust),
+              icon: Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: HushIcon(HushIcons.map, size: 22, color: _currentIndex == 1 ? HushColors.textAccent : HushColors.textSecondary),
               ),
               label: l10n.mapTitle,
             ),
@@ -84,21 +86,21 @@ class _AppShellState extends State<AppShell> {
                     ),
                   ],
                 ),
-                child: const Icon(Icons.add, color: Colors.white, size: 28),
+                child: const HushIcon(HushIcons.plusCircle, size: 28, color: Colors.white),
               ),
               label: '',
             ),
             BottomNavigationBarItem(
-              icon: const Padding(
-                padding: EdgeInsets.only(bottom: 4.0),
-                child: Icon(Icons.people_outline),
+              icon: Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: HushIcon(HushIcons.users, size: 22, color: _currentIndex == 3 ? HushColors.textAccent : HushColors.textSecondary),
               ),
               label: l10n.followingTabTitle,
             ),
             BottomNavigationBarItem(
-              icon: const Padding(
-                padding: EdgeInsets.only(bottom: 4.0),
-                child: Icon(Icons.person_outline),
+              icon: Padding(
+                padding: const EdgeInsets.only(bottom: 4.0),
+                child: HushIcon(HushIcons.userCircle, size: 22, color: _currentIndex == 4 ? HushColors.textAccent : HushColors.textSecondary),
               ),
               label: l10n.profileTitle,
             ),

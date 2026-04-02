@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
+import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
+import '../widgets/hush_icon_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'admin_screen.dart';
 
@@ -143,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ? NetworkImage(auth.firebaseUser!.photoURL!)
                         : null,
                     child: auth.firebaseUser?.photoURL == null
-                        ? const Icon(Icons.person, size: 48, color: HushColors.textMuted)
+                        ? const HushIcon(HushIcons.person, size: 48, color: HushColors.textMuted)
                         : null,
                   ),
                   const SizedBox(height: 12),
@@ -162,7 +164,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       ),
                     ),
                     child: Text(
-                      '${user.tierLevel == 10 ? '👑' : '⭐'} ${l10n.tier(user.tierLevel)}',
+                      '${user.tierLevel == 10 ? '' : ''} ${l10n.tier(user.tierLevel)}',
                       style: TextStyle(
                         color: HushColors.tierColor(user.tierLevel),
                         fontWeight: FontWeight.w600,
@@ -239,7 +241,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SnackBar(content: Text('Notification settings updated/requested.')),
                       );
                     },
-                    icon: const Icon(Icons.notifications_active, color: Colors.white),
+                    icon: const HushIcon(HushIcons.bell, size: 20, color: Colors.white),
                     label: Text(l10n.enableNotifications, style: const TextStyle(color: Colors.white)),
                     style: OutlinedButton.styleFrom(
                       side: const BorderSide(color: Colors.white24),
@@ -256,7 +258,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       onPressed: () {
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
                       },
-                      icon: const Icon(Icons.security, color: Colors.white),
+                      icon: const HushIcon(HushIcons.shield, size: 20, color: Colors.white),
                       label: Text(l10n.adminTitle, style: const TextStyle(color: Colors.white)),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.orangeAccent,
@@ -271,7 +273,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Sign out
                   OutlinedButton.icon(
                     onPressed: () => auth.signOut(),
-                    icon: const Icon(Icons.logout, color: HushColors.tierRed),
+                    icon: const HushIcon(HushIcons.logout, size: 20, color: HushColors.tierRed),
                     label: Text(
                       l10n.signOut,
                       style: const TextStyle(color: HushColors.tierRed),
@@ -305,7 +307,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 Icon(
-                  _activeTabIndex == 0 ? Icons.edit_note : Icons.bookmark_border, 
+                  _activeTabIndex == 0 ? Icons.edit_note : Icons.bookmark_border,
                   size: 48, color: HushColors.textSecondary.withValues(alpha: 0.5)
                 ),
                 const SizedBox(height: 16),

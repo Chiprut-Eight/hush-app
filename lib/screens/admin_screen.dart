@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hush_app/config/theme.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
@@ -248,10 +250,10 @@ class _ReportsList extends StatelessWidget {
                         
                         if (sData['type'] == 'voice') {
                           return Row(
-                            children: const [
-                              Icon(Icons.mic, color: HushColors.textAccent),
-                              SizedBox(width: 8),
-                              Text('Voice Secret - Requires App Player to listen', style: TextStyle(color: HushColors.textAccent)),
+                            children: [
+                              HushIcon(HushIcons.mic, size: 20, color: HushColors.textAccent),
+                              const SizedBox(width: 8),
+                              const Text('Voice Secret - Requires App Player to listen', style: TextStyle(color: HushColors.textAccent)),
                             ],
                           );
                         } else {

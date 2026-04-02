@@ -6,9 +6,11 @@ import 'package:just_audio/just_audio.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/secret.dart';
 import '../config/theme.dart';
+import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../services/secret_service.dart';
 import '../utils/time_ago_util.dart';
+import '../widgets/hush_icon_widget.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
 class SecretCard extends StatefulWidget {
@@ -155,7 +157,7 @@ class _SecretCardState extends State<SecretCard> {
                     child: Row(
                       children: [
                         Icon(
-                          selectedReason == reason ? Icons.radio_button_checked : Icons.radio_button_unchecked,
+                          selectedReason == reason ? Icons.check_circle : Icons.circle_outlined,
                           color: selectedReason == reason ? HushColors.textAccent : HushColors.textSecondary,
                           size: 20,
                         ),
@@ -291,7 +293,7 @@ class _SecretCardState extends State<SecretCard> {
                                         ? NetworkImage(c['userPhotoURL'])
                                         : null,
                                     child: c['userPhotoURL'] == null || c['userPhotoURL'] == 'generic'
-                                        ? const Icon(Icons.person, size: 14, color: Colors.white54)
+                                        ? const HushIcon(HushIcons.person, size: 14, color: Colors.white54)
                                         : null,
                                   ),
                                   const SizedBox(width: 10),
@@ -346,7 +348,7 @@ class _SecretCardState extends State<SecretCard> {
                         ),
                         const SizedBox(width: 8),
                         IconButton(
-                          icon: const Icon(Icons.send, color: HushColors.textAccent),
+                          icon: const HushIcon(HushIcons.send, size: 20, color: HushColors.textAccent),
                           onPressed: () async {
                             final text = commentController.text.trim();
                             if (text.isEmpty) return;
@@ -435,7 +437,7 @@ class _SecretCardState extends State<SecretCard> {
                                         ? NetworkImage(widget.secret.creatorPhotoURL!)
                                         : null,
                                     child: widget.secret.creatorPhotoURL == 'generic' || widget.secret.creatorPhotoURL == null
-                                        ? const Icon(Icons.person, size: 18, color: Colors.white54)
+                                        ? const HushIcon(HushIcons.person, size: 18, color: Colors.white54)
                                         : null,
                                   ),
                                 ),
@@ -485,7 +487,7 @@ class _SecretCardState extends State<SecretCard> {
                                 const SizedBox(width: 8),
                                 GestureDetector(
                                   onTap: () => _showDeleteConfirmation(context, l10n),
-                                  child: const Icon(Icons.delete_outline, color: HushColors.tierRed, size: 20),
+                                  child: const HushIcon(HushIcons.trash, size: 20, color: HushColors.tierRed),
                                 ),
                               ],
                             ],
@@ -539,7 +541,7 @@ class _SecretCardState extends State<SecretCard> {
                               Row(
                                 children: [
                                   Text(
-                                    widget.secret.textContent != null ? '👁️' : '👂', 
+                                    widget.secret.textContent != null ? '👁️' : '👂',
                                     style: const TextStyle(fontSize: 14)
                                   ),
                                   const SizedBox(width: 4),
@@ -551,10 +553,10 @@ class _SecretCardState extends State<SecretCard> {
                                 const SizedBox(width: 12),
                                 GestureDetector(
                                   onTap: () => _showCommentsSheet(context, l10n),
-                                  child: const Row(
+                                  child: Row(
                                     children: [
-                                      Text('💬', style: TextStyle(fontSize: 14)),
-                                      SizedBox(width: 4),
+                                      HushIcon(HushIcons.comment, size: 16, color: HushColors.textSecondary),
+                                      const SizedBox(width: 4),
                                     ],
                                   ),
                                 ),
@@ -566,7 +568,7 @@ class _SecretCardState extends State<SecretCard> {
                               // --- REPORT BUTTON ---
                               GestureDetector(
                                 onTap: () => _showReportDialog(context, l10n),
-                                child: const Text('🚩', style: TextStyle(fontSize: 16)),
+                                child: HushIcon(HushIcons.flag, size: 18, color: HushColors.tierRed),
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
@@ -583,7 +585,7 @@ class _SecretCardState extends State<SecretCard> {
                                 },
                                 child: Row(
                                   children: [
-                                    Text(userSaved ? '🔖' : '📌', style: const TextStyle(fontSize: 16)),
+                                    HushIcon(userSaved ? HushIcons.bookmarkFilled : HushIcons.pin, size: 18, color: userSaved ? HushColors.textAccent : HushColors.textSecondary),
                                     const SizedBox(width: 4),
                                     Text(userSaved ? l10n.saved : l10n.save, style: TextStyle(color: userSaved ? HushColors.textAccent : HushColors.textSecondary, fontSize: 12)),
                                   ],
@@ -609,7 +611,7 @@ class _SecretCardState extends State<SecretCard> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Text('⚠️', style: TextStyle(fontSize: 32)),
+                            HushIcon(HushIcons.warning, size: 32, color: Colors.amber),
                             const SizedBox(height: 8),
                             Text(l10n.contentWarning, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 4),
@@ -692,7 +694,7 @@ class _SecretCardState extends State<SecretCard> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.graphic_eq, color: HushColors.textMuted.withValues(alpha: 0.3), size: 24),
+                        HushIcon(HushIcons.audioLines, size: 24, color: HushColors.textMuted.withValues(alpha: 0.3)),
                         const SizedBox(width: 8),
                         ...List.generate(12, (i) => Container(
                           margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -741,7 +743,7 @@ class _SecretCardState extends State<SecretCard> {
                 child: Row(
                   children: [
                     IconButton(
-                      icon: Icon(_isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill, color: HushColors.textAccent, size: 40),
+                      icon: HushIcon(_isPlaying ? HushIcons.pause : HushIcons.play, size: 40, color: HushColors.textAccent),
                       onPressed: _togglePlay,
                     ),
                     const SizedBox(width: 8),
@@ -777,8 +779,8 @@ class _SecretCardState extends State<SecretCard> {
         children: [
           Transform.rotate(
             angle: bearing,
-            child: Icon(
-              Icons.navigation,
+            child: HushIcon(
+              HushIcons.navigation,
               color: HushColors.textAccent.withValues(alpha: 0.7),
               size: 22,
             ),
@@ -807,7 +809,7 @@ class _SecretCardState extends State<SecretCard> {
       child: Center(
         child: Column(
           children: [
-            const Icon(Icons.touch_app, color: HushColors.textAccent, size: 32),
+            const HushIcon(HushIcons.touch, size: 32, color: HushColors.textAccent),
             const SizedBox(height: 8),
             Text(l10n.tapToReveal, style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold)),
           ],

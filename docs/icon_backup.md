@@ -1,0 +1,53 @@
+# HUSH Icon Backup — Pre-SVG Migration
+
+## Emojis
+- 🔐 Group Secret indicator
+- 🤫 Regular Secret / Hide Secret action
+- ✍️ Text tab
+- 🎙️ Voice tab
+- 👻 Ghost Mode indicator (create_screen, profile)
+- ⭐ Tier 1-9 badge (profile)
+- 👑 Tier 10 badge (profile)
+- 🔖 Saved secret indicator
+- 📌 Unsaved / Save button
+- 🚩 Report button
+- 💬 Comments button
+- ⚠️ Content warning overlay
+
+## Material Icons (Icons.*)
+- Icons.grid_view_rounded — Bottom nav: Feed
+- Icons.adjust — Bottom nav: Map
+- Icons.add — Bottom nav: Create (+)
+- Icons.people_outline — Bottom nav: Following
+- Icons.person_outline — Bottom nav: Profile
+- Icons.touch_app — Tap to reveal overlay
+- Icons.person — Default avatar placeholder
+- Icons.search — Search bar prefix
+- Icons.send — Comment send button
+- Icons.delete_outline — Delete secret
+- Icons.delete — Delete recording
+- Icons.play_circle_fill — Play audio
+- Icons.pause_circle_filled — Pause audio
+- Icons.navigation — Compass arrow
+- Icons.graphic_eq — Audio waveform placeholder
+- Icons.radio_button_checked/unchecked — Report reason selector
+- Icons.my_location — Recenter map
+- Icons.refresh — Refresh button
+- Icons.explore_off — Map error
+- Icons.error_outline — Feed error
+- Icons.hearing_disabled — No secrets nearby
+- Icons.mic — Microphone / voice indicator
+- Icons.mic_none — Record button
+- Icons.stop_rounded — Stop recording
+- Icons.article — Text secret marker on map
+- Icons.arrow_back — Back button (overlay map)
+- Icons.chevron_right — List arrow
+- Icons.text_snippet — Text secret type indicator
+- Icons.notifications_active — Enable notifications
+- Icons.security — Admin panel button
+- Icons.logout — Sign out
+- Icons.edit_note — My secrets tab icon
+- Icons.bookmark_border — Saved secrets tab icon
+- Icons.g_mobiledata — Google sign-in
+- Icons.apple — Apple sign-in
+- Icons.language — Language switch

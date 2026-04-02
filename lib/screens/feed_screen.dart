@@ -6,6 +6,8 @@ import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
 import '../config/theme.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
@@ -99,7 +101,7 @@ class _FeedScreenState extends State<FeedScreen> {
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.refresh),
+            icon: const HushIcon(HushIcons.refresh, size: 20, color: Colors.white),
             onPressed: _fetchSecrets,
           ),
         ],
@@ -135,7 +137,7 @@ class _FeedScreenState extends State<FeedScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.redAccent),
+              HushIcon(HushIcons.error, size: 48, color: Colors.redAccent),
               const SizedBox(height: 16),
               Text(
                 _error!,
@@ -158,7 +160,7 @@ class _FeedScreenState extends State<FeedScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.hearing_disabled, size: 64, color: HushColors.textSecondary.withValues(alpha: 0.5)),
+            HushIcon(HushIcons.hearingOff, size: 64, color: HushColors.textSecondary.withValues(alpha: 0.5)),
             const SizedBox(height: 16),
             Text(
               l10n.feedEmpty,
