@@ -14,6 +14,7 @@ import '../services/secret_service.dart';
 import '../utils/time_ago_util.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../config/constants.dart';
+import '../config/tiers.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
 class SecretCard extends StatefulWidget {
@@ -442,7 +443,12 @@ class _SecretCardState extends State<SecretCard> {
         widget.secret.lat, 
         widget.secret.lng
       );
-      isInRange = distance <= AppConstants.revealRadiusMeters;
+      final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
+      final double effectiveRadius = widget.secret.isGroup 
+          ? tier.revealRadius 
+          : AppConstants.revealRadiusMeters;
+      
+      isInRange = distance <= effectiveRadius;
     }
     
     bool isGroup = widget.secret.isGroup; // Use model's isGroup instead of type check

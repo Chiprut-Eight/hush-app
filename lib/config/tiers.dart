@@ -9,6 +9,7 @@ class TierDef {
   final int requiredSuccesses;
   final int maxGroupUsers;
   final int timeWindowMinutes;
+  final double revealRadius;
 
   const TierDef({
     required this.level,
@@ -18,6 +19,7 @@ class TierDef {
     required this.requiredSuccesses,
     required this.maxGroupUsers,
     required this.timeWindowMinutes,
+    required this.revealRadius,
   });
 }
 
@@ -32,6 +34,7 @@ class HushTiers {
       requiredSuccesses: 0,
       maxGroupUsers: 3,
       timeWindowMinutes: 1,
+      revealRadius: 15.0,
     ),
     TierDef(
       level: 2,
@@ -41,6 +44,7 @@ class HushTiers {
       requiredSuccesses: 5,
       maxGroupUsers: 8,
       timeWindowMinutes: 2,
+      revealRadius: 15.0,
     ),
     TierDef(
       level: 3,
@@ -50,6 +54,7 @@ class HushTiers {
       requiredSuccesses: 10,
       maxGroupUsers: 15,
       timeWindowMinutes: 3,
+      revealRadius: 15.0,
     ),
     TierDef(
       level: 4,
@@ -59,6 +64,7 @@ class HushTiers {
       requiredSuccesses: 15,
       maxGroupUsers: 25,
       timeWindowMinutes: 4,
+      revealRadius: 15.0,
     ),
     TierDef(
       level: 5,
@@ -68,6 +74,7 @@ class HushTiers {
       requiredSuccesses: 20,
       maxGroupUsers: 40,
       timeWindowMinutes: 5,
+      revealRadius: 30.0,
     ),
     TierDef(
       level: 6,
@@ -77,6 +84,7 @@ class HushTiers {
       requiredSuccesses: 25,
       maxGroupUsers: 70,
       timeWindowMinutes: 6,
+      revealRadius: 40.0,
     ),
     TierDef(
       level: 7,
@@ -86,6 +94,7 @@ class HushTiers {
       requiredSuccesses: 30,
       maxGroupUsers: 120,
       timeWindowMinutes: 8,
+      revealRadius: 60.0,
     ),
     TierDef(
       level: 8,
@@ -95,6 +104,7 @@ class HushTiers {
       requiredSuccesses: 35,
       maxGroupUsers: 200,
       timeWindowMinutes: 10,
+      revealRadius: 80.0,
     ),
     TierDef(
       level: 9,
@@ -104,6 +114,7 @@ class HushTiers {
       requiredSuccesses: 40,
       maxGroupUsers: 350,
       timeWindowMinutes: 12,
+      revealRadius: 100.0,
     ),
     TierDef(
       level: 10,
@@ -113,6 +124,7 @@ class HushTiers {
       requiredSuccesses: 50,
       maxGroupUsers: 500, // Or infinity
       timeWindowMinutes: 15,
+      revealRadius: 150.0,
     ),
   ];
 
