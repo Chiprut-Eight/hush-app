@@ -441,4 +441,47 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get groupUnlockSuccess => 'הקבוצה התאחדה. הסוד נחשף!';
+
+  @override
+  String get maintenanceTitle => 'תחזוקה';
+
+  @override
+  String get testConfetti => 'בדיקת אנימציית קונפטי';
+
+  @override
+  String get migrateUsers => 'עדכון משתמשים (קבוצתי)';
+
+  @override
+  String get settings => 'הגדרות';
+
+  @override
+  String get termsOfService => 'תנאי שימוש';
+
+  @override
+  String get privacyPolicy => 'מדיניות פרטיות';
+
+  @override
+  String get migrationSearchTitle => 'עדכון אינדקס חיפוש';
+
+  @override
+  String get migrationSearchDesc =>
+      'כלי זה מעדכן את שדה ה-\"searchName\" עבור משתמשים ישנים כדי לאפשר את חיפושם במערכת החדשה.';
+
+  @override
+  String get migrationReady => 'מוכן לעדכון משתמשים.';
+
+  @override
+  String get migrationFetching => 'מחפש משתמשים ללא searchName...';
+
+  @override
+  String get migrationAllDone => 'כל המשתמשים עודכנו!';
+
+  @override
+  String get migrationBatchDone =>
+      'קבוצת משתמשים עודכנה! הפעל שוב במידת הצורך.';
+
+  @override
+  String migrationError(String error) {
+    return 'שגיאה במהלך העדכון: $error';
+  }
 }

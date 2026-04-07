@@ -442,4 +442,47 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get groupUnlockSuccess => 'The group has unified. Secret revealed!';
+
+  @override
+  String get maintenanceTitle => 'Maintenance';
+
+  @override
+  String get testConfetti => 'Test Confetti Animation';
+
+  @override
+  String get migrateUsers => 'Migrate Users (Batch)';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get termsOfService => 'Terms of Service';
+
+  @override
+  String get privacyPolicy => 'Privacy Policy';
+
+  @override
+  String get migrationSearchTitle => 'Search Index Migration';
+
+  @override
+  String get migrationSearchDesc =>
+      'This tool populates the \"searchName\" field for old users to make them searchable in the new system.';
+
+  @override
+  String get migrationReady => 'Ready to migrate users.';
+
+  @override
+  String get migrationFetching => 'Fetching users lacking searchName...';
+
+  @override
+  String get migrationAllDone => 'All users migrated!';
+
+  @override
+  String get migrationBatchDone =>
+      'Batch of users migrated! Run again if needed.';
+
+  @override
+  String migrationError(String error) {
+    return 'Error during migration: $error';
+  }
 }

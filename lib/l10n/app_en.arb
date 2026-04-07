@@ -181,5 +181,23 @@
       "count": { "type": "int" }
     }
   },
-  "groupUnlockSuccess": "The group has unified. Secret revealed!"
+  "groupUnlockSuccess": "The group has unified. Secret revealed!",
+  "maintenanceTitle": "Maintenance",
+  "testConfetti": "Test Confetti Animation",
+  "migrateUsers": "Migrate Users (Batch)",
+  "settings": "Settings",
+  "termsOfService": "Terms of Service",
+  "privacyPolicy": "Privacy Policy",
+  "migrationSearchTitle": "Search Index Migration",
+  "migrationSearchDesc": "This tool populates the \"searchName\" field for old users to make them searchable in the new system.",
+  "migrationReady": "Ready to migrate users.",
+  "migrationFetching": "Fetching users lacking searchName...",
+  "migrationAllDone": "All users migrated!",
+  "migrationBatchDone": "Batch of users migrated! Run again if needed.",
+  "migrationError": "Error during migration: {error}",
+  "@migrationError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  }
 }

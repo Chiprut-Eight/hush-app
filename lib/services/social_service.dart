@@ -22,7 +22,7 @@ class SocialService {
     // This scales to millions of users efficiently
     final snapshot = await _firestore.collection('users')
         .where('searchName', isGreaterThanOrEqualTo: searchLower)
-        .where('searchName', isLessThan: searchLower + '\uf8ff')
+        .where('searchName', isLessThan: '$searchLower\uf8ff')
         .limit(20)
         .get();
     

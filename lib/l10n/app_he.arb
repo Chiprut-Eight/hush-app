@@ -181,5 +181,23 @@
       "count": { "type": "int" }
     }
   },
-  "groupUnlockSuccess": "הקבוצה התאחדה. הסוד נחשף!"
+  "groupUnlockSuccess": "הקבוצה התאחדה. הסוד נחשף!",
+  "maintenanceTitle": "תחזוקה",
+  "testConfetti": "בדיקת אנימציית קונפטי",
+  "migrateUsers": "עדכון משתמשים (קבוצתי)",
+  "settings": "הגדרות",
+  "termsOfService": "תנאי שימוש",
+  "privacyPolicy": "מדיניות פרטיות",
+  "migrationSearchTitle": "עדכון אינדקס חיפוש",
+  "migrationSearchDesc": "כלי זה מעדכן את שדה ה-\"searchName\" עבור משתמשים ישנים כדי לאפשר את חיפושם במערכת החדשה.",
+  "migrationReady": "מוכן לעדכון משתמשים.",
+  "migrationFetching": "מחפש משתמשים ללא searchName...",
+  "migrationAllDone": "כל המשתמשים עודכנו!",
+  "migrationBatchDone": "קבוצת משתמשים עודכנה! הפעל שוב במידת הצורך.",
+  "migrationError": "שגיאה במהלך העדכון: {error}",
+  "@migrationError": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  }
 }

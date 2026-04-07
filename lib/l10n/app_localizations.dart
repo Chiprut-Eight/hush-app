@@ -901,6 +901,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The group has unified. Secret revealed!'**
   String get groupUnlockSuccess;
+
+  /// No description provided for @maintenanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Maintenance'**
+  String get maintenanceTitle;
+
+  /// No description provided for @testConfetti.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Confetti Animation'**
+  String get testConfetti;
+
+  /// No description provided for @migrateUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Migrate Users (Batch)'**
+  String get migrateUsers;
+
+  /// No description provided for @settings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settings;
+
+  /// No description provided for @termsOfService.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms of Service'**
+  String get termsOfService;
+
+  /// No description provided for @privacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get privacyPolicy;
+
+  /// No description provided for @migrationSearchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Index Migration'**
+  String get migrationSearchTitle;
+
+  /// No description provided for @migrationSearchDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This tool populates the \"searchName\" field for old users to make them searchable in the new system.'**
+  String get migrationSearchDesc;
+
+  /// No description provided for @migrationReady.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready to migrate users.'**
+  String get migrationReady;
+
+  /// No description provided for @migrationFetching.
+  ///
+  /// In en, this message translates to:
+  /// **'Fetching users lacking searchName...'**
+  String get migrationFetching;
+
+  /// No description provided for @migrationAllDone.
+  ///
+  /// In en, this message translates to:
+  /// **'All users migrated!'**
+  String get migrationAllDone;
+
+  /// No description provided for @migrationBatchDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Batch of users migrated! Run again if needed.'**
+  String get migrationBatchDone;
+
+  /// No description provided for @migrationError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error during migration: {error}'**
+  String migrationError(String error);
 }
 
 class _AppLocalizationsDelegate

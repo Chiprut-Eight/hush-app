@@ -448,7 +448,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
             Text(
               l10n.migrationSearchDesc,
               textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white.withOpacity(0.7)),
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
             ),
             const SizedBox(height: 32),
             if (_isMigrating)
