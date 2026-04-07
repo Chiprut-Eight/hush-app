@@ -610,15 +610,15 @@ class _SecretCardState extends State<SecretCard> {
                                     _userDisliked = !_userDisliked;
                                     if (_userDisliked) _secretService.dislikeSecret(widget.secret.id);
                                   });
-                                } : () {},
+                                } : null,
                               ),
                               const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.comment,
                                 count: 0,
                                 isActive: false,
-                                color: HushColors.textSecondary,
-                                onTap: _revealed ? () => _showCommentsSheet(context, l10n) : () {},
+                                color: _revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3),
+                                onTap: _revealed ? () => _showCommentsSheet(context, l10n) : null,
                               ),
                               Row(
                                 children: [
@@ -646,12 +646,12 @@ class _SecretCardState extends State<SecretCard> {
                             children: [
                               // --- REPORT BUTTON ---
                               GestureDetector(
-                                onTap: () => _showReportDialog(context, l10n),
-                                child: HushIcon(HushIcons.flag, size: 18, color: HushColors.tierRed),
+                                onTap: _revealed ? () => _showReportDialog(context, l10n) : null,
+                                child: HushIcon(HushIcons.flag, size: 18, color: (_revealed || isOwner) ? HushColors.tierRed : HushColors.tierRed.withValues(alpha: 0.3)),
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: !isOwner ? () {
+                                onTap: (_revealed && !isOwner) ? () {
                                   if (currentUser != null) {
                                     if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -666,9 +666,9 @@ class _SecretCardState extends State<SecretCard> {
                                 } : null,
                                 child: Row(
                                   children: [
-                                    HushIcon(userSaved ? HushIcons.bookmarkFilled : HushIcons.pin, size: 18, color: userSaved ? HushColors.textAccent : HushColors.textSecondary),
+                                    HushIcon(userSaved ? HushIcons.bookmarkFilled : HushIcons.pin, size: 18, color: userSaved ? HushColors.textAccent : (_revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3))),
                                     const SizedBox(width: 4),
-                                    Text(userSaved ? l10n.saved : l10n.save, style: TextStyle(color: userSaved ? HushColors.textAccent : HushColors.textSecondary, fontSize: 12)),
+                                    Text(userSaved ? l10n.saved : l10n.save, style: TextStyle(color: userSaved ? HushColors.textAccent : (_revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3)), fontSize: 12)),
                                   ],
                                 ),
                               ),
@@ -905,14 +905,14 @@ class _InteractionButton extends StatelessWidget {
   final int count;
   final bool isActive;
   final Color color;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _InteractionButton({
     required this.icon, 
     required this.count, 
     required this.isActive, 
     required this.color,
-    required this.onTap
+    this.onTap
   });
 
   @override
