@@ -13,6 +13,25 @@ class SecretService {
   CollectionReference<Map<String, dynamic>> get _secretsRef =>
       _firestore.collection('secrets');
 
+  Stream<Secret> getSecretStream(String secretId) {
+    return _firestore.collection('secrets').doc(secretId).snapshots().map((snapshot) {
+      if (!snapshot.exists) throw Exception('Secret not found');
+      return Secret.fromFirestore(snapshot);
+    });
+  }
+
+  Stream<int> getUnlockAttemptsStream(String secretId, int windowMinutes) {
+    final cutoff = DateTime.now().subtract(Duration(minutes: windowMinutes));
+    
+    return _firestore
+        .collection('secrets')
+        .doc(secretId)
+        .collection('unlockAttempts')
+        .where('timestamp', isGreaterThanOrEqualTo: Timestamp.fromDate(cutoff))
+        .snapshots()
+        .map((snapshot) => snapshot.docs.length);
+  }
+
   /// Fetch all non-hidden, non-expired secrets and filter by proximity
   Future<List<Secret>> getNearbySecrets(double userLat, double userLng) async {
     final now = DateTime.now();

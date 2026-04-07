@@ -50,6 +50,9 @@ class _SecretCardState extends State<SecretCard> {
   bool _userDisliked = false;
   
   StreamSubscription<CompassEvent>? _compassSubscription;
+  StreamSubscription<int>? _attemptsSubscription;
+  StreamSubscription<Secret>? _secretDocSubscription;
+  int _activeParticipantsCount = 0;
   double? _deviceHeading;
 
   @override
@@ -105,6 +108,8 @@ class _SecretCardState extends State<SecretCard> {
   @override
   void dispose() {
     _compassSubscription?.cancel();
+    _attemptsSubscription?.cancel();
+    _secretDocSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -134,6 +139,30 @@ class _SecretCardState extends State<SecretCard> {
         lat: widget.userPosition!.latitude,
         lng: widget.userPosition!.longitude,
       );
+      
+      // Start Live Subscriptions if not already started
+      if (_attemptsSubscription == null) {
+        final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
+        
+        _attemptsSubscription = _secretService
+            .getUnlockAttemptsStream(widget.secret.id, tier.timeWindowMinutes)
+            .listen((count) {
+          if (mounted) setState(() => _activeParticipantsCount = count);
+        });
+
+        _secretDocSubscription = _secretService
+            .getSecretStream(widget.secret.id)
+            .listen((updatedSecret) {
+          if (mounted && updatedSecret.unlockedBy.contains(currentUser.uid)) {
+            setState(() {
+              _revealed = true;
+              if (widget.secret.type == 'voice') _initAudio();
+            });
+            _attemptsSubscription?.cancel();
+            _secretDocSubscription?.cancel();
+          }
+        });
+      }
       
       if (result['success'] == true) {
         setState(() => _revealed = true);
@@ -916,8 +945,14 @@ class _SecretCardState extends State<SecretCard> {
             if (widget.secret.isGroup) ...[
               const SizedBox(height: 4),
               Text(
-                '${l10n.peopleRequired}: ${widget.secret.requiredUsers ?? 3}',
-                style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+                _activeParticipantsCount > 0 
+                    ? '$_activeParticipantsCount / ${widget.secret.requiredUsers ?? 3} ${l10n.peopleRequired}'
+                    : '${l10n.peopleRequired}: ${widget.secret.requiredUsers ?? 3}',
+                style: TextStyle(
+                  color: _activeParticipantsCount > 0 ? HushColors.textAccent : HushColors.textSecondary, 
+                  fontSize: 12,
+                  fontWeight: _activeParticipantsCount > 0 ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ],
           ],
