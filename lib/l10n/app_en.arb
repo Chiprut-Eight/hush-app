@@ -16,7 +16,7 @@
   "recordVoice": "Record Voice Secret",
   "stopRecording": "Stop Recording",
   "publishSecret": "Drop Secret",
-  "hideSecretAction": "🤫 Hide Secret",
+  "hideSecretAction": "Hide Secret",
   "regularSecret": "Regular Secret",
   "regularSecretDesc": "Visible to everyone nearby immediately.",
   "groupSecret": "Group Secret",
@@ -30,8 +30,8 @@
       "minutes": { "type": "int" }
     }
   },
-  "textTab": "✍️ Text",
-  "voiceTab": "🎙️ Voice",
+  "textTab": "Text",
+  "voiceTab": "Voice",
   "secretReady": "Secret Ready",
   "tapToRecord": "Tap to Record",
   "recordingLabel": "Recording...",
@@ -82,7 +82,7 @@
   "appeals": "Appeals",
   "reports": "Reports",
   "ghostMode": "Ghost Mode",
-  "ghostModeActive": "👻 Ghost Mode Active",
+  "ghostModeActive": "Ghost Mode Active",
   "ghostModeRestricted": "Your account features are restricted.",
   "cannotPlantGhost": "You cannot plant secrets right now.",
   "noReports": "No reports pending",

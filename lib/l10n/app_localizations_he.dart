@@ -58,7 +58,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get publishSecret => 'הטמן סוד';
 
   @override
-  String get hideSecretAction => '🤫 הטמן סוד';
+  String get hideSecretAction => 'הטמן סוד';
 
   @override
   String get regularSecret => 'סוד רגיל';
@@ -87,10 +87,10 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get textTab => '✍️ טקסט';
+  String get textTab => 'טקסט';
 
   @override
-  String get voiceTab => '🎙️ קול';
+  String get voiceTab => 'קול';
 
   @override
   String get secretReady => 'הסוד מוכן';

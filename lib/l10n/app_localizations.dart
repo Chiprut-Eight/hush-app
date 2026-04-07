@@ -197,7 +197,7 @@ abstract class AppLocalizations {
   /// No description provided for @hideSecretAction.
   ///
   /// In en, this message translates to:
-  /// **'🤫 Hide Secret'**
+  /// **'Hide Secret'**
   String get hideSecretAction;
 
   /// No description provided for @regularSecret.
@@ -251,13 +251,13 @@ abstract class AppLocalizations {
   /// No description provided for @textTab.
   ///
   /// In en, this message translates to:
-  /// **'✍️ Text'**
+  /// **'Text'**
   String get textTab;
 
   /// No description provided for @voiceTab.
   ///
   /// In en, this message translates to:
-  /// **'🎙️ Voice'**
+  /// **'Voice'**
   String get voiceTab;
 
   /// No description provided for @secretReady.

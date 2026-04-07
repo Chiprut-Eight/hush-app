@@ -28,6 +28,10 @@ class HushIcons {
   static const IconData send         = PhosphorIconsLight.paperPlaneRight;
   static const IconData trash        = PhosphorIconsLight.trash;
   static const IconData stop         = PhosphorIconsLight.stopCircle;
+  static const IconData heart        = PhosphorIconsLight.heart;
+  static const IconData heartFilled  = PhosphorIconsFill.heart;
+  static const IconData thumbsDown   = PhosphorIconsLight.thumbsDown;
+
 
   // --- Media Player ---
   static const IconData play         = PhosphorIconsLight.playCircle;

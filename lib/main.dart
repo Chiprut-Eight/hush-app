@@ -46,7 +46,7 @@ class HushApp extends StatelessWidget {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             builder: (context, child) {
               return Material(
-                color: HushColors.bgPrimary,
+                color: Colors.transparent, // Background removal for top area
                 child: Column(
                   children: [
                     SafeArea(
@@ -58,17 +58,20 @@ class HushApp extends StatelessWidget {
                           textDirection: TextDirection.ltr,
                           child: Image.asset(
                             'assets/images/top_banner.png',
-                            width: MediaQuery.of(context).size.width * 0.45,
+                            width: MediaQuery.of(context).size.width * 0.38, // Shrunk from 0.45
                             fit: BoxFit.contain,
                           ),
                         ),
                       ),
                     ),
                     Expanded(
-                      child: MediaQuery.removePadding(
-                        context: context,
-                        removeTop: true,
-                        child: child ?? const SizedBox.shrink(),
+                      child: Container(
+                        color: HushColors.bgPrimary, // Apply global background to screens
+                        child: MediaQuery.removePadding(
+                          context: context,
+                          removeTop: true,
+                          child: child ?? const SizedBox.shrink(),
+                        ),
                       ),
                     ),
                   ],

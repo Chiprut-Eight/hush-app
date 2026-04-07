@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:flutter_compass/flutter_compass.dart';
+import 'dart:async';
 import '../models/secret.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
@@ -44,6 +46,9 @@ class _SecretCardState extends State<SecretCard> {
 
   bool _userLiked = false;
   bool _userDisliked = false;
+  
+  StreamSubscription<CompassEvent>? _compassSubscription;
+  double? _deviceHeading;
 
   @override
   void initState() {
@@ -52,6 +57,14 @@ class _SecretCardState extends State<SecretCard> {
     if (widget.secret.dislikes > 3 && widget.secret.dislikes > widget.secret.likes) {
       _showWarning = true;
     }
+    
+    _compassSubscription = FlutterCompass.events?.listen((event) {
+      if (mounted) {
+        setState(() {
+          _deviceHeading = event.heading;
+        });
+      }
+    });
   }
 
   Future<void> _initAudio() async {
@@ -82,6 +95,7 @@ class _SecretCardState extends State<SecretCard> {
 
   @override
   void dispose() {
+    _compassSubscription?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -124,7 +138,16 @@ class _SecretCardState extends State<SecretCard> {
 
     final y = math.sin(dLng) * math.cos(lat2);
     final x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLng);
-    return math.atan2(y, x);
+    
+    final bearing = math.atan2(y, x);
+    final bearingDegrees = (bearing * 180.0 / math.pi + 360.0) % 360.0;
+    
+    // Live compass adjustment relative to device heading
+    if (_deviceHeading != null) {
+      return (bearingDegrees - _deviceHeading!) * (math.pi / 180.0);
+    }
+
+    return bearing;
   }
 
   /// Show report dialog
@@ -237,133 +260,137 @@ class _SecretCardState extends State<SecretCard> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return StatefulBuilder(builder: (ctx, setSheetState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(ctx).viewInsets.bottom,
-            ),
-            child: SizedBox(
-              height: MediaQuery.of(ctx).size.height * 0.6,
-              child: Column(
-                children: [
-                  // Handle bar
-                  Container(
-                    margin: const EdgeInsets.only(top: 8),
-                    width: 40,
-                    height: 4,
-                    decoration: BoxDecoration(
-                      color: HushColors.textMuted,
-                      borderRadius: BorderRadius.circular(2),
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Text(l10n.comments, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
-                  ),
-                  const Divider(color: HushColors.borderSubtle, height: 1),
-                  // Comments list
-                  Expanded(
-                    child: StreamBuilder<List<Map<String, dynamic>>>(
-                      stream: _secretService.getCommentsStream(widget.secret.id),
-                      builder: (ctx, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
-                        }
-                        final comments = snapshot.data ?? [];
-                        if (comments.isEmpty) {
-                          return Center(
-                            child: Text(l10n.noComments, style: const TextStyle(color: HushColors.textSecondary)),
-                          );
-                        }
-                        return ListView.builder(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          itemCount: comments.length,
-                          itemBuilder: (ctx, i) {
-                            final c = comments[i];
-                            final commentTime = (c['createdAt'] as DateTime?) ?? DateTime.now();
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 6),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CircleAvatar(
-                                    radius: 14,
-                                    backgroundColor: HushColors.bgCard,
-                                    backgroundImage: c['userPhotoURL'] != null && c['userPhotoURL'] != 'generic'
-                                        ? NetworkImage(c['userPhotoURL'])
-                                        : null,
-                                    child: c['userPhotoURL'] == null || c['userPhotoURL'] == 'generic'
-                                        ? const HushIcon(HushIcons.person, size: 14, color: Colors.white54)
-                                        : null,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
-                                        Row(
+        return SafeArea(
+          child: StatefulBuilder(
+            builder: (ctx, setSheetState) {
+              return Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(ctx).viewInsets.bottom,
+                ),
+                child: SizedBox(
+                  height: MediaQuery.of(ctx).size.height * 0.6,
+                  child: Column(
+                    children: [
+                      // Handle bar
+                      Container(
+                        margin: const EdgeInsets.only(top: 8),
+                        width: 40,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: HushColors.textMuted,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Text(l10n.comments, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18)),
+                      ),
+                      const Divider(color: HushColors.borderSubtle, height: 1),
+                      // Comments list
+                      Expanded(
+                        child: StreamBuilder<List<Map<String, dynamic>>>(
+                          stream: _secretService.getCommentsStream(widget.secret.id),
+                          builder: (ctx, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
+                            }
+                            final comments = snapshot.data ?? [];
+                            if (comments.isEmpty) {
+                              return Center(
+                                child: Text(l10n.noComments, style: const TextStyle(color: HushColors.textSecondary)),
+                              );
+                            }
+                            return ListView.builder(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              itemCount: comments.length,
+                              itemBuilder: (ctx, i) {
+                                final c = comments[i];
+                                final commentTime = (c['createdAt'] as DateTime?) ?? DateTime.now();
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 6),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 14,
+                                        backgroundColor: HushColors.bgCard,
+                                        backgroundImage: c['userPhotoURL'] != null && c['userPhotoURL'] != 'generic'
+                                            ? NetworkImage(c['userPhotoURL'])
+                                            : null,
+                                        child: c['userPhotoURL'] == null || c['userPhotoURL'] == 'generic'
+                                            ? const HushIcon(HushIcons.person, size: 14, color: Colors.white54)
+                                            : null,
+                                      ),
+                                      const SizedBox(width: 10),
+                                      Expanded(
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
-                                            Text(c['userName'] ?? l10n.anonymousUser, 
-                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                                            const SizedBox(width: 8),
-                                            Text(getTimeAgo(commentTime, l10n),
-                                              style: const TextStyle(color: HushColors.textMuted, fontSize: 11)),
+                                            Row(
+                                              children: [
+                                                Text(c['userName'] ?? l10n.anonymousUser, 
+                                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                                const SizedBox(width: 8),
+                                                Text(getTimeAgo(commentTime, l10n),
+                                                  style: const TextStyle(color: HushColors.textMuted, fontSize: 11)),
+                                              ],
+                                            ),
+                                            const SizedBox(height: 4),
+                                            Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
                                           ],
                                         ),
-                                        const SizedBox(height: 4),
-                                        Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
-                                      ],
-                                    ),
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
+                                );
+                              },
                             );
                           },
-                        );
-                      },
-                    ),
-                  ),
-                  const Divider(color: HushColors.borderSubtle, height: 1),
-                  // Input field
-                  Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: commentController,
-                            style: const TextStyle(color: Colors.white),
-                            decoration: InputDecoration(
-                              hintText: l10n.commentPlaceholder,
-                              hintStyle: const TextStyle(color: HushColors.textMuted),
-                              filled: true,
-                              fillColor: HushColors.bgCard,
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none,
+                        ),
+                      ),
+                      const Divider(color: HushColors.borderSubtle, height: 1),
+                      // Input field
+                      Padding(
+                        padding: const EdgeInsets.all(12),
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: TextField(
+                                controller: commentController,
+                                style: const TextStyle(color: Colors.white),
+                                decoration: InputDecoration(
+                                  hintText: l10n.commentPlaceholder,
+                                  hintStyle: const TextStyle(color: HushColors.textMuted),
+                                  filled: true,
+                                  fillColor: HushColors.bgCard,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(20),
+                                    borderSide: BorderSide.none,
+                                  ),
+                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                ),
                               ),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                             ),
-                          ),
+                            const SizedBox(width: 8),
+                            IconButton(
+                              icon: const HushIcon(HushIcons.send, size: 20, color: HushColors.textAccent),
+                              onPressed: () async {
+                                final text = commentController.text.trim();
+                                if (text.isEmpty) return;
+                                await _secretService.addComment(widget.secret.id, text);
+                                commentController.clear();
+                              },
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 8),
-                        IconButton(
-                          icon: const HushIcon(HushIcons.send, size: 20, color: HushColors.textAccent),
-                          onPressed: () async {
-                            final text = commentController.text.trim();
-                            if (text.isEmpty) return;
-                            await _secretService.addComment(widget.secret.id, text);
-                            commentController.clear();
-                          },
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-          );
-        });
+                ),
+              );
+            },
+          ),
+        );
       },
     );
   }
@@ -465,7 +492,7 @@ class _SecretCardState extends State<SecretCard> {
                                       ),
                                       const SizedBox(height: 2),
                                       Text(
-                                        isGroup ? '🔐 Group Secret' : '🤫 Regular Secret',
+                                        isGroup ? 'Group Secret' : 'Regular Secret',
                                         style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
                                       ),
                                     ],
@@ -515,9 +542,10 @@ class _SecretCardState extends State<SecretCard> {
                           Row(
                             children: [
                               _InteractionButton(
-                                icon: _userLiked ? '❤️' : '🤍',
+                                icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
                                 count: widget.secret.likes + (_userLiked ? 1 : 0),
                                 isActive: _userLiked,
+                                color: _userLiked ? HushColors.tierRed : HushColors.textSecondary,
                                 onTap: () {
                                   if (currentUser != null) {
                                     setState(() => _userLiked = true);
@@ -527,9 +555,10 @@ class _SecretCardState extends State<SecretCard> {
                               ),
                               const SizedBox(width: 8),
                               _InteractionButton(
-                                icon: '👎',
+                                icon: HushIcons.thumbsDown,
                                 count: widget.secret.dislikes + (_userDisliked ? 1 : 0),
                                 isActive: _userDisliked,
+                                color: _userDisliked ? Colors.amber : HushColors.textSecondary,
                                 onTap: () {
                                   if (currentUser != null) {
                                     setState(() => _userDisliked = true);
@@ -540,10 +569,7 @@ class _SecretCardState extends State<SecretCard> {
                               const SizedBox(width: 16),
                               Row(
                                 children: [
-                                  Text(
-                                    widget.secret.textContent != null ? '👁️' : '👂',
-                                    style: const TextStyle(fontSize: 14)
-                                  ),
+                                  HushIcon(widget.secret.textContent != null ? HushIcons.textSnippet : HushIcons.mic, size: 14, color: HushColors.textSecondary),
                                   const SizedBox(width: 4),
                                   Text('${widget.secret.listens}', style: const TextStyle(color: HushColors.textSecondary)),
                                 ],
@@ -646,82 +672,68 @@ class _SecretCardState extends State<SecretCard> {
 
   Widget _buildContent(bool isInRange, AppLocalizations l10n) {
     if (!isInRange || !_revealed) {
-      // --- SMOKY BLUR EFFECT for distant secrets (Task 4) ---
+      // --- ENHANCED SMOKY BLUR EFFECT ---
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
           decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [
-                Colors.white.withValues(alpha: 0.05),
-                HushColors.textMuted.withValues(alpha: 0.08),
-                Colors.white.withValues(alpha: 0.03),
-              ],
-            ),
+            color: Colors.black.withValues(alpha: 0.8), // Dark base
           ),
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-            child: ShaderMask(
-              shaderCallback: (bounds) => RadialGradient(
-                center: Alignment.center,
-                radius: 0.8,
-                colors: [
-                  Colors.white.withValues(alpha: 0.6),
-                  Colors.white.withValues(alpha: 0.2),
-                  Colors.transparent,
-                ],
-              ).createShader(bounds),
-              blendMode: BlendMode.dstIn,
-              child: Column(
-                children: [
-                  if (widget.secret.textContent != null)
-                    // Smoky text blur
-                    Text(
-                      'A hidden secret awaits nearby...',
-                      style: TextStyle(
-                        color: HushColors.textMuted.withValues(alpha: 0.4),
-                        fontSize: 16,
-                        fontWeight: FontWeight.w300,
-                        letterSpacing: 1.2,
-                      ),
-                      textAlign: TextAlign.center,
-                    )
-                  else
-                    // Smoky voice blur
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        HushIcon(HushIcons.audioLines, size: 24, color: HushColors.textMuted.withValues(alpha: 0.3)),
-                        const SizedBox(width: 8),
-                        ...List.generate(12, (i) => Container(
-                          margin: const EdgeInsets.symmetric(horizontal: 2),
-                          width: 3,
-                          height: 4.0 + math.Random(i).nextInt(20).toDouble(),
-                          decoration: BoxDecoration(
-                            color: HushColors.textMuted.withValues(alpha: 0.15 + math.Random(i).nextDouble() * 0.2),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                        )),
-                      ],
-                    ),
-                  const SizedBox(height: 14),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.black.withValues(alpha: 0.5),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Text(
-                      isInRange ? l10n.tapToReveal : l10n.outOfRange,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                  )
-                ],
+          child: Stack(
+            children: [
+              // Dummy content to be blurred
+              Container(
+                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                child: Column(
+                  children: [
+                    if (widget.secret.textContent != null)
+                      Container(height: 20, width: double.infinity, color: HushColors.textAccent.withValues(alpha: 0.3))
+                    else
+                      Container(height: 40, width: double.infinity, color: HushColors.textAccent.withValues(alpha: 0.3)),
+                  ],
+                ),
               ),
-            ),
+              // The heavy smoky blur overlay
+              Positioned.fill(
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: RadialGradient(
+                        center: Alignment.center,
+                        radius: 1.5,
+                        colors: [
+                          Colors.black.withValues(alpha: 0.4),
+                          Colors.grey.shade900.withValues(alpha: 0.7),
+                          Colors.black.withValues(alpha: 0.9),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              // Centered mystical text
+              Positioned.fill(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Text(
+                      l10n.secretReady,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: HushColors.textAccent.withValues(alpha: 0.7),
+                        fontWeight: FontWeight.w500,
+                        letterSpacing: 1.2,
+                        shadows: [
+                          Shadow(color: HushColors.tierRed.withValues(alpha: 0.5), blurRadius: 10),
+                        ]
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -820,12 +832,19 @@ class _SecretCardState extends State<SecretCard> {
 }
 
 class _InteractionButton extends StatelessWidget {
-  final String icon;
+  final IconData icon;
   final int count;
   final bool isActive;
+  final Color color;
   final VoidCallback onTap;
 
-  const _InteractionButton({required this.icon, required this.count, required this.isActive, required this.onTap});
+  const _InteractionButton({
+    required this.icon, 
+    required this.count, 
+    required this.isActive, 
+    required this.color,
+    required this.onTap
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -835,7 +854,7 @@ class _InteractionButton extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         child: Row(
           children: [
-            Text(icon, style: const TextStyle(fontSize: 16)),
+            HushIcon(icon, size: 18, color: color),
             const SizedBox(width: 4),
             Text('$count', style: TextStyle(color: isActive ? Colors.white : HushColors.textSecondary, fontWeight: FontWeight.w500)),
           ],

@@ -59,7 +59,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishSecret => 'Drop Secret';
 
   @override
-  String get hideSecretAction => '🤫 Hide Secret';
+  String get hideSecretAction => 'Hide Secret';
 
   @override
   String get regularSecret => 'Regular Secret';
@@ -88,10 +88,10 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get textTab => '✍️ Text';
+  String get textTab => 'Text';
 
   @override
-  String get voiceTab => '🎙️ Voice';
+  String get voiceTab => 'Voice';
 
   @override
   String get secretReady => 'Secret Ready';

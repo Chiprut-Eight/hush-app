@@ -16,7 +16,7 @@
   "recordVoice": "הקלט סוד קולי",
   "stopRecording": "עצור הקלטה",
   "publishSecret": "הטמן סוד",
-  "hideSecretAction": "🤫 הטמן סוד",
+  "hideSecretAction": "הטמן סוד",
   "regularSecret": "סוד רגיל",
   "regularSecretDesc": "גלוי לכולם בקרבת מקום באופן מיידי.",
   "groupSecret": "סוד קבוצתי",
@@ -30,8 +30,8 @@
       "minutes": { "type": "int" }
     }
   },
-  "textTab": "✍️ טקסט",
-  "voiceTab": "🎙️ קול",
+  "textTab": "טקסט",
+  "voiceTab": "קול",
   "secretReady": "הסוד מוכן",
   "tapToRecord": "הקש כדי להקליט",
   "recordingLabel": "מקליט...",
@@ -82,7 +82,7 @@
   "appeals": "ערעורים",
   "reports": "דיווחים",
   "ghostMode": "מצב רוח רפאים",
-  "ghostModeActive": "👻 מצב רוח רפאים פעיל",
+  "ghostModeActive": "מצב רוח רפאים פעיל",
   "ghostModeRestricted": "פעולות החשבון שלך מוגבלות.",
   "cannotPlantGhost": "אינך יכול להטמין סודות כרגע.",
   "noReports": "אין דיווחים ממתינים",
