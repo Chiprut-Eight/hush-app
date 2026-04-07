@@ -49,10 +49,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
         _secretService.getSavedSecrets(user.savedSecretIds),
       ]);
       
+      final now = DateTime.now();
+      final myActive = results[0].where((s) => s.expiresAt.isAfter(now)).toList();
+      final savedActive = results[1].where((s) => s.expiresAt.isAfter(now)).toList();
+      
       if (mounted) {
         setState(() {
-          _mySecrets = results[0];
-          _savedSecrets = results[1];
+          _mySecrets = myActive;
+          _savedSecrets = savedActive;
           _isLoading = false;
         });
       }
@@ -182,8 +186,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Column(
                 children: [
-                  _buildStatRow(l10n.publishedSecrets, '${user.totalPublished}'),
-                  _buildStatRow(l10n.savedSecrets, '${user.savedSecretIds.length}'),
+                  _buildStatRow(l10n.publishedSecrets, '${_mySecrets.length}'),
+                  _buildStatRow(l10n.savedSecrets, '${_savedSecrets.length}'),
                   _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
                   _buildStatRow(l10n.followers, '${user.followerIds.length}'),
                 ],
@@ -297,13 +301,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   
   List<Widget> _buildActiveTabList(AppLocalizations l10n) {
-    final now = DateTime.now();
     final list = _activeTabIndex == 0 ? _mySecrets : _savedSecrets;
     
-    // Filter out expired secrets on the fly to fulfill the deletion mechanism
-    final activeSecrets = list.where((secret) => secret.expiresAt.isAfter(now)).toList();
-    
-    if (activeSecrets.isEmpty) {
+    if (list.isEmpty) {
       return [
         Padding(
           padding: const EdgeInsets.all(32.0),
@@ -326,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ];
     }
     
-    return activeSecrets.map((secret) => SecretCard(
+    return list.map((secret) => SecretCard(
       secret: secret,
       onDelete: _fetchProfileData,
     )).toList();

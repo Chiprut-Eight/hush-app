@@ -68,6 +68,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         'isOnboarded': true,
         'firstName': _firstNameController.text.trim(),
         'lastName': _lastNameController.text.trim(),
+        'email': authParams.firebaseUser?.email,
         'dateOfBirth': Timestamp.fromDate(_dateOfBirth!),
         'gender': _gender,
         'useGenericPhoto': _useGenericPhoto,

@@ -60,6 +60,13 @@ class _SecretCardState extends State<SecretCard> {
       _showWarning = true;
     }
     
+    // Auto-reveal for creators
+    final currentUser = context.read<AuthProvider>().firebaseUser;
+    if (currentUser?.uid == widget.secret.creatorId) {
+      _revealed = true;
+      if (widget.secret.type == 'voice') _initAudio();
+    }
+    
     _compassSubscription = FlutterCompass.events?.listen((event) {
       if (mounted) {
         setState(() {
@@ -644,7 +651,7 @@ class _SecretCardState extends State<SecretCard> {
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: _revealed ? () {
+                                onTap: !isOwner ? () {
                                   if (currentUser != null) {
                                     if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {
                                       ScaffoldMessenger.of(context).showSnackBar(

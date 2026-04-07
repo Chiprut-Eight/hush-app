@@ -82,7 +82,8 @@ class Secret {
       reportCount: data['reportCount'] ?? 0,
       isHidden: data['isHidden'] ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
-      expiresAt: (data['expiresAt'] as Timestamp?)?.toDate() ?? DateTime.now().add(const Duration(hours: 24)),
+      expiresAt: (data['expiresAt'] as Timestamp?)?.toDate() ?? 
+                 ((data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now()).add(const Duration(hours: 24)),
     );
   }
 
