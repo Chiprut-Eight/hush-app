@@ -27,6 +27,9 @@ class HushUser {
   final List<String> followingIds;
   final List<String> followerIds;
 
+  // Search Optimization
+  final String searchName;
+
   HushUser({
     required this.uid,
     this.displayName,
@@ -48,6 +51,7 @@ class HushUser {
     this.useGenericPhoto = false,
     this.followingIds = const [],
     this.followerIds = const [],
+    this.searchName = '',
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory HushUser.fromFirestore(DocumentSnapshot doc) {
@@ -73,6 +77,7 @@ class HushUser {
       useGenericPhoto: data['useGenericPhoto'] ?? false,
       followingIds: List<String>.from(data['followingIds'] ?? []),
       followerIds: List<String>.from(data['followerIds'] ?? []),
+      searchName: data['searchName'] ?? '',
     );
   }
 
@@ -97,5 +102,6 @@ class HushUser {
     'useGenericPhoto': useGenericPhoto,
     'followingIds': followingIds,
     'followerIds': followerIds,
+    'searchName': searchName,
   };
 }

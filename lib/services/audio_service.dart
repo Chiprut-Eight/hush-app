@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
 
@@ -61,6 +62,12 @@ class AudioService {
     } catch (_) {}
 
     return downloadUrl;
+  }
+
+  /// Get cached audio file from URL
+  /// Returns a File object once downloaded or retrieved from cache
+  Future<File> getCachedAudioFile(String url) async {
+    return await DefaultCacheManager().getSingleFile(url);
   }
 
   /// Dispose resources

@@ -12,29 +12,21 @@ class FollowedUserFeedItem {
 class SocialService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  /// Search users by name prefix (case insensitive pseudo-search)
+  /// Search users by name prefix (case insensitive indexed search)
   Future<List<HushUser>> searchUsers(String query) async {
     if (query.trim().isEmpty) return [];
     
-    // Quick memory fallback for small apps since Firestore lacks true 'contains' query
-    // We'll fetch users that start with the query, or just fetch the first 100 limit and filter in memory.
-    final snapshot = await _firestore.collection('users').get();
-    
     final searchLower = query.toLowerCase().trim();
-    final List<HushUser> results = [];
     
-    for (var doc in snapshot.docs) {
-      final data = doc.data();
-      final name = '${data['firstName'] ?? ''} ${data['lastName'] ?? ''}'.trim().toLowerCase();
-      final displayName = (data['displayName'] ?? '').toString().toLowerCase();
-      final email = (data['email'] ?? '').toString().toLowerCase();
-      
-      if (name.contains(searchLower) || displayName.contains(searchLower) || email.contains(searchLower)) {
-        results.add(HushUser.fromFirestore(doc));
-      }
-    }
+    // Firestore prefix search using range query
+    // This scales to millions of users efficiently
+    final snapshot = await _firestore.collection('users')
+        .where('searchName', isGreaterThanOrEqualTo: searchLower)
+        .where('searchName', isLessThan: searchLower + '\uf8ff')
+        .limit(20)
+        .get();
     
-    return results;
+    return snapshot.docs.map((doc) => HushUser.fromFirestore(doc)).toList();
   }
 
   /// Follow a specific user

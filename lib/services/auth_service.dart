@@ -80,6 +80,7 @@ class AuthService {
         displayName: user.displayName,
         email: user.email,
         photoURL: user.photoURL,
+        searchName: (user.displayName ?? '').toLowerCase(),
       );
       await userRef.set(newUser.toFirestore());
     }

@@ -72,6 +72,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         'dateOfBirth': Timestamp.fromDate(_dateOfBirth!),
         'gender': _gender,
         'useGenericPhoto': _useGenericPhoto,
+        'searchName': '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'.toLowerCase(),
       });
       
       // Refresh the auth provider so the root router kicks us to the AppShell

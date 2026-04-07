@@ -12,7 +12,7 @@ class AdminScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         backgroundColor: HushColors.bgPrimary,
         appBar: AppBar(
@@ -26,6 +26,7 @@ class AdminScreen extends StatelessWidget {
             tabs: [
               Tab(text: l10n.appeals),
               Tab(text: l10n.reports),
+              const Tab(text: 'Maintenance'),
             ],
           ),
         ),
@@ -33,6 +34,7 @@ class AdminScreen extends StatelessWidget {
           children: [
             _AppealsList(),
             _ReportsList(),
+            _MaintenanceView(),
           ],
         ),
       ),
@@ -323,6 +325,132 @@ class _ReportsList extends StatelessWidget {
           }).toList(),
         );
       },
+    );
+  }
+}
+
+class _MaintenanceView extends StatefulWidget {
+  const _MaintenanceView();
+
+  @override
+  State<_MaintenanceView> createState() => _MaintenanceViewState();
+}
+
+class _MaintenanceViewState extends State<_MaintenanceView> {
+  bool _isMigrating = false;
+  String _status = 'Ready to migrate users.';
+
+  Future<void> _migrateSearchNames() async {
+    setState(() {
+      _isMigrating = true;
+      _status = 'Fetching users lacking searchName...';
+    });
+
+    try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .where('searchName', isEqualTo: '')
+          .limit(100)
+          .get();
+
+      if (query.docs.isEmpty) {
+        // Also check for users where the field doesn't exist at all
+        final queryMissing = await FirebaseFirestore.instance
+            .collection('users')
+            .orderBy('uid')
+            .limit(100)
+            .get();
+        
+        // Filter in memory for simplicity of migration script logic
+        final docsToUpdate = queryMissing.docs.where((doc) {
+          final data = doc.data();
+          return !data.containsKey('searchName');
+        }).toList();
+
+        if (docsToUpdate.isEmpty) {
+          setState(() {
+            _isMigrating = false;
+            _status = 'All users migrated!';
+          });
+          return;
+        }
+
+        await _performBatchUpdate(docsToUpdate);
+      } else {
+        await _performBatchUpdate(query.docs);
+      }
+
+      setState(() {
+        _isMigrating = false;
+        _status = 'Batch of users migrated! Run again if needed.';
+      });
+    } catch (e) {
+      setState(() {
+        _isMigrating = false;
+        _status = 'Error: $e';
+      });
+    }
+  }
+
+  Future<void> _performBatchUpdate(List<QueryDocumentSnapshot> docs) async {
+    final batch = FirebaseFirestore.instance.batch();
+    int count = 0;
+
+    for (var doc in docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      final firstName = data['firstName'] ?? '';
+      final lastName = data['lastName'] ?? '';
+      final displayName = data['displayName'] ?? '';
+      
+      String searchName = '';
+      if (firstName.isNotEmpty || lastName.isNotEmpty) {
+        searchName = '$firstName $lastName'.trim().toLowerCase();
+      } else if (displayName.isNotEmpty) {
+        searchName = displayName.toLowerCase();
+      }
+
+      batch.update(doc.reference, {'searchName': searchName});
+      count++;
+    }
+
+    if (count > 0) {
+      await batch.commit();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Icon(Icons.build_circle_outlined, size: 64, color: HushColors.textAccent),
+            const SizedBox(height: 16),
+            const Text(
+              'Search Index Migration',
+              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              'This tool populates the "searchName" field for old users to make them searchable in the new system.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.white.withOpacity(0.7)),
+            ),
+            const SizedBox(height: 32),
+            if (_isMigrating)
+              const CircularProgressIndicator(color: HushColors.textAccent)
+            else
+              ElevatedButton(
+                onPressed: _migrateSearchNames,
+                child: const Text('Migrate Users (Batch)'),
+              ),
+            const SizedBox(height: 16),
+            Text(_status, style: const TextStyle(color: Colors.white54)),
+          ],
+        ),
+      ),
     );
   }
 }

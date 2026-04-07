@@ -11,6 +11,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../services/secret_service.dart';
+import '../services/audio_service.dart';
 import '../utils/time_ago_util.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../config/constants.dart';
@@ -37,6 +38,7 @@ class SecretCard extends StatefulWidget {
 
 class _SecretCardState extends State<SecretCard> {
   final SecretService _secretService = SecretService();
+  final AudioService _audioService = AudioService();
   final AudioPlayer _audioPlayer = AudioPlayer();
   
   bool _revealed = false;
@@ -121,7 +123,11 @@ class _SecretCardState extends State<SecretCard> {
   Future<void> _initAudio() async {
     try {
       if (widget.secret.audioURL == null) return;
-      await _audioPlayer.setUrl(widget.secret.audioURL!);
+      
+      // Use cached audio file for faster playback and lower data usage
+      final file = await _audioService.getCachedAudioFile(widget.secret.audioURL!);
+      await _audioPlayer.setFilePath(file.path);
+      
       _audioPlayer.durationStream.listen((d) {
         if (mounted && d != null) setState(() => _duration = d);
       });
