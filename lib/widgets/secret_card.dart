@@ -13,6 +13,7 @@ import '../providers/auth_provider.dart';
 import '../services/secret_service.dart';
 import '../utils/time_ago_util.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../config/constants.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
 class SecretCard extends StatefulWidget {
@@ -441,10 +442,10 @@ class _SecretCardState extends State<SecretCard> {
         widget.secret.lat, 
         widget.secret.lng
       );
-      isInRange = distance <= 15.0; // 15 meters reveal radius
+      isInRange = distance <= AppConstants.revealRadiusMeters;
     }
     
-    bool isGroup = widget.secret.type == 'group';
+    bool isGroup = widget.secret.isGroup; // Use model's isGroup instead of type check
     bool userSaved = hushUser?.savedSecretIds.contains(widget.secret.id) ?? false;
     bool isOwner = currentUser?.uid == widget.secret.creatorId;
     
