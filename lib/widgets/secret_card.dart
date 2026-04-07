@@ -41,6 +41,8 @@ class _SecretCardState extends State<SecretCard> {
   final AudioService _audioService = AudioService();
   final AudioPlayer _audioPlayer = AudioPlayer();
   
+  late Secret _currentSecret;
+  
   bool _revealed = false;
   bool _showWarning = false;
   
@@ -60,16 +62,41 @@ class _SecretCardState extends State<SecretCard> {
   @override
   void initState() {
     super.initState();
+    _currentSecret = widget.secret;
+
     // Default showWarning if highly downvoted or reported
-    if (widget.secret.dislikes > 3 && widget.secret.dislikes > widget.secret.likes) {
+    if (_currentSecret.dislikes > 3 && _currentSecret.dislikes > _currentSecret.likes) {
       _showWarning = true;
     }
     
-    // Auto-reveal for creators
     final currentUser = context.read<AuthProvider>().firebaseUser;
-    if (currentUser?.uid == widget.secret.creatorId) {
-      _revealed = true;
-      if (widget.secret.type == 'voice') _initAudio();
+    
+    // Start live secret data stream
+    _secretDocSubscription = _secretService
+        .getSecretStream(_currentSecret.id)
+        .listen((updatedSecret) {
+      if (mounted) {
+        setState(() {
+          _currentSecret = updatedSecret;
+          // Auto-reveal for creators OR if already unlocked
+          if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid)) {
+            if (!_revealed) {
+              _revealed = true;
+              if (_currentSecret.type == 'voice') _initAudio();
+            }
+          }
+        });
+      }
+    });
+
+    // Start participants counter stream for group secrets
+    if (_currentSecret.isGroup) {
+      final tier = HushTiers.getTier(_currentSecret.creatorTierLevel);
+      _attemptsSubscription = _secretService
+          .getUnlockAttemptsStream(_currentSecret.id, tier.timeWindowMinutes)
+          .listen((count) {
+        if (mounted) setState(() => _activeParticipantsCount = count);
+      });
     }
     
     _compassSubscription = FlutterCompass.events?.listen((event) {
@@ -79,53 +106,16 @@ class _SecretCardState extends State<SecretCard> {
         });
       }
     });
-
-    // Check for existing group participation to persist through refreshes
-    if (widget.secret.isGroup && !widget.secret.unlockedBy.contains(currentUser?.uid)) {
-      _checkParticipation(currentUser?.uid);
-    }
   }
 
-  Future<void> _checkParticipation(String? uid) async {
-    if (uid == null) return;
-    final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
-    final participating = await _secretService.isUserParticipating(widget.secret.id, uid, tier.timeWindowMinutes);
-    if (participating && mounted) {
-      _startLiveListeners(uid);
-    }
-  }
 
-  void _startLiveListeners(String uid) {
-    if (_attemptsSubscription != null) return;
-    
-    final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
-    
-    _attemptsSubscription = _secretService
-        .getUnlockAttemptsStream(widget.secret.id, tier.timeWindowMinutes)
-        .listen((count) {
-      if (mounted) setState(() => _activeParticipantsCount = count);
-    });
 
-    _secretDocSubscription = _secretService
-        .getSecretStream(widget.secret.id)
-        .listen((updatedSecret) {
-      if (mounted && updatedSecret.unlockedBy.contains(uid)) {
-        setState(() {
-          _revealed = true;
-          if (widget.secret.type == 'voice') _initAudio();
-        });
-        _attemptsSubscription?.cancel();
-        _secretDocSubscription?.cancel();
-      }
-    });
-  }
-
-  Future<void> _initAudio() async {
+  void _initAudio() async {
     try {
-      if (widget.secret.audioURL == null) return;
+      if (_currentSecret.audioURL == null) return;
       
       // Use cached audio file for faster playback and lower data usage
-      final file = await _audioService.getCachedAudioFile(widget.secret.audioURL!);
+      final file = await _audioService.getCachedAudioFile(_currentSecret.audioURL!);
       await _audioPlayer.setFilePath(file.path);
       
       _audioPlayer.durationStream.listen((d) {
@@ -163,7 +153,7 @@ class _SecretCardState extends State<SecretCard> {
     if (_isPlaying) {
       _audioPlayer.pause();
     } else {
-      _secretService.viewSecret(widget.secret.id);
+      _secretService.viewSecret(_currentSecret.id);
       _audioPlayer.play();
     }
   }
@@ -176,22 +166,21 @@ class _SecretCardState extends State<SecretCard> {
     final l10n = AppLocalizations.of(context)!;
 
     // Check if it's a group secret and needs unlocking
-    if (widget.secret.isGroup && !widget.secret.unlockedBy.contains(currentUser.uid)) {
+    if (_currentSecret.isGroup && !_currentSecret.unlockedBy.contains(currentUser.uid)) {
       if (widget.userPosition == null) return;
       
       final result = await _secretService.verifyGroupUnlock(
-        secretId: widget.secret.id,
+        secretId: _currentSecret.id,
         lat: widget.userPosition!.latitude,
         lng: widget.userPosition!.longitude,
       );
       
-      // Start Live Subscriptions if not already started
-      _startLiveListeners(currentUser.uid);
+      // Start Live Subscriptions if not already started (Handled by initState now)
       
       if (result['success'] == true) {
         setState(() => _revealed = true);
-        if (widget.secret.type == 'voice') _initAudio();
-        _secretService.viewSecret(widget.secret.id);
+        if (_currentSecret.type == 'voice') _initAudio();
+        _secretService.viewSecret(_currentSecret.id);
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -208,7 +197,7 @@ class _SecretCardState extends State<SecretCard> {
       } else {
         // Show current progress localized
         if (mounted) {
-          final requiredCount = (result['requiredCount'] as int?) ?? widget.secret.requiredUsers ?? 3;
+          final requiredCount = (result['requiredCount'] as int?) ?? _currentSecret.requiredUsers ?? 3;
           final currentCount = (result['currentCount'] as int?) ?? 0;
           final remaining = requiredCount - currentCount;
           
@@ -233,15 +222,15 @@ class _SecretCardState extends State<SecretCard> {
     } else {
       // Regular secret or already unlocked group secret
       setState(() => _revealed = true);
-      if (widget.secret.type == 'voice') _initAudio();
-      _secretService.viewSecret(widget.secret.id);
+      if (_currentSecret.type == 'voice') _initAudio();
+      _secretService.viewSecret(_currentSecret.id);
       if (widget.onReveal != null) widget.onReveal!();
     }
   }
 
   Color _getTierColor() {
     try {
-      final hexCode = widget.secret.creatorTierColor.replaceAll('#', '0xFF');
+      final hexCode = _currentSecret.creatorTierColor.replaceAll('#', '0xFF');
       return Color(int.parse(hexCode));
     } catch (_) {
       return Colors.grey;
@@ -252,8 +241,8 @@ class _SecretCardState extends State<SecretCard> {
   double _getBearing() {
     if (widget.userPosition == null) return 0;
     final lat1 = widget.userPosition!.latitude * math.pi / 180;
-    final lat2 = widget.secret.lat * math.pi / 180;
-    final dLng = (widget.secret.lng - widget.userPosition!.longitude) * math.pi / 180;
+    final lat2 = _currentSecret.lat * math.pi / 180;
+    final dLng = (_currentSecret.lng - widget.userPosition!.longitude) * math.pi / 180;
 
     final y = math.sin(dLng) * math.cos(lat2);
     final x = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(dLng);
@@ -320,7 +309,7 @@ class _SecretCardState extends State<SecretCard> {
                 onPressed: selectedReason == null ? null : () async {
                   final messenger = ScaffoldMessenger.of(context);
                   await _secretService.reportSecretWithDetails(
-                    widget.secret.id, 
+                    _currentSecret.id, 
                     selectedReason!,
                   );
                   if (ctx.mounted) Navigator.pop(ctx);
@@ -355,7 +344,7 @@ class _SecretCardState extends State<SecretCard> {
           ),
           ElevatedButton(
             onPressed: () async {
-              await _secretService.deleteSecret(widget.secret.id);
+              await _secretService.deleteSecret(_currentSecret.id);
               if (ctx.mounted) Navigator.pop(ctx);
               if (widget.onDelete != null) widget.onDelete!();
             },
@@ -408,7 +397,7 @@ class _SecretCardState extends State<SecretCard> {
                       // Comments list
                       Expanded(
                         child: StreamBuilder<List<Map<String, dynamic>>>(
-                          stream: _secretService.getCommentsStream(widget.secret.id),
+                          stream: _secretService.getCommentsStream(_currentSecret.id),
                           builder: (ctx, snapshot) {
                             if (snapshot.connectionState == ConnectionState.waiting) {
                               return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
@@ -496,7 +485,7 @@ class _SecretCardState extends State<SecretCard> {
                               onPressed: () async {
                                 final text = commentController.text.trim();
                                 if (text.isEmpty) return;
-                                await _secretService.addComment(widget.secret.id, text);
+                                await _secretService.addComment(_currentSecret.id, text);
                                 commentController.clear();
                               },
                             ),
@@ -527,20 +516,20 @@ class _SecretCardState extends State<SecretCard> {
       distance = Geolocator.distanceBetween(
         widget.userPosition!.latitude, 
         widget.userPosition!.longitude, 
-        widget.secret.lat, 
-        widget.secret.lng
+        _currentSecret.lat, 
+        _currentSecret.lng
       );
-      final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
-      final double effectiveRadius = widget.secret.isGroup 
+      final tier = HushTiers.getTier(_currentSecret.creatorTierLevel);
+      final double effectiveRadius = _currentSecret.isGroup 
           ? tier.revealRadius 
           : AppConstants.revealRadiusMeters;
       
       isInRange = distance <= effectiveRadius;
     }
     
-    bool isGroup = widget.secret.isGroup; // Use model's isGroup instead of type check
-    bool userSaved = hushUser?.savedSecretIds.contains(widget.secret.id) ?? false;
-    bool isOwner = currentUser?.uid == widget.secret.creatorId;
+    bool isGroup = _currentSecret.isGroup; // Use model's isGroup instead of type check
+    bool userSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
+    bool isOwner = currentUser?.uid == _currentSecret.creatorId;
     
     final l10n = AppLocalizations.of(context)!;
 
@@ -584,10 +573,10 @@ class _SecretCardState extends State<SecretCard> {
                                   child: CircleAvatar(
                                     radius: 16,
                                     backgroundColor: HushColors.bgPrimary,
-                                    backgroundImage: widget.secret.creatorPhotoURL != null && widget.secret.creatorPhotoURL != 'generic'
-                                        ? NetworkImage(widget.secret.creatorPhotoURL!)
+                                    backgroundImage: _currentSecret.creatorPhotoURL != null && _currentSecret.creatorPhotoURL != 'generic'
+                                        ? NetworkImage(_currentSecret.creatorPhotoURL!)
                                         : null,
-                                    child: widget.secret.creatorPhotoURL == 'generic' || widget.secret.creatorPhotoURL == null
+                                    child: _currentSecret.creatorPhotoURL == 'generic' || _currentSecret.creatorPhotoURL == null
                                         ? const HushIcon(HushIcons.person, size: 18, color: Colors.white54)
                                         : null,
                                   ),
@@ -601,7 +590,7 @@ class _SecretCardState extends State<SecretCard> {
                                         children: [
                                           Flexible(
                                             child: Text(
-                                              widget.secret.creatorName ?? 'Anonymous',
+                                              _currentSecret.creatorName ?? 'Anonymous',
                                               style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
                                               overflow: TextOverflow.ellipsis,
                                             ),
@@ -609,7 +598,7 @@ class _SecretCardState extends State<SecretCard> {
                                           const SizedBox(width: 6),
                                           // --- TIME AGO ---
                                           Text(
-                                            getTimeAgo(widget.secret.createdAt, l10n),
+                                            getTimeAgo(_currentSecret.createdAt, l10n),
                                             style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
                                           ),
                                         ],
@@ -667,28 +656,28 @@ class _SecretCardState extends State<SecretCard> {
                             children: [
                               _InteractionButton(
                                 icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
-                                count: widget.secret.likes + (_userLiked ? 1 : 0),
+                                count: _currentSecret.likes + (_userLiked ? 1 : 0),
                                 isActive: _userLiked,
                                 color: _userLiked ? Colors.pink : HushColors.textSecondary,
                                 onTap: _revealed ? () {
                                   setState(() {
                                     if (_userDisliked) _userDisliked = false;
                                     _userLiked = !_userLiked;
-                                    if (_userLiked) _secretService.likeSecret(widget.secret.id);
+                                    if (_userLiked) _secretService.likeSecret(_currentSecret.id);
                                   });
                                 } : () {},
                               ),
                               const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.thumbsDown,
-                                count: widget.secret.dislikes + (_userDisliked ? 1 : 0),
+                                count: _currentSecret.dislikes + (_userDisliked ? 1 : 0),
                                 isActive: _userDisliked,
                                 color: _userDisliked ? Colors.orange : HushColors.textSecondary,
                                 onTap: _revealed ? () {
                                   setState(() {
                                     if (_userLiked) _userLiked = false;
                                     _userDisliked = !_userDisliked;
-                                    if (_userDisliked) _secretService.dislikeSecret(widget.secret.id);
+                                    if (_userDisliked) _secretService.dislikeSecret(_currentSecret.id);
                                   });
                                 } : null,
                               ),
@@ -702,9 +691,9 @@ class _SecretCardState extends State<SecretCard> {
                               ),
                               Row(
                                 children: [
-                                  HushIcon(widget.secret.textContent != null ? HushIcons.textSnippet : HushIcons.mic, size: 14, color: HushColors.textSecondary),
+                                  HushIcon(_currentSecret.textContent != null ? HushIcons.textSnippet : HushIcons.mic, size: 14, color: HushColors.textSecondary),
                                   const SizedBox(width: 4),
-                                  Text('${widget.secret.views}', style: const TextStyle(color: HushColors.textSecondary)),
+                                  Text('${_currentSecret.views}', style: const TextStyle(color: HushColors.textSecondary)),
                                 ],
                               ),
                               // --- COMMENTS BUTTON (only if revealed) ---
@@ -740,7 +729,7 @@ class _SecretCardState extends State<SecretCard> {
                                       return;
                                     }
                                     setState(() {
-                                      _secretService.toggleSaveSecret(widget.secret.id);
+                                      _secretService.toggleSaveSecret(_currentSecret.id);
                                     });
                                   }
                                 } : null,
@@ -821,7 +810,7 @@ class _SecretCardState extends State<SecretCard> {
                 padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
                 child: Column(
                   children: [
-                    if (widget.secret.textContent != null)
+                    if (_currentSecret.textContent != null)
                       Container(height: 20, width: double.infinity, color: HushColors.textAccent.withValues(alpha: 0.3))
                     else
                       Container(height: 40, width: double.infinity, color: HushColors.textAccent.withValues(alpha: 0.3)),
@@ -876,8 +865,8 @@ class _SecretCardState extends State<SecretCard> {
       // Revealed Content
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: widget.secret.textContent != null
-          ? Text(widget.secret.textContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4))
+        child: _currentSecret.textContent != null
+          ? Text(_currentSecret.textContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4))
           : Directionality(
               // Task 5: Force LTR for audio player
               textDirection: TextDirection.ltr,
@@ -957,21 +946,21 @@ class _SecretCardState extends State<SecretCard> {
         child: Column(
           children: [
             HushIcon(
-              widget.secret.isGroup ? HushIcons.users : HushIcons.touch, 
+              _currentSecret.isGroup ? HushIcons.users : HushIcons.touch, 
               size: 32, 
               color: HushColors.textAccent
             ),
             const SizedBox(height: 8),
             Text(
-              widget.secret.isGroup ? l10n.groupSecret : l10n.tapToReveal, 
+              _currentSecret.isGroup ? l10n.groupSecret : l10n.tapToReveal, 
               style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold)
             ),
-            if (widget.secret.isGroup) ...[
+            if (_currentSecret.isGroup) ...[
               const SizedBox(height: 4),
               Text(
                 _activeParticipantsCount > 0 
-                    ? '$_activeParticipantsCount / ${widget.secret.requiredUsers ?? 3} ${l10n.peopleRequired}'
-                    : '${l10n.peopleRequired}: ${widget.secret.requiredUsers ?? 3}',
+                    ? '$_activeParticipantsCount / ${_currentSecret.requiredUsers ?? 3} ${l10n.peopleRequired}'
+                    : '${l10n.peopleRequired}: ${_currentSecret.requiredUsers ?? 3}',
                 style: TextStyle(
                   color: _activeParticipantsCount > 0 ? HushColors.textAccent : HushColors.textSecondary, 
                   fontSize: 12,
