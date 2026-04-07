@@ -34,11 +34,11 @@ class UIProvider with ChangeNotifier {
 
       // Use asset:/// with WAV for maximum compatibility
       await _audioPlayer.setAudioSource(
-        AudioSource.uri(Uri.parse('asset:///assets/sounds/confetti.wav')),
+        AudioSource.uri(Uri.parse('asset:///assets/sounds/confetti_v2.wav')),
         preload: true,
       );
       _isAudioReady = true;
-      debugPrint('[AUDIO] Confetti sound (WAV) preloaded successfully');
+      debugPrint('[AUDIO] Confetti sound (WAV v2) preloaded successfully');
     } catch (e, stackTrace) {
       debugPrint('[AUDIO] Error initializing audio: $e');
       debugPrint('[AUDIO] TIP: If this is a "Source error", try replacing the .mp3 file with a .wav file.');
