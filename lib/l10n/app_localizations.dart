@@ -503,7 +503,7 @@ abstract class AppLocalizations {
   /// No description provided for @ghostModeActive.
   ///
   /// In en, this message translates to:
-  /// **'👻 Ghost Mode Active'**
+  /// **'Ghost Mode Active'**
   String get ghostModeActive;
 
   /// No description provided for @ghostModeRestricted.

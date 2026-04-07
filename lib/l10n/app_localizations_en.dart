@@ -219,7 +219,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get ghostMode => 'Ghost Mode';
 
   @override
-  String get ghostModeActive => '👻 Ghost Mode Active';
+  String get ghostModeActive => 'Ghost Mode Active';
 
   @override
   String get ghostModeRestricted => 'Your account features are restricted.';

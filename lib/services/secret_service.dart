@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/secret.dart';
 import '../config/constants.dart';
@@ -17,14 +18,13 @@ class SecretService {
     final now = DateTime.now();
     final snapshot = await _secretsRef
         .where('isHidden', isEqualTo: false)
-        .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
-        .orderBy('expiresAt')
         .orderBy('createdAt', descending: true)
         .get();
 
     final secrets = snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
         .where((secret) =>
+            secret.expiresAt.isAfter(now) && // Client-side expiration filter to allow primary sort by createdAt
             GeoService.isWithinRadius(
               userLat, userLng,
               secret.lat, secret.lng,
@@ -174,6 +174,25 @@ class SecretService {
     await _secretsRef.doc(secretId).update({
       'listens': FieldValue.increment(1),
     });
+  }
+
+  /// Verify and attempt to unlock a group secret via Cloud Function
+  Future<Map<String, dynamic>> verifyGroupUnlock({
+    required String secretId,
+    required double lat,
+    required double lng,
+  }) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('verifyGroupUnlock');
+      final result = await callable.call({
+        'secretId': secretId,
+        'userLat': lat,
+        'userLng': lng,
+      });
+      return Map<String, dynamic>.from(result.data);
+    } catch (e) {
+      return {'success': false, 'message': e.toString()};
+    }
   }
 
   /// Report a secret

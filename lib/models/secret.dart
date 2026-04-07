@@ -48,10 +48,13 @@ class Secret {
     this.timeWindowMinutes,
     this.reportCount = 0,
     this.isHidden = false,
+    this.unlockedBy = const [],
     DateTime? createdAt,
     DateTime? expiresAt,
   })  : createdAt = createdAt ?? DateTime.now(),
         expiresAt = expiresAt ?? DateTime.now().add(const Duration(hours: 24));
+  
+  final List<String> unlockedBy;
 
   factory Secret.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -75,6 +78,7 @@ class Secret {
       minTierLevel: data['minTierLevel'],
       requiredUsers: data['requiredUsers'],
       timeWindowMinutes: data['timeWindowMinutes'],
+      unlockedBy: List<String>.from(data['unlockedBy'] ?? []),
       reportCount: data['reportCount'] ?? 0,
       isHidden: data['isHidden'] ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
@@ -101,6 +105,7 @@ class Secret {
     'minTierLevel': minTierLevel,
     'requiredUsers': requiredUsers,
     'timeWindowMinutes': timeWindowMinutes,
+    'unlockedBy': unlockedBy,
     'reportCount': reportCount,
     'isHidden': isHidden,
     'createdAt': Timestamp.fromDate(createdAt),

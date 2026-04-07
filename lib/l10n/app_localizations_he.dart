@@ -219,7 +219,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get ghostMode => 'מצב רוח רפאים';
 
   @override
-  String get ghostModeActive => '👻 מצב רוח רפאים פעיל';
+  String get ghostModeActive => 'מצב רוח רפאים פעיל';
 
   @override
   String get ghostModeRestricted => 'פעולות החשבון שלך מוגבלות.';

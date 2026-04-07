@@ -109,15 +109,45 @@ class _SecretCardState extends State<SecretCard> {
     }
   }
 
-  void _handleReveal() {
+  void _handleReveal() async {
     if (_showWarning) return; // Must accept warning first
     
-    setState(() => _revealed = true);
-    if (widget.secret.type == 'voice') {
-      _initAudio();
+    final currentUser = context.read<AuthProvider>().firebaseUser;
+    if (currentUser == null) return;
+
+    // Check if it's a group secret and needs unlocking
+    if (widget.secret.isGroup && !widget.secret.unlockedBy.contains(currentUser.uid)) {
+      if (widget.userPosition == null) return;
+      
+      final result = await _secretService.verifyGroupUnlock(
+        secretId: widget.secret.id,
+        lat: widget.userPosition!.latitude,
+        lng: widget.userPosition!.longitude,
+      );
+      
+      if (result['success'] == true) {
+        setState(() => _revealed = true);
+        if (widget.secret.type == 'voice') _initAudio();
+        _secretService.listenSecret(widget.secret.id);
+        if (widget.onReveal != null) widget.onReveal!();
+      } else {
+        // Show current progress
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(result['message'] ?? 'Group unlock in progress...'),
+              backgroundColor: HushColors.bgSecondary,
+            ),
+          );
+        }
+      }
+    } else {
+      // Regular secret or already unlocked group secret
+      setState(() => _revealed = true);
+      if (widget.secret.type == 'voice') _initAudio();
+      _secretService.listenSecret(widget.secret.id);
+      if (widget.onReveal != null) widget.onReveal!();
     }
-    _secretService.listenSecret(widget.secret.id);
-    if (widget.onReveal != null) widget.onReveal!();
   }
 
   Color _getTierColor() {
@@ -545,28 +575,37 @@ class _SecretCardState extends State<SecretCard> {
                                 icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
                                 count: widget.secret.likes + (_userLiked ? 1 : 0),
                                 isActive: _userLiked,
-                                color: _userLiked ? HushColors.tierRed : HushColors.textSecondary,
-                                onTap: () {
-                                  if (currentUser != null) {
-                                    setState(() => _userLiked = true);
-                                    _secretService.likeSecret(widget.secret.id);
-                                  }
-                                },
+                                color: _userLiked ? Colors.pink : HushColors.textSecondary,
+                                onTap: _revealed ? () {
+                                  setState(() {
+                                    if (_userDisliked) _userDisliked = false;
+                                    _userLiked = !_userLiked;
+                                    if (_userLiked) _secretService.likeSecret(widget.secret.id);
+                                  });
+                                } : () {},
                               ),
-                              const SizedBox(width: 8),
+                              const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.thumbsDown,
                                 count: widget.secret.dislikes + (_userDisliked ? 1 : 0),
                                 isActive: _userDisliked,
-                                color: _userDisliked ? Colors.amber : HushColors.textSecondary,
-                                onTap: () {
-                                  if (currentUser != null) {
-                                    setState(() => _userDisliked = true);
-                                    _secretService.dislikeSecret(widget.secret.id);
-                                  }
-                                },
+                                color: _userDisliked ? Colors.orange : HushColors.textSecondary,
+                                onTap: _revealed ? () {
+                                  setState(() {
+                                    if (_userLiked) _userLiked = false;
+                                    _userDisliked = !_userDisliked;
+                                    if (_userDisliked) _secretService.dislikeSecret(widget.secret.id);
+                                  });
+                                } : () {},
                               ),
                               const SizedBox(width: 16),
+                              _InteractionButton(
+                                icon: HushIcons.comment,
+                                count: 0,
+                                isActive: false,
+                                color: HushColors.textSecondary,
+                                onTap: _revealed ? () => _showCommentsSheet(context, l10n) : () {},
+                              ),
                               Row(
                                 children: [
                                   HushIcon(widget.secret.textContent != null ? HushIcons.textSnippet : HushIcons.mic, size: 14, color: HushColors.textSecondary),
@@ -598,7 +637,7 @@ class _SecretCardState extends State<SecretCard> {
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: () {
+                                onTap: _revealed ? () {
                                   if (currentUser != null) {
                                     if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {
                                       ScaffoldMessenger.of(context).showSnackBar(
@@ -608,7 +647,7 @@ class _SecretCardState extends State<SecretCard> {
                                     }
                                     _secretService.saveSecret(widget.secret.id);
                                   }
-                                },
+                                } : null,
                                 child: Row(
                                   children: [
                                     HushIcon(userSaved ? HushIcons.bookmarkFilled : HushIcons.pin, size: 18, color: userSaved ? HushColors.textAccent : HushColors.textSecondary),
@@ -821,9 +860,23 @@ class _SecretCardState extends State<SecretCard> {
       child: Center(
         child: Column(
           children: [
-            const HushIcon(HushIcons.touch, size: 32, color: HushColors.textAccent),
+            HushIcon(
+              widget.secret.isGroup ? HushIcons.users : HushIcons.touch, 
+              size: 32, 
+              color: HushColors.textAccent
+            ),
             const SizedBox(height: 8),
-            Text(l10n.tapToReveal, style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold)),
+            Text(
+              widget.secret.isGroup ? l10n.groupSecret : l10n.tapToReveal, 
+              style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold)
+            ),
+            if (widget.secret.isGroup) ...[
+              const SizedBox(height: 4),
+              Text(
+                '${l10n.peopleRequired}: ${widget.secret.requiredUsers ?? 3}',
+                style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+              ),
+            ],
           ],
         ),
       ),
