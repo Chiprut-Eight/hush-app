@@ -69,6 +69,7 @@ flutter:
     - assets/images/
     - assets/sounds/
     - assets/sounds/confetti.mp3
+    - assets/sounds/confetti.wav
 
 flutter_native_splash:
   color: "#0D1320"
