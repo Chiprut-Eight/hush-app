@@ -106,7 +106,7 @@ class _SecretCardState extends State<SecretCard> {
     if (_isPlaying) {
       _audioPlayer.pause();
     } else {
-      _secretService.listenSecret(widget.secret.id);
+      _secretService.viewSecret(widget.secret.id);
       _audioPlayer.play();
     }
   }
@@ -130,7 +130,7 @@ class _SecretCardState extends State<SecretCard> {
       if (result['success'] == true) {
         setState(() => _revealed = true);
         if (widget.secret.type == 'voice') _initAudio();
-        _secretService.listenSecret(widget.secret.id);
+        _secretService.viewSecret(widget.secret.id);
         if (widget.onReveal != null) widget.onReveal!();
       } else {
         // Show current progress
@@ -147,7 +147,7 @@ class _SecretCardState extends State<SecretCard> {
       // Regular secret or already unlocked group secret
       setState(() => _revealed = true);
       if (widget.secret.type == 'voice') _initAudio();
-      _secretService.listenSecret(widget.secret.id);
+      _secretService.viewSecret(widget.secret.id);
       if (widget.onReveal != null) widget.onReveal!();
     }
   }
@@ -617,7 +617,7 @@ class _SecretCardState extends State<SecretCard> {
                                 children: [
                                   HushIcon(widget.secret.textContent != null ? HushIcons.textSnippet : HushIcons.mic, size: 14, color: HushColors.textSecondary),
                                   const SizedBox(width: 4),
-                                  Text('${widget.secret.listens}', style: const TextStyle(color: HushColors.textSecondary)),
+                                  Text('${widget.secret.views}', style: const TextStyle(color: HushColors.textSecondary)),
                                 ],
                               ),
                               // --- COMMENTS BUTTON (only if revealed) ---

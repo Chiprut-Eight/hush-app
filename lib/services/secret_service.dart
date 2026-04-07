@@ -169,10 +169,10 @@ class SecretService {
     });
   }
 
-  /// Increment listen count
-  Future<void> listenSecret(String secretId) async {
+  /// Increment view count
+  Future<void> viewSecret(String secretId) async {
     await _secretsRef.doc(secretId).update({
-      'listens': FieldValue.increment(1),
+      'views': FieldValue.increment(1),
     });
   }
 

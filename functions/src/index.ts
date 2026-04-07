@@ -20,13 +20,13 @@ export const decaySecretsJob = functions.pubsub.schedule("0 2 * * *").onRun(asyn
   // Rule B: 0 listens in 1 week
   const noListenersQuery = await secretsRef
       .where("createdAt", "<=", oneWeekAgo)
-      .where("listens", "==", 0)
+      .where("views", "==", 0)
       .get();
       
   // Rule C: < 5 listens in 3 weeks
   const lowListenersQuery = await secretsRef
       .where("createdAt", "<=", threeWeeksAgo)
-      .where("listens", "<", 5)
+      .where("views", "<", 5)
       .get();
 
   const batch = db.batch();

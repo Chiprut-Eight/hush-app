@@ -14,7 +14,7 @@ class Secret {
   final int audioDuration;
   final double lat;
   final double lng;
-  final int listens;
+  final int views;
   final int likes;
   final int dislikes;
   final bool isGroup;
@@ -39,7 +39,7 @@ class Secret {
     this.audioDuration = 0,
     required this.lat,
     required this.lng,
-    this.listens = 0,
+    this.views = 0,
     this.likes = 0,
     this.dislikes = 0,
     this.isGroup = false,
@@ -71,7 +71,7 @@ class Secret {
       audioDuration: data['audioDuration'] ?? 0,
       lat: (data['lat'] as num?)?.toDouble() ?? 0.0,
       lng: (data['lng'] as num?)?.toDouble() ?? 0.0,
-      listens: data['listens'] ?? 0,
+      views: data['views'] ?? data['listens'] ?? 0,
       likes: data['likes'] ?? 0,
       dislikes: data['dislikes'] ?? 0,
       isGroup: data['isGroup'] ?? false,
@@ -98,7 +98,7 @@ class Secret {
     'audioDuration': audioDuration,
     'lat': lat,
     'lng': lng,
-    'listens': listens,
+    'views': views,
     'likes': likes,
     'dislikes': dislikes,
     'isGroup': isGroup,
