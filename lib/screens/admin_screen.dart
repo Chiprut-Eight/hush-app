@@ -225,9 +225,33 @@ class _ReportsList extends StatelessWidget {
                   children: [
                     Text('Secret ID: $secretId', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 8),
-                    Text('Reported By: ${data['reporterId']}', style: const TextStyle(color: HushColors.textSecondary, fontSize: 13)),
-                    if (date != null)
+                    Text('Reporter ID: ${data['reporterId']}', style: const TextStyle(color: HushColors.textSecondary, fontSize: 11)),
+                    if (data['reporterName'] != null || data['reporterEmail'] != null) ...[
+                      const SizedBox(height: 4),
+                      Text('Reporter: ${data['reporterName'] ?? 'N/A'}', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                      Text('Email: ${data['reporterEmail'] ?? 'N/A'}', style: const TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                    ] else ...[
+                      const SizedBox(height: 4),
+                      FutureBuilder<DocumentSnapshot>(
+                        future: FirebaseFirestore.instance.collection('users').doc(data['reporterId']).get(),
+                        builder: (context, userSnap) {
+                          if (userSnap.connectionState == ConnectionState.waiting) return const SizedBox(height: 20);
+                          if (!userSnap.hasData || !userSnap.data!.exists) return const Text('User lookup failed', style: TextStyle(color: HushColors.tierRed, fontSize: 12));
+                          final uData = userSnap.data!.data() as Map<String, dynamic>;
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text('Reporter: ${uData['firstName'] ?? ''} ${uData['lastName'] ?? ''}'.trim(), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                              Text('Email: ${uData['email'] ?? 'N/A'}', style: const TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                            ],
+                          );
+                        }
+                      ),
+                    ],
+                    if (date != null) ...[
+                      const SizedBox(height: 4),
                       Text('${date.day}/${date.month}/${date.year}', style: const TextStyle(color: HushColors.textMuted, fontSize: 12)),
+                    ],
                     const SizedBox(height: 16),
                     
                     // Display Secret Context

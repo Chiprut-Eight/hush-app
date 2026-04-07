@@ -217,6 +217,7 @@ class SecretService {
       'secretId': secretId,
       'reporterId': user.uid,
       'reporterName': user.displayName,
+      'reporterEmail': user.email,
       'reason': reason,
       'status': 'pending',
       'createdAt': FieldValue.serverTimestamp(),

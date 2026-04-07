@@ -652,7 +652,9 @@ class _SecretCardState extends State<SecretCard> {
                                       );
                                       return;
                                     }
-                                    _secretService.saveSecret(widget.secret.id);
+                                    setState(() {
+                                      _secretService.saveSecret(widget.secret.id);
+                                    });
                                   }
                                 } : null,
                                 child: Row(

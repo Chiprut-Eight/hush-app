@@ -297,9 +297,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   
   List<Widget> _buildActiveTabList(AppLocalizations l10n) {
+    final now = DateTime.now();
     final list = _activeTabIndex == 0 ? _mySecrets : _savedSecrets;
     
-    if (list.isEmpty) {
+    // Filter out expired secrets on the fly to fulfill the deletion mechanism
+    final activeSecrets = list.where((secret) => secret.expiresAt.isAfter(now)).toList();
+    
+    if (activeSecrets.isEmpty) {
       return [
         Padding(
           padding: const EdgeInsets.all(32.0),
@@ -322,7 +326,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ];
     }
     
-    return list.map((secret) => SecretCard(
+    return activeSecrets.map((secret) => SecretCard(
       secret: secret,
       onDelete: _fetchProfileData,
     )).toList();
