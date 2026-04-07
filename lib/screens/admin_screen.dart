@@ -248,6 +248,9 @@ class _ReportsList extends StatelessWidget {
                             children: [
                               Text('Reporter: ${uData['firstName'] ?? ''} ${uData['lastName'] ?? ''}'.trim(), style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
                               Text('Email: ${uData['email'] ?? 'N/A'}', style: const TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                              const SizedBox(height: 12),
+                              Text('Reason: ${data['reason'] ?? 'Not specified'}', style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold, fontStyle: FontStyle.italic)),
+                              const SizedBox(height: 12),
                             ],
                           );
                         }

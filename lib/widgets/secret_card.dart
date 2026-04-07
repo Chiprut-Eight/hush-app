@@ -727,7 +727,7 @@ class _SecretCardState extends State<SecretCard> {
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: (_revealed && !isOwner) ? () {
+                                onTap: (_revealed) ? () {
                                   if (currentUser != null) {
                                     if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {
                                       ScaffoldMessenger.of(context).showSnackBar(
