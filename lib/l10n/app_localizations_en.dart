@@ -434,4 +434,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get directionToSecret => 'Direction to secret';
+
+  @override
+  String groupUnlockProgress(int count) {
+    return 'Wait! $count more people are needed to reveal this secret.';
+  }
+
+  @override
+  String get groupUnlockSuccess => 'The group has unified. Secret revealed!';
 }

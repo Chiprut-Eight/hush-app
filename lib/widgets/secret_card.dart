@@ -123,6 +123,7 @@ class _SecretCardState extends State<SecretCard> {
     
     final currentUser = context.read<AuthProvider>().firebaseUser;
     if (currentUser == null) return;
+    final l10n = AppLocalizations.of(context)!;
 
     // Check if it's a group secret and needs unlocking
     if (widget.secret.isGroup && !widget.secret.unlockedBy.contains(currentUser.uid)) {
@@ -138,14 +139,40 @@ class _SecretCardState extends State<SecretCard> {
         setState(() => _revealed = true);
         if (widget.secret.type == 'voice') _initAudio();
         _secretService.viewSecret(widget.secret.id);
-        if (widget.onReveal != null) widget.onReveal!();
-      } else {
-        // Show current progress
+        
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(result['message'] ?? 'Group unlock in progress...'),
-              backgroundColor: HushColors.bgSecondary,
+              content: Text(l10n.groupUnlockSuccess, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              backgroundColor: HushColors.textAccent.withValues(alpha: 0.9),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+          );
+        }
+        
+        if (widget.onReveal != null) widget.onReveal!();
+      } else {
+        // Show current progress localized
+        if (mounted) {
+          final requiredCount = (result['requiredCount'] as int?) ?? widget.secret.requiredUsers ?? 3;
+          final currentCount = (result['currentCount'] as int?) ?? 0;
+          final remaining = requiredCount - currentCount;
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                l10n.groupUnlockProgress(remaining),
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+              ),
+              backgroundColor: HushColors.bgCard.withValues(alpha: 0.95),
+              behavior: SnackBarBehavior.floating,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+                side: const BorderSide(color: HushColors.textAccent, width: 0.5),
+              ),
+              elevation: 8,
+              duration: const Duration(seconds: 4),
             ),
           );
         }

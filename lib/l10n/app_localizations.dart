@@ -889,6 +889,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Direction to secret'**
   String get directionToSecret;
+
+  /// No description provided for @groupUnlockProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Wait! {count} more people are needed to reveal this secret.'**
+  String groupUnlockProgress(int count);
+
+  /// No description provided for @groupUnlockSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'The group has unified. Secret revealed!'**
+  String get groupUnlockSuccess;
 }
 
 class _AppLocalizationsDelegate

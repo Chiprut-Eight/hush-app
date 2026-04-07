@@ -174,5 +174,12 @@
   "deleteComment": "Delete Comment",
   "commentPlaceholder": "Write a comment...",
 
-  "directionToSecret": "Direction to secret"
+  "directionToSecret": "Direction to secret",
+  "groupUnlockProgress": "Wait! {count} more people are needed to reveal this secret.",
+  "@groupUnlockProgress": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "groupUnlockSuccess": "The group has unified. Secret revealed!"
 }

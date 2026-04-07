@@ -174,5 +174,12 @@
   "deleteComment": "מחק תגובה",
   "commentPlaceholder": "כתוב תגובה...",
 
-  "directionToSecret": "כיוון אל הסוד"
+  "directionToSecret": "כיוון אל הסוד",
+  "groupUnlockProgress": "רגע! דרושים עוד {count} אנשים כדי לחשוף את הסוד הזה.",
+  "@groupUnlockProgress": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "groupUnlockSuccess": "הקבוצה התאחדה. הסוד נחשף!"
 }
