@@ -29,7 +29,7 @@ class AdminScreen extends StatelessWidget {
             tabs: [
               Tab(text: l10n.appeals),
               Tab(text: l10n.reports),
-              const Tab(text: 'Maintenance'),
+              Tab(text: l10n.maintenanceTitle),
             ],
           ),
         ),
@@ -344,12 +344,17 @@ class _MaintenanceView extends StatefulWidget {
 
 class _MaintenanceViewState extends State<_MaintenanceView> {
   bool _isMigrating = false;
-  String _status = 'Ready to migrate users.';
+  String? _status;
 
-  Future<void> _migrateSearchNames() async {
+  String _getStatus(AppLocalizations l10n) {
+    if (_status == null) return l10n.migrationReady;
+    return _status!;
+  }
+
+  Future<void> _migrateSearchNames(AppLocalizations l10n) async {
     setState(() {
       _isMigrating = true;
-      _status = 'Fetching users lacking searchName...';
+      _status = l10n.migrationFetching;
     });
 
     try {
@@ -376,7 +381,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
         if (docsToUpdate.isEmpty) {
           setState(() {
             _isMigrating = false;
-            _status = 'All users migrated!';
+            _status = l10n.migrationAllDone;
           });
           return;
         }
@@ -388,12 +393,12 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
 
       setState(() {
         _isMigrating = false;
-        _status = 'Batch of users migrated! Run again if needed.';
+        _status = l10n.migrationBatchDone;
       });
     } catch (e) {
       setState(() {
         _isMigrating = false;
-        _status = 'Error: $e';
+        _status = l10n.migrationError(e.toString());
       });
     }
   }
@@ -426,6 +431,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     return Center(
       child: Padding(
         padding: const EdgeInsets.all(24.0),
@@ -434,13 +440,13 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
           children: [
             const Icon(Icons.build_circle_outlined, size: 64, color: HushColors.textAccent),
             const SizedBox(height: 16),
-            const Text(
-              'Search Index Migration',
-              style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+            Text(
+              l10n.migrationSearchTitle,
+              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
-              'This tool populates the "searchName" field for old users to make them searchable in the new system.',
+              l10n.migrationSearchDesc,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.white.withOpacity(0.7)),
             ),
@@ -449,16 +455,16 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
               const CircularProgressIndicator(color: HushColors.textAccent)
             else
               ElevatedButton(
-                onPressed: _migrateSearchNames,
-                child: const Text('Migrate Users (Batch)'),
+                onPressed: () => _migrateSearchNames(l10n),
+                child: Text(l10n.migrateUsers),
               ),
             const SizedBox(height: 16),
-            Text(_status, style: const TextStyle(color: Colors.white54)),
+            Text(_getStatus(l10n), style: const TextStyle(color: Colors.white54)),
             const Divider(height: 64, color: Colors.white10),
             ElevatedButton.icon(
               onPressed: () => context.read<UIProvider>().triggerConfetti(),
               icon: const Icon(Icons.celebration),
-              label: const Text('Test Confetti Animation'),
+              label: Text(l10n.testConfetti),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber.shade800,
                 foregroundColor: Colors.white,

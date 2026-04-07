@@ -15,11 +15,12 @@ class UIProvider with ChangeNotifier {
     _confettiTrigger.add(null);
     try {
       // Note: Assumes assets/sounds/confetti.mp3 exists. 
-      // If not, it will fail silently but the animation will still run.
+      // If not, it will fail but the animation will still run.
       await _audioPlayer.setAsset('assets/sounds/confetti.mp3');
-      _audioPlayer.play();
-    } catch (_) {
-      // Fallback or silent fail if asset missing
+      await _audioPlayer.play();
+      debugPrint('Confetti sound played successfully');
+    } catch (e) {
+      debugPrint('Error playing confetti sound: $e');
     }
   }
 
