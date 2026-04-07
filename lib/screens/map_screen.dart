@@ -9,6 +9,7 @@ import '../widgets/secret_card.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../widgets/hush_drawer.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
@@ -114,6 +115,7 @@ class _MapScreenState extends State<MapScreen> {
     final l10n = AppLocalizations.of(context)!;
     
     return Scaffold(
+      drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.mapTitle, style: const TextStyle(fontWeight: FontWeight.bold)),

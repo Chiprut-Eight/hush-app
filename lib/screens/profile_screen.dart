@@ -4,13 +4,12 @@ import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
-import '../providers/locale_provider.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../widgets/hush_drawer.dart';
 import 'package:flutter/cupertino.dart';
-import 'admin_screen.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -71,30 +70,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final l10n = AppLocalizations.of(context)!;
     final auth = context.watch<AuthProvider>();
     final user = auth.hushUser;
-    final localeProvider = context.watch<LocaleProvider>();
 
     if (user == null) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final isGhostMode = user.isGhostMode;
-    final isAdmin = auth.firebaseUser?.uid == const String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2');
 
     return Scaffold(
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(l10n.profileTitle),
-        actions: [
-          TextButton(
-            onPressed: () => localeProvider.toggleLocale(),
-            child: Text(
-              localeProvider.isHebrew ? 'EN' : 'עב',
-              style: const TextStyle(
-                color: HushColors.textAccent,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -232,64 +218,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             else ..._buildActiveTabList(l10n),
 
             const SizedBox(height: 32),
-
-            // Action Buttons (Notifications, Admin, Sign Out)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  // Enable Notifications
-                  OutlinedButton.icon(
-                    onPressed: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Notification settings updated/requested.')),
-                      );
-                    },
-                    icon: const HushIcon(HushIcons.bell, size: 20, color: Colors.white),
-                    label: Text(l10n.enableNotifications, style: const TextStyle(color: Colors.white)),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: Colors.white24),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  
-                  // Admin panel if applicable
-                  if (isAdmin) ...[
-                    ElevatedButton.icon(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
-                      },
-                      icon: const HushIcon(HushIcons.shield, size: 20, color: Colors.white),
-                      label: Text(l10n.adminTitle, style: const TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.orangeAccent,
-                        padding: const EdgeInsets.symmetric(vertical: 14),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                  ],
-
-                  // Sign out
-                  OutlinedButton.icon(
-                    onPressed: () => auth.signOut(),
-                    icon: const HushIcon(HushIcons.logout, size: 20, color: HushColors.tierRed),
-                    label: Text(
-                      l10n.signOut,
-                      style: const TextStyle(color: HushColors.tierRed),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: HushColors.tierRed.withValues(alpha: 0.5)),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                  ),
-                ],
+            
+            // Footer Info
+            Center(
+              child: Text(
+                'HUSH v1.0.0',
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 12),
               ),
             ),
             

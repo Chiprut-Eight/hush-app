@@ -6,6 +6,7 @@ import '../models/hush_user.dart';
 import '../providers/auth_provider.dart';
 import '../services/social_service.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../widgets/hush_drawer.dart';
 import 'map_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
@@ -96,6 +97,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      drawer: const HushDrawer(),
       backgroundColor: HushColors.bgPrimary,
       appBar: AppBar(
         title: Text(l10n.followingTabTitle),

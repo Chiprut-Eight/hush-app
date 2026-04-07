@@ -33,6 +33,7 @@ dependencies:
   # Audio
   record: ^6.2.0
   just_audio: ^0.9.43
+  audio_session: ^0.1.21
 
   # State Management
   provider: ^6.1.4
@@ -67,6 +68,7 @@ flutter:
     - assets/
     - assets/images/
     - assets/sounds/
+    - assets/sounds/confetti.mp3
 
 flutter_native_splash:
   color: "#0D1320"

@@ -8,6 +8,7 @@ import '../widgets/secret_card.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../widgets/hush_drawer.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
@@ -93,6 +94,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.feedTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
