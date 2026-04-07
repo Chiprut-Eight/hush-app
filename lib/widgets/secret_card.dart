@@ -77,6 +77,45 @@ class _SecretCardState extends State<SecretCard> {
         });
       }
     });
+
+    // Check for existing group participation to persist through refreshes
+    if (widget.secret.isGroup && !widget.secret.unlockedBy.contains(currentUser?.uid)) {
+      _checkParticipation(currentUser?.uid);
+    }
+  }
+
+  Future<void> _checkParticipation(String? uid) async {
+    if (uid == null) return;
+    final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
+    final participating = await _secretService.isUserParticipating(widget.secret.id, uid, tier.timeWindowMinutes);
+    if (participating && mounted) {
+      _startLiveListeners(uid);
+    }
+  }
+
+  void _startLiveListeners(String uid) {
+    if (_attemptsSubscription != null) return;
+    
+    final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
+    
+    _attemptsSubscription = _secretService
+        .getUnlockAttemptsStream(widget.secret.id, tier.timeWindowMinutes)
+        .listen((count) {
+      if (mounted) setState(() => _activeParticipantsCount = count);
+    });
+
+    _secretDocSubscription = _secretService
+        .getSecretStream(widget.secret.id)
+        .listen((updatedSecret) {
+      if (mounted && updatedSecret.unlockedBy.contains(uid)) {
+        setState(() {
+          _revealed = true;
+          if (widget.secret.type == 'voice') _initAudio();
+        });
+        _attemptsSubscription?.cancel();
+        _secretDocSubscription?.cancel();
+      }
+    });
   }
 
   Future<void> _initAudio() async {
@@ -141,28 +180,7 @@ class _SecretCardState extends State<SecretCard> {
       );
       
       // Start Live Subscriptions if not already started
-      if (_attemptsSubscription == null) {
-        final tier = HushTiers.getTier(widget.secret.creatorTierLevel);
-        
-        _attemptsSubscription = _secretService
-            .getUnlockAttemptsStream(widget.secret.id, tier.timeWindowMinutes)
-            .listen((count) {
-          if (mounted) setState(() => _activeParticipantsCount = count);
-        });
-
-        _secretDocSubscription = _secretService
-            .getSecretStream(widget.secret.id)
-            .listen((updatedSecret) {
-          if (mounted && updatedSecret.unlockedBy.contains(currentUser.uid)) {
-            setState(() {
-              _revealed = true;
-              if (widget.secret.type == 'voice') _initAudio();
-            });
-            _attemptsSubscription?.cancel();
-            _secretDocSubscription?.cancel();
-          }
-        });
-      }
+      _startLiveListeners(currentUser.uid);
       
       if (result['success'] == true) {
         setState(() => _revealed = true);
@@ -716,7 +734,7 @@ class _SecretCardState extends State<SecretCard> {
                                       return;
                                     }
                                     setState(() {
-                                      _secretService.saveSecret(widget.secret.id);
+                                      _secretService.toggleSaveSecret(widget.secret.id);
                                     });
                                   }
                                 } : null,

@@ -258,13 +258,43 @@ class SecretService {
   }
 
   /// Save a secret to user's saved list
-  Future<void> saveSecret(String secretId) async {
+  /// Toggle save status of a secret (Save/Unsave)
+  Future<void> toggleSaveSecret(String secretId) async {
     final uid = _auth.currentUser?.uid;
     if (uid == null) return;
 
-    await _firestore.collection('users').doc(uid).update({
-      'savedSecretIds': FieldValue.arrayUnion([secretId]),
-    });
+    final userDoc = await _firestore.collection('users').doc(uid).get();
+    if (!userDoc.exists) return;
+
+    final List<dynamic> savedIds = userDoc.data()?['savedSecretIds'] ?? [];
+    if (savedIds.contains(secretId)) {
+      // Unsave
+      await _firestore.collection('users').doc(uid).update({
+        'savedSecretIds': FieldValue.arrayRemove([secretId]),
+      });
+    } else {
+      // Save
+      await _firestore.collection('users').doc(uid).update({
+        'savedSecretIds': FieldValue.arrayUnion([secretId]),
+      });
+    }
+  }
+
+  /// Check if the current user has a valid active participation in a group secret
+  Future<bool> isUserParticipating(String secretId, String userId, int windowMinutes) async {
+    final cutoff = DateTime.now().subtract(Duration(minutes: windowMinutes));
+    
+    final snapshot = await _firestore
+        .collection('secrets')
+        .doc(secretId)
+        .collection('unlockAttempts')
+        .doc(userId)
+        .get();
+        
+    if (!snapshot.exists) return false;
+    
+    final timestamp = (snapshot.data()?['timestamp'] as Timestamp?)?.toDate();
+    return timestamp != null && timestamp.isAfter(cutoff);
   }
 
   /// Unsave a secret
