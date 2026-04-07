@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hush_app/config/theme.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import 'package:provider/provider.dart';
+import '../providers/ui_provider.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 
@@ -448,6 +451,16 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
               ),
             const SizedBox(height: 16),
             Text(_status, style: const TextStyle(color: Colors.white54)),
+            const Divider(height: 64, color: Colors.white10),
+            ElevatedButton.icon(
+              onPressed: () => context.read<UIProvider>().triggerConfetti(),
+              icon: const Icon(Icons.celebration),
+              label: const Text('Test Confetti Animation'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber.shade800,
+                foregroundColor: Colors.white,
+              ),
+            ),
           ],
         ),
       ),

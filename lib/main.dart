@@ -7,6 +7,7 @@ import 'config/firebase_options.dart';
 import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/ui_provider.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
 import 'screens/onboarding_screen.dart';
@@ -34,6 +35,7 @@ class HushApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
+        ChangeNotifierProvider(create: (_) => UIProvider()),
       ],
       child: Consumer<LocaleProvider>(
         builder: (context, localeProvider, _) {

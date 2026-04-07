@@ -542,10 +542,17 @@ class _SecretCardState extends State<SecretCard> {
           borderRadius: BorderRadius.circular(20),
           border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
           boxShadow: [
+            // Inner bright glow
             BoxShadow(
-              color: _getTierColor().withValues(alpha: 0.1),
-              blurRadius: 15,
-              spreadRadius: 2,
+              color: _getTierColor().withValues(alpha: 0.25),
+              blurRadius: 12,
+              spreadRadius: 1,
+            ),
+            // Outer wide aura
+            BoxShadow(
+              color: _getTierColor().withValues(alpha: 0.15),
+              blurRadius: 25,
+              spreadRadius: 4,
             ),
           ],
         ),
