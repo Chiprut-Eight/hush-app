@@ -32,15 +32,16 @@ class UIProvider with ChangeNotifier {
       
       debugPrint('[AUDIO] AudioSession (playAndRecord) configured successfully');
 
-      // Preload the confetti sound
+      // Use asset:/// URI scheme which is sometimes more robust for certain Android extractors
       await _audioPlayer.setAudioSource(
-        AudioSource.asset('assets/sounds/confetti.mp3'),
+        AudioSource.uri(Uri.parse('asset:///assets/sounds/confetti.mp3')),
         preload: true,
       );
       _isAudioReady = true;
       debugPrint('[AUDIO] Confetti sound preloaded successfully');
     } catch (e, stackTrace) {
       debugPrint('[AUDIO] Error initializing audio: $e');
+      debugPrint('[AUDIO] TIP: If this is a "Source error", try replacing the .mp3 file with a .wav file.');
       debugPrint(stackTrace.toString());
     }
   }
