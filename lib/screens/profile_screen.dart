@@ -6,6 +6,8 @@ import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
+import 'package:hush_app/models/hush_user.dart';
+import '../services/social_service.dart';
 import '../widgets/secret_card.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
@@ -13,7 +15,8 @@ import 'package:flutter/cupertino.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final String? targetUserId;
+  const ProfileScreen({super.key, this.targetUserId});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -21,7 +24,9 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   final SecretService _secretService = SecretService();
+  final SocialService _socialService = SocialService();
   
+  HushUser? _targetUser;
   List<Secret> _mySecrets = [];
   List<Secret> _savedSecrets = [];
   bool _isLoading = true;
@@ -34,17 +39,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _fetchProfileData() async {
-    final user = context.read<AuthProvider>().hushUser;
-    final firebaseUser = context.read<AuthProvider>().firebaseUser;
+    final auth = context.read<AuthProvider>();
+    final currentUser = auth.hushUser;
     
-    if (user == null || firebaseUser == null) {
+    final String uidToFetch = widget.targetUserId ?? currentUser?.uid ?? '';
+    if (uidToFetch.isEmpty) {
       if (mounted) setState(() => _isLoading = false);
       return;
     }
 
     try {
+      // 1. Fetch User Data if it's someone else
+      HushUser? user;
+      if (widget.targetUserId == null || widget.targetUserId == currentUser?.uid) {
+        user = currentUser;
+      } else {
+        user = await _socialService.getUserById(uidToFetch);
+      }
+
+      if (user == null) {
+        if (mounted) setState(() => _isLoading = false);
+        return;
+      }
+
+      // 2. Fetch Secrets
       final results = await Future.wait([
-        _secretService.getUserSecrets(firebaseUser.uid),
+        _secretService.getUserSecrets(uidToFetch),
         _secretService.getSavedSecrets(user.savedSecretIds),
       ]);
       
@@ -54,6 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       
       if (mounted) {
         setState(() {
+          _targetUser = user;
           _mySecrets = myActive;
           _savedSecrets = savedActive;
           _isLoading = false;
@@ -65,26 +86,52 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _toggleFollow() async {
+    final auth = context.read<AuthProvider>();
+    final currentUser = auth.hushUser;
+    if (currentUser == null || _targetUser == null) return;
+
+    final isFollowing = currentUser.followingIds.contains(_targetUser!.uid);
+    try {
+      if (isFollowing) {
+        await _socialService.unfollowUser(currentUser.uid, _targetUser!.uid);
+      } else {
+        await _socialService.followUser(currentUser.uid, _targetUser!.uid);
+      }
+      await auth.refreshProfile();
+      await _fetchProfileData();
+    } catch (e) {
+      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final auth = context.watch<AuthProvider>();
-    final user = auth.hushUser;
+    final currentUser = auth.hushUser;
+    final user = _targetUser;
 
-    if (user == null) {
+    if (user == null && _isLoading) {
       return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
-    final isGhostMode = user.isGhostMode;
+    if (user == null) {
+      return Scaffold(appBar: AppBar(), body: const Center(child: Text('User not found')));
+    }
+
+    final bool isMe = widget.targetUserId == null || widget.targetUserId == currentUser?.uid;
+    final isFollowing = currentUser?.followingIds.contains(user.uid) ?? false;
 
     return Scaffold(
-      drawer: const HushDrawer(),
+      drawer: isMe ? const HushDrawer() : null,
       appBar: AppBar(
-        title: Text(l10n.profileTitle),
+        title: Text(isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser)),
+        leading: !isMe ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)) : null,
       ),
       body: RefreshIndicator(
         onRefresh: () async {
-          await auth.refreshProfile();
+          if (isMe) await auth.refreshProfile();
           await _fetchProfileData();
         },
         color: HushColors.textAccent,
@@ -92,8 +139,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: ListView(
           padding: const EdgeInsets.symmetric(vertical: 16),
           children: [
-            // Ghost Mode Banner
-            if (isGhostMode)
+            // Ghost Mode Banner (Only for Me)
+            if (isMe && user.isGhostMode)
               Container(
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                 padding: const EdgeInsets.all(16),
@@ -131,36 +178,60 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   CircleAvatar(
                     radius: 48,
                     backgroundColor: HushColors.bgCard,
-                    backgroundImage: auth.firebaseUser?.photoURL != null
-                        ? NetworkImage(auth.firebaseUser!.photoURL!)
+                    backgroundImage: user.photoURL != null && !user.useGenericPhoto
+                        ? NetworkImage(user.photoURL!)
                         : null,
-                    child: auth.firebaseUser?.photoURL == null
+                    child: (user.useGenericPhoto || user.photoURL == null)
                         ? const HushIcon(HushIcons.person, size: 48, color: HushColors.textMuted)
                         : null,
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    auth.firebaseUser?.displayName ?? 'Anonymous',
+                    user.displayName ?? 'Anonymous',
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
-                  const SizedBox(height: 4),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.2),
-                      borderRadius: BorderRadius.circular(12),
-                      border: Border.all(
-                        color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.5),
+                  const SizedBox(height: 8),
+                  
+                  // Wrap in row to handle Tier + Follow
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.5),
+                          ),
+                        ),
+                        child: Text(
+                          l10n.tier(user.tierLevel),
+                          style: TextStyle(
+                            color: HushColors.tierColor(user.tierLevel),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                    ),
-                    child: Text(
-                      '${user.tierLevel == 10 ? '' : ''} ${l10n.tier(user.tierLevel)}',
-                      style: TextStyle(
-                        color: HushColors.tierColor(user.tierLevel),
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
+                    ],
                   ),
+
+                  if (!isMe) ...[
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _toggleFollow,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isFollowing ? Colors.transparent : HushColors.textAccent,
+                        side: isFollowing ? const BorderSide(color: HushColors.textAccent) : null,
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                      ),
+                      child: Text(
+                        isFollowing ? l10n.unfollowBtn : l10n.followBtn,
+                        style: TextStyle(color: isFollowing ? HushColors.textAccent : Colors.white),
+                      ),
+                    ),
+                  ],
                 ],
               ),
             ),
@@ -173,41 +244,42 @@ class _ProfileScreenState extends State<ProfileScreen> {
               child: Column(
                 children: [
                   _buildStatRow(l10n.publishedSecrets, '${_mySecrets.length}'),
-                  _buildStatRow(l10n.savedSecrets, '${_savedSecrets.length}'),
-                  _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
                   _buildStatRow(l10n.followers, '${user.followerIds.length}'),
+                  _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
                 ],
               ),
             ),
 
             const SizedBox(height: 32),
             
-            // Tab Switcher for Secrets
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: CupertinoSlidingSegmentedControl<int>(
-                backgroundColor: HushColors.bgCard,
-                thumbColor: const Color(0xFF1E2638), // Slightly lighter than bgCard
-                groupValue: _activeTabIndex,
-                padding: const EdgeInsets.all(4),
-                children: {
-                  0: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(l10n.mySecretsTab, style: TextStyle(color: _activeTabIndex == 0 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
-                  ),
-                  1: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    child: Text(l10n.savedSecrets, style: TextStyle(color: _activeTabIndex == 1 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
-                  ),
-                },
-                onValueChanged: (int? value) {
-                  if (value != null) {
-                    setState(() => _activeTabIndex = value);
-                  }
-                },
+            // Tab Switcher for Secrets (Only show 'My Secrets' tab for public view)
+            if (isMe) ...[
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: CupertinoSlidingSegmentedControl<int>(
+                  backgroundColor: HushColors.bgCard,
+                  thumbColor: const Color(0xFF1E2638), // Slightly lighter than bgCard
+                  groupValue: _activeTabIndex,
+                  padding: const EdgeInsets.all(4),
+                  children: {
+                    0: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(l10n.mySecretsTab, style: TextStyle(color: _activeTabIndex == 0 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
+                    ),
+                    1: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      child: Text(l10n.savedSecrets, style: TextStyle(color: _activeTabIndex == 1 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
+                    ),
+                  },
+                  onValueChanged: (int? value) {
+                    if (value != null) {
+                      setState(() => _activeTabIndex = value);
+                    }
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 16),
+              const SizedBox(height: 16),
+            ],
             
             // Secrets List Builder
             if (_isLoading)
@@ -215,7 +287,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: EdgeInsets.all(32.0),
                 child: CircularProgressIndicator(color: HushColors.textAccent),
               ))
-            else ..._buildActiveTabList(l10n),
+            else ..._buildActiveTabList(l10n, isMe),
 
             const SizedBox(height: 32),
             
@@ -234,8 +306,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
   
-  List<Widget> _buildActiveTabList(AppLocalizations l10n) {
-    final list = _activeTabIndex == 0 ? _mySecrets : _savedSecrets;
+  List<Widget> _buildActiveTabList(AppLocalizations l10n, bool isMe) {
+    // For public view, always show published secrets
+    final list = (isMe && _activeTabIndex == 1) ? _savedSecrets : _mySecrets;
     
     if (list.isEmpty) {
       return [
@@ -245,12 +318,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 Icon(
-                  _activeTabIndex == 0 ? Icons.edit_note : Icons.bookmark_border,
+                  (isMe && _activeTabIndex == 1) ? Icons.bookmark_border : Icons.edit_note,
                   size: 48, color: HushColors.textSecondary.withValues(alpha: 0.5)
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  _activeTabIndex == 0 ? l10n.noPlantedSecrets : l10n.noSavedSecrets,
+                  (isMe && _activeTabIndex == 1) ? l10n.noSavedSecrets : l10n.noPlantedSecrets,
                   style: TextStyle(color: HushColors.textSecondary.withValues(alpha: 0.7)),
                 ),
               ],
@@ -262,7 +335,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     return list.map((secret) => SecretCard(
       secret: secret,
-      onDelete: _fetchProfileData,
+      onDelete: isMe ? _fetchProfileData : null,
     )).toList();
   }
 

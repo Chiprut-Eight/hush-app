@@ -8,6 +8,7 @@ import '../services/social_service.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
 import 'map_screen.dart';
+import 'profile_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
 class FollowingScreen extends StatefulWidget {
@@ -151,6 +152,12 @@ class _FollowingScreenState extends State<FollowingScreen> {
         final isFollowing = currentUserFollowing.contains(user.uid);
 
         return ListTile(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => ProfileScreen(targetUserId: user.uid)),
+            );
+          },
           leading: CircleAvatar(
             backgroundColor: HushColors.bgCard,
             backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
@@ -202,20 +209,36 @@ class _FollowingScreenState extends State<FollowingScreen> {
               padding: const EdgeInsets.all(16.0),
               child: Row(
                 children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor: HushColors.bgPrimary,
-                    backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
-                    child: (user.useGenericPhoto || user.photoURL == null) ? const Icon(Icons.person, color: Colors.white, size: 24) : null,
+                  GestureDetector(
+                    child: CircleAvatar(
+                      radius: 24,
+                      backgroundColor: HushColors.bgPrimary,
+                      backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
+                      child: (user.useGenericPhoto || user.photoURL == null) ? const Icon(Icons.person, color: Colors.white, size: 24) : null,
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfileScreen(targetUserId: user.uid)),
+                      );
+                    },
                   ),
                   const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
-                          '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser),
-                          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                        GestureDetector(
+                          child: Text(
+                            '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser),
+                            style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => ProfileScreen(targetUserId: user.uid)),
+                            );
+                          },
                         ),
                         const SizedBox(height: 4),
                         if (secret != null) ...[

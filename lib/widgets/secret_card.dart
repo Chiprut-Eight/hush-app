@@ -16,6 +16,7 @@ import '../utils/time_ago_util.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../config/constants.dart';
 import '../config/tiers.dart';
+import '../screens/profile_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 
 class SecretCard extends StatefulWidget {
@@ -572,53 +573,63 @@ class _SecretCardState extends State<SecretCard> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Expanded(
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: _getTierColor(),
-                                  child: CircleAvatar(
-                                    radius: 16,
-                                    backgroundColor: HushColors.bgPrimary,
-                                    backgroundImage: _currentSecret.creatorPhotoURL != null && _currentSecret.creatorPhotoURL != 'generic'
-                                        ? NetworkImage(_currentSecret.creatorPhotoURL!)
-                                        : null,
-                                    child: _currentSecret.creatorPhotoURL == 'generic' || _currentSecret.creatorPhotoURL == null
-                                        ? const HushIcon(HushIcons.person, size: 18, color: Colors.white54)
-                                        : null,
+                            child: GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => ProfileScreen(targetUserId: _currentSecret.creatorId),
                                   ),
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Flexible(
-                                            child: Text(
-                                              _currentSecret.creatorName ?? 'Anonymous',
-                                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                                              overflow: TextOverflow.ellipsis,
+                                );
+                              },
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: _getTierColor(),
+                                    child: CircleAvatar(
+                                      radius: 16,
+                                      backgroundColor: HushColors.bgPrimary,
+                                      backgroundImage: _currentSecret.creatorPhotoURL != null && _currentSecret.creatorPhotoURL != 'generic'
+                                          ? NetworkImage(_currentSecret.creatorPhotoURL!)
+                                          : null,
+                                      child: _currentSecret.creatorPhotoURL == 'generic' || _currentSecret.creatorPhotoURL == null
+                                          ? const HushIcon(HushIcons.person, size: 18, color: Colors.white54)
+                                          : null,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 10),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Flexible(
+                                              child: Text(
+                                                _currentSecret.creatorName ?? 'Anonymous',
+                                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
-                                          ),
-                                          const SizedBox(width: 6),
-                                          // --- TIME AGO ---
-                                          Text(
-                                            getTimeAgo(_currentSecret.createdAt, l10n),
-                                            style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
-                                          ),
-                                        ],
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        isGroup ? 'Group Secret' : 'Regular Secret',
-                                        style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
-                                      ),
-                                    ],
+                                            const SizedBox(width: 6),
+                                            // --- TIME AGO ---
+                                            Text(
+                                              getTimeAgo(_currentSecret.createdAt, l10n),
+                                              style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
+                                            ),
+                                          ],
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          isGroup ? 'Group Secret' : 'Regular Secret',
+                                          style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                           // Distance + delete button for owner

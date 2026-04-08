@@ -11,6 +11,13 @@ class FollowedUserFeedItem {
 
 class SocialService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  
+  /// Get user data by ID
+  Future<HushUser?> getUserById(String uid) async {
+    final doc = await _firestore.collection('users').doc(uid).get();
+    if (!doc.exists) return null;
+    return HushUser.fromFirestore(doc);
+  }
 
   /// Search users by name prefix (case insensitive indexed search)
   Future<List<HushUser>> searchUsers(String query) async {
