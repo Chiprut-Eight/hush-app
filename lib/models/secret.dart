@@ -21,6 +21,7 @@ class Secret {
   final int? minTierLevel;
   final int? requiredUsers;
   final int? timeWindowMinutes;
+  final int saveCount;
   final int reportCount;
   final bool isHidden;
   final DateTime createdAt;
@@ -42,6 +43,7 @@ class Secret {
     this.views = 0,
     this.likes = 0,
     this.dislikes = 0,
+    this.saveCount = 0,
     this.isGroup = false,
     this.minTierLevel,
     this.requiredUsers,
@@ -74,6 +76,7 @@ class Secret {
       views: data['views'] ?? data['listens'] ?? 0,
       likes: data['likes'] ?? 0,
       dislikes: data['dislikes'] ?? 0,
+      saveCount: data['saveCount'] ?? 0,
       isGroup: data['isGroup'] ?? false,
       minTierLevel: data['minTierLevel'],
       requiredUsers: data['requiredUsers'],
@@ -102,6 +105,7 @@ class Secret {
     'views': views,
     'likes': likes,
     'dislikes': dislikes,
+    'saveCount': saveCount,
     'isGroup': isGroup,
     'minTierLevel': minTierLevel,
     'requiredUsers': requiredUsers,

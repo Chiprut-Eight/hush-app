@@ -42,8 +42,27 @@ class SecretService {
 
     final secrets = snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
-        .where((secret) =>
-            secret.expiresAt.isAfter(now) && // Client-side expiration filter to allow primary sort by createdAt
+        .where((secret) {
+          // --- ADVANCED DELETION/VISIBILITY LOGIC ---
+          // If it's saved by anyone, it survives (it won't be filtered out)
+          if (secret.saveCount > 0) return true;
+
+          final age = now.difference(secret.createdAt);
+          
+          // Absolute deletion/hiding for non-saved content after 60 days
+          if (age.inDays >= 60) return false;
+          
+          // Rule: 0 views in 1 week -> Hide
+          if (age.inDays >= 7 && secret.views == 0) return false;
+          
+          // Rule: < 5 views in 3 weeks -> Hide
+          if (age.inDays >= 21 && secret.views < 5) return false;
+
+          // Legacy filter (optional, but we'll stick to the new rules)
+          // return secret.expiresAt.isAfter(now); 
+          return true;
+        })
+        .where((secret) => 
             GeoService.isWithinRadius(
               userLat, userLng,
               secret.lat, secret.lng,
@@ -272,10 +291,18 @@ class SecretService {
       await _firestore.collection('users').doc(uid).update({
         'savedSecretIds': FieldValue.arrayRemove([secretId]),
       });
+      // Decrement counter on the secret itself
+      await _secretsRef.doc(secretId).update({
+        'saveCount': FieldValue.increment(-1),
+      });
     } else {
       // Save
       await _firestore.collection('users').doc(uid).update({
         'savedSecretIds': FieldValue.arrayUnion([secretId]),
+      });
+      // Increment counter on the secret itself
+      await _secretsRef.doc(secretId).update({
+        'saveCount': FieldValue.increment(1),
       });
     }
   }
@@ -369,11 +396,18 @@ class SecretService {
     final now = DateTime.now();
     final snapshot = await _secretsRef
         .where('isHidden', isEqualTo: false)
-        .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
         .get();
 
     return snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
+        .where((secret) {
+          if (secret.saveCount > 0) return true;
+          final age = now.difference(secret.createdAt);
+          if (age.inDays >= 60) return false;
+          if (age.inDays >= 7 && secret.views == 0) return false;
+          if (age.inDays >= 21 && secret.views < 5) return false;
+          return true;
+        })
         .where((secret) =>
             GeoService.isWithinRadius(
               userLat, userLng,

@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
+import '../providers/locale_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class TutorialPopup extends StatefulWidget {
@@ -85,11 +86,10 @@ class _TutorialPopupState extends State<TutorialPopup> {
               SafeArea(
                 child: Column(
                   children: [
-                    // Header with Page Indicator (X/4)
+                    // Header with Page Indicator (X/4) and Language Toggle
                     Padding(
                       padding: const EdgeInsets.fromLTRB(20, 20, 20, 10),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
                             '${_currentPage + 1}/${pages.length}',
@@ -100,6 +100,48 @@ class _TutorialPopupState extends State<TutorialPopup> {
                               fontFamily: 'monospace',
                             ),
                           ),
+                          const Spacer(),
+                          // Language Toggle
+                          Consumer<LocaleProvider>(
+                            builder: (context, localeProv, _) {
+                              return GestureDetector(
+                                onTap: () => localeProv.toggleLocale(),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(color: Colors.white24),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'EN',
+                                        style: TextStyle(
+                                          color: !localeProv.isHebrew ? HushColors.textAccent : Colors.white54,
+                                          fontSize: 12,
+                                          fontWeight: !localeProv.isHebrew ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        height: 12,
+                                        child: VerticalDivider(color: Colors.white24, width: 10),
+                                      ),
+                                      Text(
+                                        'HE',
+                                        style: TextStyle(
+                                          color: localeProv.isHebrew ? HushColors.textAccent : Colors.white54,
+                                          fontSize: 12,
+                                          fontWeight: localeProv.isHebrew ? FontWeight.bold : FontWeight.normal,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                          const SizedBox(width: 8),
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.white54),
                             onPressed: () => Navigator.of(context).pop(),
