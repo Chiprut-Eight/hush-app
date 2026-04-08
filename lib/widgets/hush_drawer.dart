@@ -97,7 +97,7 @@ class HushDrawer extends StatelessWidget {
                     isDark ? 'Dark Mode' : 'Light Mode', 
                     style: TextStyle(color: isDark ? Colors.white : Colors.black87)
                   ),
-                  activeColor: HushColors.textAccent,
+                  activeThumbColor: HushColors.textAccent,
                   value: isDark,
                   onChanged: (bool value) => themeProvider.toggleTheme(),
                 ),
