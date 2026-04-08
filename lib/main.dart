@@ -7,6 +7,7 @@ import 'config/firebase_options.dart';
 import 'config/theme.dart';
 import 'providers/auth_provider.dart';
 import 'providers/locale_provider.dart';
+import 'providers/theme_provider.dart';
 import 'screens/onboarding_screen.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:async';
@@ -56,21 +57,24 @@ class _HushAppState extends State<HushApp> {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => LocaleProvider()),
         ChangeNotifierProvider(create: (_) => UIProvider()),
       ],
-      child: Consumer<LocaleProvider>(
-        builder: (context, localeProvider, _) {
+      child: Consumer2<LocaleProvider, ThemeProvider>(
+        builder: (context, localeProvider, themeProvider, _) {
           // Listen for confetti trigger from UIProvider
           _uiSubscription ??= context.read<UIProvider>().confettiStream.listen((_) {
             _confettiController.play();
           });
 
+          final currentTheme = themeProvider.isDarkMode ? hushDarkTheme() : hushLightTheme();
+
           return MaterialApp(
             title: 'HUSH',
             debugShowCheckedModeBanner: false,
-            theme: hushTheme(),
+            theme: currentTheme,
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
@@ -98,7 +102,7 @@ class _HushAppState extends State<HushApp> {
                         ),
                         Expanded(
                           child: Container(
-                            color: HushColors.bgPrimary, // Apply global background to screens
+                            color: currentTheme.scaffoldBackgroundColor, // Apply dynamic background
                             child: MediaQuery.removePadding(
                               context: context,
                               removeTop: true,

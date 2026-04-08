@@ -5,6 +5,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
+import '../providers/theme_provider.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/tutorial_popup.dart';
 import '../screens/admin_screen.dart';
@@ -17,18 +18,21 @@ class HushDrawer extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final auth = context.watch<AuthProvider>();
     final localeProvider = context.watch<LocaleProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
     final user = auth.hushUser;
+    final theme = Theme.of(context);
+    final isDark = themeProvider.isDarkMode;
 
     return Drawer(
-      backgroundColor: HushColors.bgPrimary,
+      backgroundColor: theme.scaffoldBackgroundColor,
       child: Column(
         children: [
           // Drawer Header
           DrawerHeader(
-            decoration: const BoxDecoration(
-              color: HushColors.bgCard,
+            decoration: BoxDecoration(
+              color: isDark ? HushColors.bgCard : HushColors.bgSecondaryLight,
               border: Border(
-                bottom: BorderSide(color: HushColors.borderSubtle, width: 1),
+                bottom: BorderSide(color: isDark ? HushColors.borderSubtle : HushColors.borderLightMode, width: 1),
               ),
             ),
             padding: EdgeInsets.zero,
@@ -39,7 +43,7 @@ class HushDrawer extends StatelessWidget {
                   top: 8,
                   right: 8,
                   child: IconButton(
-                    icon: const Icon(Icons.close, color: Colors.white70),
+                    icon: Icon(Icons.close, color: isDark ? Colors.white70 : Colors.black54),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),
@@ -61,10 +65,10 @@ class HushDrawer extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(height: 12),
-                      const Text(
+                      Text(
                         'HUSH',
                         style: TextStyle(
-                          color: Colors.white,
+                          color: isDark ? Colors.white : Colors.black87,
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                           letterSpacing: 2,
@@ -82,10 +86,26 @@ class HushDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
+                // Theme Toggle
+                SwitchListTile(
+                  secondary: HushIcon(
+                    isDark ? Icons.dark_mode : Icons.light_mode, 
+                    size: 22, 
+                    color: HushColors.textAccent
+                  ),
+                  title: Text(
+                    isDark ? 'Dark Mode' : 'Light Mode', 
+                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)
+                  ),
+                  activeColor: HushColors.textAccent,
+                  value: isDark,
+                  onChanged: (bool value) => themeProvider.toggleTheme(),
+                ),
+
                 // Language Toggle
                 ListTile(
                   leading: const HushIcon(HushIcons.feed, size: 22, color: HushColors.textAccent),
-                  title: Text(l10n.language, style: const TextStyle(color: Colors.white)),
+                  title: Text(l10n.language, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   trailing: Text(
                     localeProvider.isHebrew ? 'עברית' : 'English',
                     style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold),
@@ -95,8 +115,8 @@ class HushDrawer extends StatelessWidget {
 
                 // Settings
                 ListTile(
-                  leading: const HushIcon(HushIcons.bell, size: 22, color: Colors.white70),
-                  title: Text(l10n.settings, style: const TextStyle(color: Colors.white)),
+                  leading: HushIcon(HushIcons.bell, size: 22, color: isDark ? Colors.white70 : Colors.black54),
+                  title: Text(l10n.settings, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   onTap: () {
                     Navigator.pop(context);
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -105,32 +125,30 @@ class HushDrawer extends StatelessWidget {
                   },
                 ),
 
-                const Divider(color: Colors.white10, indent: 16, endIndent: 16),
+                Divider(color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
 
                 // Legal
                 ListTile(
-                  leading: const Icon(Icons.description_outlined, size: 22, color: Colors.white70),
-                  title: Text(l10n.termsOfService, style: const TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.description_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
+                  title: Text(l10n.termsOfService, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Open inner legal page or External URL
                   },
                 ),
                 ListTile(
-                  leading: const Icon(Icons.privacy_tip_outlined, size: 22, color: Colors.white70),
-                  title: Text(l10n.privacyPolicy, style: const TextStyle(color: Colors.white)),
+                  leading: Icon(Icons.privacy_tip_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
+                  title: Text(l10n.privacyPolicy, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   onTap: () {
                     Navigator.pop(context);
-                    // TODO: Open inner legal page or External URL
                   },
                 ),
 
                 // Admin (only for specific UID)
                 if (auth.firebaseUser?.uid == const String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2')) ...[
-                  const Divider(color: Colors.white10, indent: 16, endIndent: 16),
+                  Divider(color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
                   ListTile(
                     leading: const HushIcon(HushIcons.shield, size: 22, color: Colors.orangeAccent),
-                    title: Text(l10n.adminTitle, style: const TextStyle(color: Colors.white)),
+                    title: Text(l10n.adminTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Navigator.pop(context);
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
@@ -138,12 +156,12 @@ class HushDrawer extends StatelessWidget {
                   ),
                 ],
 
-                const Divider(color: Colors.white10, indent: 16, endIndent: 16),
+                Divider(color: isDark ? Colors.white10 : Colors.black12, indent: 16, endIndent: 16),
 
                 // What is Hushhh? (Tutorial)
                 ListTile(
                   leading: const Icon(Icons.info_outline, size: 22, color: HushColors.textAccent),
-                  title: Text(l10n.drawer_what_is_hush, style: const TextStyle(color: Colors.white)),
+                  title: Text(l10n.drawer_what_is_hush, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   onTap: () {
                     Navigator.pop(context); // Close drawer
                     showDialog(

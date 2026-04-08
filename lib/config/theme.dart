@@ -17,6 +17,14 @@ class HushColors {
   static const textMuted = Color(0xFF64748B);
   static const textAccent = Color(0xFF67E8F9);
 
+  // Light Mode Colors
+  static const bgPrimaryLight = Color(0xFFF8FAFC); // Slate 50
+  static const bgSecondaryLight = Color(0xFFF1F5F9); // Slate 100
+  static const bgCardLight = Color(0xFFFFFFFF);
+  static const textPrimaryLight = Color(0xFF0F172A); // Slate 900
+  static const textSecondaryLight = Color(0xFF475569); // Slate 600
+  static const borderLightMode = Color(0xFFE2E8F0); // Slate 200
+
   // Brand gradient colors
   static const gradientCyan = Color(0xFF67E8F9);
   static const gradientBlue = Color(0xFF4A9EFF);
@@ -25,7 +33,7 @@ class HushColors {
   static const gradientOrange = Color(0xFFF97316);
   static const gradientYellow = Color(0xFFFBBF24);
 
-  // Borders
+  // Borders (Dark Mode)
   static const borderSubtle = Color(0x0FFFFFFF); // rgba(255,255,255,0.06)
   static const borderLight = Color(0x1FFFFFFF); // rgba(255,255,255,0.12)
   static const borderAccent = Color(0x4D67E8F9); // rgba(103,232,249,0.3)
@@ -76,7 +84,7 @@ class HushColors {
   }
 }
 
-ThemeData hushTheme() {
+ThemeData hushDarkTheme() {
   final textTheme = GoogleFonts.interTextTheme().apply(
     bodyColor: HushColors.textPrimary,
     displayColor: HushColors.textPrimary,
@@ -148,6 +156,84 @@ ThemeData hushTheme() {
     ),
     dividerTheme: const DividerThemeData(
       color: HushColors.borderSubtle,
+      thickness: 1,
+    ),
+  );
+}
+
+ThemeData hushLightTheme() {
+  final textTheme = GoogleFonts.interTextTheme().apply(
+    bodyColor: HushColors.textPrimaryLight,
+    displayColor: HushColors.textPrimaryLight,
+  );
+
+  return ThemeData(
+    useMaterial3: true,
+    brightness: Brightness.light,
+    scaffoldBackgroundColor: HushColors.bgPrimaryLight,
+    colorScheme: const ColorScheme.light(
+      surface: HushColors.bgPrimaryLight,
+      primary: HushColors.textAccent,
+      secondary: HushColors.gradientPurple,
+      onSurface: HushColors.textPrimaryLight,
+      onPrimary: Colors.white,
+    ),
+    textTheme: textTheme,
+    appBarTheme: AppBarTheme(
+      backgroundColor: HushColors.bgPrimaryLight,
+      foregroundColor: HushColors.textPrimaryLight,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: GoogleFonts.inter(
+        fontSize: 20,
+        fontWeight: FontWeight.w600,
+        color: HushColors.textPrimaryLight,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      color: HushColors.bgCardLight,
+      elevation: 2,
+      shadowColor: Colors.black.withValues(alpha: 0.1),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: const BorderSide(color: HushColors.borderLightMode),
+      ),
+    ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: HushColors.textAccent,
+      unselectedItemColor: HushColors.textMuted,
+      type: BottomNavigationBarType.fixed,
+      elevation: 8,
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: HushColors.textAccent,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+        textStyle: GoogleFonts.inter(fontSize: 16, fontWeight: FontWeight.w600),
+      ),
+    ),
+    inputDecorationTheme: InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: HushColors.borderLightMode),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: HushColors.borderLightMode),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(12),
+        borderSide: const BorderSide(color: HushColors.textAccent),
+      ),
+      hintStyle: const TextStyle(color: HushColors.textMuted),
+    ),
+    dividerTheme: const DividerThemeData(
+      color: HushColors.borderLightMode,
       thickness: 1,
     ),
   );
