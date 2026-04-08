@@ -116,4 +116,23 @@ class Secret {
     'createdAt': Timestamp.fromDate(createdAt),
     'expiresAt': Timestamp.fromDate(expiresAt),
   };
+
+  /// Centralized logic to determine if a secret should be visible (The Decay & Immunity mechanism)
+  static bool isSurvivor(Secret secret, DateTime now) {
+    // Immunity: If it's saved by anyone (including creator), it survives the decay
+    if (secret.saveCount > 0) return true;
+
+    final age = now.difference(secret.createdAt);
+
+    // Rule 1: Absolute deletion/hiding for non-saved content after 60 days
+    if (age.inDays >= 60) return false;
+
+    // Rule 2: 0 views (listens) in 1 week -> Hide
+    if (age.inDays >= 7 && secret.views == 0) return false;
+
+    // Rule 3: < 5 views in 3 weeks -> Hide
+    if (age.inDays >= 21 && secret.views < 5) return false;
+
+    return true;
+  }
 }

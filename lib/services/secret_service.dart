@@ -42,26 +42,7 @@ class SecretService {
 
     final secrets = snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
-        .where((secret) {
-          // --- ADVANCED DELETION/VISIBILITY LOGIC ---
-          // If it's saved by anyone, it survives (it won't be filtered out)
-          if (secret.saveCount > 0) return true;
-
-          final age = now.difference(secret.createdAt);
-          
-          // Absolute deletion/hiding for non-saved content after 60 days
-          if (age.inDays >= 60) return false;
-          
-          // Rule: 0 views in 1 week -> Hide
-          if (age.inDays >= 7 && secret.views == 0) return false;
-          
-          // Rule: < 5 views in 3 weeks -> Hide
-          if (age.inDays >= 21 && secret.views < 5) return false;
-
-          // Legacy filter (optional, but we'll stick to the new rules)
-          // return secret.expiresAt.isAfter(now); 
-          return true;
-        })
+        .where((secret) => Secret.isSurvivor(secret, now))
         .where((secret) => 
             GeoService.isWithinRadius(
               userLat, userLng,
@@ -400,14 +381,7 @@ class SecretService {
 
     return snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
-        .where((secret) {
-          if (secret.saveCount > 0) return true;
-          final age = now.difference(secret.createdAt);
-          if (age.inDays >= 60) return false;
-          if (age.inDays >= 7 && secret.views == 0) return false;
-          if (age.inDays >= 21 && secret.views < 5) return false;
-          return true;
-        })
+        .where((secret) => Secret.isSurvivor(secret, now))
         .where((secret) =>
             GeoService.isWithinRadius(
               userLat, userLng,

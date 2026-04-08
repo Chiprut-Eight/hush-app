@@ -49,8 +49,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ]);
       
       final now = DateTime.now();
-      final myActive = results[0].where((s) => s.expiresAt.isAfter(now)).toList();
-      final savedActive = results[1].where((s) => s.expiresAt.isAfter(now)).toList();
+      final myActive = results[0].where((s) => Secret.isSurvivor(s, now)).toList();
+      final savedActive = results[1].where((s) => Secret.isSurvivor(s, now)).toList();
       
       if (mounted) {
         setState(() {
