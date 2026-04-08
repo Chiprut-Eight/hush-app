@@ -5,24 +5,24 @@
   "loginSubtitle": "The geo-acoustic social network",
   "signInWithGoogle": "Sign in with Google",
   "signInWithApple": "Sign in with Apple",
-  "feedTitle": "Nearby Secrets",
-  "feedEmpty": "No secrets nearby... Walk around to discover hidden whispers",
-  "feedLoading": "Listening for secrets...",
+  "feedTitle": "Nearby Hushhh",
+  "feedEmpty": "No Hushhh nearby... Walk around to discover hidden whispers",
+  "feedLoading": "Listening for Hushhh...",
   "mapTitle": "Echo Map",
-  "createTitle": "Drop a Secret",
+  "createTitle": "Drop a Hushhh",
   "profileTitle": "Profile",
   "adminTitle": "Admin Panel",
-  "secretPlaceholder": "What's on your mind? Keep it secret... (max 140 chars)",
-  "recordVoice": "Record Voice Secret",
+  "secretPlaceholder": "What's on your mind? Keep it Hushhh... (max 140 chars)",
+  "recordVoice": "Record Voice Hushhh",
   "stopRecording": "Stop Recording",
-  "publishSecret": "Drop Secret",
-  "hideSecretAction": "Hide Secret",
-  "regularSecret": "Regular Secret",
+  "publishSecret": "Drop Hushhh",
+  "hideSecretAction": "Hide Hushhh",
+  "regularSecret": "Regular Hushhh",
   "regularSecretDesc": "Visible to everyone nearby immediately.",
-  "groupSecret": "Group Secret",
+  "groupSecret": "Group Hushhh",
   "groupSecretDesc": "Requires multiple people nearby to unlock.",
   "selectTier": "Select Minimum Tier",
-  "secretType": "Secret Type",
+  "secretType": "Hushhh Type",
   "peopleRequired": "People Required",
   "timeWindow": "Time Window: {minutes} minutes",
   "@timeWindow": {
@@ -32,7 +32,7 @@
   },
   "textTab": "Text",
   "voiceTab": "Voice",
-  "secretReady": "Secret Ready",
+  "secretReady": "Hushhh Ready",
   "tapToRecord": "Tap to Record",
   "recordingLabel": "Recording...",
   "audioPreview": "Audio Preview",
@@ -43,7 +43,7 @@
   "saved": "Saved",
   "report": "Report",
   "reveal": "Get closer to reveal...",
-  "revealed": "Secret Revealed!",
+  "revealed": "Hushhh Revealed!",
   "metersAway": "{distance}m away",
   "@metersAway": {
     "placeholders": {
@@ -52,14 +52,14 @@
   },
   "outOfRange": "Out of range",
   "contentWarning": "Content Warning",
-  "downvotedWarning": "This secret has been heavily downvoted.",
+  "downvotedWarning": "This Hushhh has been heavily downvoted.",
   "viewAnyway": "View Anyway",
-  "saveLimitWarning": "You can save up to 50 secrets combined.",
-  "publishedSecrets": "Published Secrets",
-  "savedSecrets": "Saved Secrets",
-  "mySecretsTab": "My Secrets",
-  "noPlantedSecrets": "You haven't planted any secrets yet.",
-  "noSavedSecrets": "No saved secrets found.",
+  "saveLimitWarning": "You can save up to 50 Hushhh combined.",
+  "publishedSecrets": "Published Hushhh",
+  "savedSecrets": "Saved Hushhh",
+  "mySecretsTab": "My Hushhh",
+  "noPlantedSecrets": "You haven't planted any Hushhh yet.",
+  "noSavedSecrets": "No saved Hushhh found.",
   "enableNotifications": "Enable Notifications",
   "distinguished": "Distinguished",
   "tier": "Tier {level}",
@@ -71,7 +71,7 @@
   "cloutLevel": "Clout Level",
   "signOut": "Sign Out",
   "language": "Language",
-  "locationPermissionDenied": "Location permission denied. HUSH needs your location to discover nearby secrets.",
+  "locationPermissionDenied": "Location permission denied. HUSH needs your location to discover nearby Hushhh.",
   "locationUnavailable": "Location unavailable",
   "enableLocation": "Enable Location",
   "retry": "Retry",
@@ -84,7 +84,7 @@
   "ghostMode": "Ghost Mode",
   "ghostModeActive": "Ghost Mode Active",
   "ghostModeRestricted": "Your account features are restricted.",
-  "cannotPlantGhost": "You cannot plant secrets right now.",
+  "cannotPlantGhost": "You cannot plant Hushhh right now.",
   "noReports": "No reports pending",
   "noAppeals": "No appeals pending",
   "maxChars": "{count}/140",
@@ -124,14 +124,14 @@
   "notFollowingAnyone": "You are not following anyone yet.",
   "followBtn": "Follow",
   "unfollowBtn": "Unfollow",
-  "publishedSecretAgo": "Published a secret {hours}h ago",
+  "publishedSecretAgo": "Published a Hushhh {hours}h ago",
   "@publishedSecretAgo": {
     "placeholders": {
       "hours": { "type": "int" }
     }
   },
   "tapToViewMap": "Tap to view on map",
-  "noActiveSecrets": "No active secrets",
+  "noActiveSecrets": "No active Hushhh",
   "anonymousUser": "Anonymous",
   "followers": "Followers",
 
@@ -150,7 +150,7 @@
   "timeAgoYears": "{count}y ago",
   "@timeAgoYears": { "placeholders": { "count": { "type": "int" } } },
 
-  "reportTitle": "Report Secret",
+  "reportTitle": "Report Hushhh",
   "reportReason": "Why are you reporting this?",
   "reportReasonHate": "Hate speech",
   "reportReasonSpam": "Spam",
@@ -165,8 +165,8 @@
   "appealSuccess": "Appeal submitted. We'll review your case.",
   "appealSubmit": "Submit Appeal",
 
-  "deleteSecretTitle": "Delete Secret",
-  "deleteSecretConfirm": "Are you sure you want to delete this secret? This cannot be undone.",
+  "deleteSecretTitle": "Delete Hushhh",
+  "deleteSecretConfirm": "Are you sure you want to delete this Hushhh? This cannot be undone.",
 
   "comments": "Comments",
   "addComment": "Add a comment...",
@@ -174,14 +174,14 @@
   "deleteComment": "Delete Comment",
   "commentPlaceholder": "Write a comment...",
 
-  "directionToSecret": "Direction to secret",
-  "groupUnlockProgress": "Wait! {count} more people are needed to reveal this secret.",
+  "directionToSecret": "Direction to Hushhh",
+  "groupUnlockProgress": "Wait! {count} more people are needed to reveal this Hushhh.",
   "@groupUnlockProgress": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "groupUnlockSuccess": "The group has unified. Secret revealed!",
+  "groupUnlockSuccess": "The group has unified. Hushhh revealed!",
   "maintenanceTitle": "Maintenance",
   "testConfetti": "Test Confetti Animation",
   "migrateUsers": "Migrate Users (Batch)",
@@ -199,5 +199,15 @@
     "placeholders": {
       "error": { "type": "String" }
     }
-  }
+  },
+  "tutorial_p1_title": "Welcome to Hushhh",
+  "tutorial_p1_content": "We are a geographic social network where physical space becomes your Hushhh board.\n• How does it work? Hushhh is like a secret - you 'plant a Hushhh' (voice or text message) at the exact point where you are.\n• The world is your feed: The feed is dynamic and changes according to your location - it will always show what is happening around you right now.",
+  "tutorial_p2_title": "The Reveal of the Hushhh",
+  "tutorial_p2_content": "Hushhh in the feed appear in a 'blurred' state as long as you are far away.\n• Hushhh becomes available for opening only when you are physically within 15 meters.\n• Once you reach the range, the blur will disappear and you can read the text or press Play and listen.\n• On the map, you can look for a pulsating frequency to see interesting activity within a 200m radius.",
+  "tutorial_p3_title": "Regular or Group Hushhh?",
+  "tutorial_p3_content": "Not every Hushhh is for one person. You set the rules:\n• Regular Hushhh is open to anyone who arrives at the point.\n• Group Hushhh = Group challenge! It can only be opened if a certain number of users (minimum 3) are at the point simultaneously in a defined time window.\n• Level Up: Success in activating group Hushhh increases your status - the halo color around the Hushhh changes, identifying you as an interesting creator.",
+  "tutorial_p4_title": "Where is my content?",
+  "tutorial_p4_content": "Content in Hushhh is temporary and live, creating urgency and authenticity:\n• Deletion mechanism: Hushhh that haven't been viewed or are older than 60 days are deleted to keep the map clean.\n• Save button: Found a Hushhh you must keep? You can save up to 50 Hushhh in your profile, and they will never be deleted.\n• Quality above all: Your profile displays distinguished Hushhh you've published - those that survived the test of time.\nMissed something? Don't worry. You can always return to the full explanation through the settings menu.\nReady to plant your first Hushhh?",
+  "action_understand": "I Got It",
+  "drawer_what_is_hush": "What is Hushhh?"
 }

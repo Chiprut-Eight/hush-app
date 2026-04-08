@@ -8,6 +8,8 @@ import '../widgets/hush_icon_widget.dart';
 import '../providers/auth_provider.dart';
 import '../providers/ui_provider.dart';
 
+import '../widgets/tutorial_popup.dart';
+
 import 'feed_screen.dart';
 import 'map_screen.dart';
 import 'create_screen.dart';
@@ -25,6 +27,7 @@ class AppShell extends StatefulWidget {
 class _AppShellState extends State<AppShell> {
   int _currentIndex = 0;
   int? _lastTier; // Tracks the user's tier to detect level-up events
+  bool _tutorialShownThisSession = false; // Prevents tutorial from popping up repeatedly
 
   final List<Widget> _screens = const [
     FeedScreen(),
@@ -53,6 +56,18 @@ class _AppShellState extends State<AppShell> {
             });
           }
           _lastTier = currentTier;
+        }
+
+        // --- TUTORIAL TRIGGER LOGIC ---
+        if (hushUser != null && !hushUser.hasSeenTutorial && !_tutorialShownThisSession) {
+          _tutorialShownThisSession = true;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            showDialog(
+              context: context,
+              barrierDismissible: true, // Allow dismissal via clicking outside if they want
+              builder: (_) => const TutorialPopup(),
+            );
+          });
         }
 
         return PopScope(

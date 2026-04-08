@@ -5,24 +5,24 @@
   "loginSubtitle": "הרשת החברתית הגיאו-אקוסטית",
   "signInWithGoogle": "התחברות עם Google",
   "signInWithApple": "התחברות עם Apple",
-  "feedTitle": "סודות בקרבת מקום",
-  "feedEmpty": "אין סודות בסביבה... הסתובב כדי לגלות לחישות נסתרות",
-  "feedLoading": "מאזין לסודות...",
+  "feedTitle": "Hushhh בקרבת מקום",
+  "feedEmpty": "אין Hushhh בסביבה... הסתובב כדי לגלות לחישות נסתרות",
+  "feedLoading": "מאזין ל-Hushhh...",
   "mapTitle": "מפת הד",
-  "createTitle": "הטמן סוד",
+  "createTitle": "הטמן Hushhh",
   "profileTitle": "פרופיל",
   "adminTitle": "פאנל ניהול",
-  "secretPlaceholder": "מה עובר לך בראש? שמור את זה בסוד... (עד 140 תווים)",
-  "recordVoice": "הקלט סוד קולי",
+  "secretPlaceholder": "מה עובר לך בראש? שמור את זה ב-Hushhh... (עד 140 תווים)",
+  "recordVoice": "הקלט Hushhh קולי",
   "stopRecording": "עצור הקלטה",
-  "publishSecret": "הטמן סוד",
-  "hideSecretAction": "הטמן סוד",
-  "regularSecret": "סוד רגיל",
+  "publishSecret": "הטמן Hushhh",
+  "hideSecretAction": "הטמן Hushhh",
+  "regularSecret": "Hushhh רגיל",
   "regularSecretDesc": "גלוי לכולם בקרבת מקום באופן מיידי.",
-  "groupSecret": "סוד קבוצתי",
+  "groupSecret": "Hushhh קבוצתי",
   "groupSecretDesc": "דורש מספר אנשים בקרבת מקום כדי להיפתח.",
   "selectTier": "בחר דרגה מינימלית",
-  "secretType": "סוג הסוד",
+  "secretType": "סוג ה-Hushhh",
   "peopleRequired": "כמות אנשים נדרשת",
   "timeWindow": "חלון זמן: {minutes} דקות",
   "@timeWindow": {
@@ -32,7 +32,7 @@
   },
   "textTab": "טקסט",
   "voiceTab": "קול",
-  "secretReady": "הסוד מוכן",
+  "secretReady": "ה-Hushhh מוכן",
   "tapToRecord": "הקש כדי להקליט",
   "recordingLabel": "מקליט...",
   "audioPreview": "תצוגה מקדימה קולית",
@@ -43,7 +43,7 @@
   "saved": "נשמר",
   "report": "דווח",
   "reveal": "התקרב כדי לחשוף...",
-  "revealed": "הסוד נחשף!",
+  "revealed": "ה-Hushhh נחשף!",
   "metersAway": "{distance} מטר",
   "@metersAway": {
     "placeholders": {
@@ -52,14 +52,14 @@
   },
   "outOfRange": "מחוץ לטווח",
   "contentWarning": "אזהרת תוכן",
-  "downvotedWarning": "סוד זה קיבל הרבה דיסלייקים.",
+  "downvotedWarning": "Hushhh זה קיבל הרבה דיסלייקים.",
   "viewAnyway": "הצג בכל זאת",
-  "saveLimitWarning": "ניתן לשמור עד 50 סודות שלך או של משתמשים אחרים",
-  "publishedSecrets": "סודות שפורסמו",
-  "savedSecrets": "סודות שנשמרו",
-  "mySecretsTab": "הסודות שלי",
-  "noPlantedSecrets": "טרם הטמנת סודות.",
-  "noSavedSecrets": "לא נמצאו סודות שמורים.",
+  "saveLimitWarning": "ניתן לשמור עד 50 Hushhh שלך או של משתמשים אחרים",
+  "publishedSecrets": "Hushhh שפורסמו",
+  "savedSecrets": "Hushhh שנשמרו",
+  "mySecretsTab": "ה-Hushhh שלי",
+  "noPlantedSecrets": "טרם הטמנת Hushhh.",
+  "noSavedSecrets": "לא נמצאו Hushhh שמורים.",
   "enableNotifications": "אפשר התראות",
   "distinguished": "מצטיינים",
   "tier": "דרגה {level}",
@@ -71,7 +71,7 @@
   "cloutLevel": "רמת השפעה",
   "signOut": "התנתקות",
   "language": "שפה",
-  "locationPermissionDenied": "הרשאת מיקום נדחתה. HUSH צריך את המיקום שלך כדי לגלות סודות בסביבה.",
+  "locationPermissionDenied": "הרשאת מיקום נדחתה. HUSH צריך את המיקום שלך כדי לגלות Hushhh בסביבה.",
   "locationUnavailable": "מיקום לא זמין",
   "enableLocation": "אפשר מיקום",
   "retry": "נסה שוב",
@@ -84,7 +84,7 @@
   "ghostMode": "מצב רוח רפאים",
   "ghostModeActive": "מצב רוח רפאים פעיל",
   "ghostModeRestricted": "פעולות החשבון שלך מוגבלות.",
-  "cannotPlantGhost": "אינך יכול להטמין סודות כרגע.",
+  "cannotPlantGhost": "אינך יכול להטמין Hushhh כרגע.",
   "noReports": "אין דיווחים ממתינים",
   "noAppeals": "אין ערעורים ממתינים",
   "maxChars": "{count}/140",
@@ -124,14 +124,14 @@
   "notFollowingAnyone": "אינך עוקב אחרי אף אחד כרגע.",
   "followBtn": "עקוב",
   "unfollowBtn": "הסר עוקב",
-  "publishedSecretAgo": "פורסם סוד לפני {hours} שעות",
+  "publishedSecretAgo": "פורסם Hushhh לפני {hours} שעות",
   "@publishedSecretAgo": {
     "placeholders": {
       "hours": { "type": "int" }
     }
   },
   "tapToViewMap": "לחץ לצפייה במפה",
-  "noActiveSecrets": "אין סודות פעילים",
+  "noActiveSecrets": "אין Hushhh פעילים",
   "anonymousUser": "אנונימי",
   "followers": "עוקבים",
 
@@ -150,7 +150,7 @@
   "timeAgoYears": "לפני {count} שנ׳",
   "@timeAgoYears": { "placeholders": { "count": { "type": "int" } } },
 
-  "reportTitle": "דיווח על סוד",
+  "reportTitle": "דיווח על Hushhh",
   "reportReason": "מדוע את/ה מדווח/ת?",
   "reportReasonHate": "שיח שנאה",
   "reportReasonSpam": "ספאם",
@@ -165,8 +165,8 @@
   "appealSuccess": "הערעור נשלח. נבדוק את המקרה שלך.",
   "appealSubmit": "שלח ערעור",
 
-  "deleteSecretTitle": "מחיקת סוד",
-  "deleteSecretConfirm": "האם אתה בטוח שברצונך למחוק את הסוד? לא ניתן לבטל פעולה זו.",
+  "deleteSecretTitle": "מחיקת Hushhh",
+  "deleteSecretConfirm": "האם אתה בטוח שברצונך למחוק את ה-Hushhh? לא ניתן לבטל פעולה זו.",
 
   "comments": "תגובות",
   "addComment": "הוסף תגובה...",
@@ -174,14 +174,14 @@
   "deleteComment": "מחק תגובה",
   "commentPlaceholder": "כתוב תגובה...",
 
-  "directionToSecret": "כיוון אל הסוד",
-  "groupUnlockProgress": "רגע! דרושים עוד {count} אנשים כדי לחשוף את הסוד הזה.",
+  "directionToSecret": "כיוון אל ה-Hushhh",
+  "groupUnlockProgress": "רגע! דרושים עוד {count} אנשים כדי לחשוף את ה-Hushhh הזה.",
   "@groupUnlockProgress": {
     "placeholders": {
       "count": { "type": "int" }
     }
   },
-  "groupUnlockSuccess": "הקבוצה התאחדה. הסוד נחשף!",
+  "groupUnlockSuccess": "הקבוצה התאחדה. ה-Hushhh נחשף!",
   "maintenanceTitle": "תחזוקה",
   "testConfetti": "בדיקת אנימציית קונפטי",
   "migrateUsers": "עדכון משתמשים (קבוצתי)",
@@ -199,5 +199,15 @@
     "placeholders": {
       "error": { "type": "String" }
     }
-  }
+  },
+  "tutorial_p1_title": "ברוכים הבאים ל-Hushhh",
+  "tutorial_p1_content": "אנחנו רשת חברתית גאוגרפית שבה המרחב הפיזי הופך ללוח ה-Hushhh שלכם.\n• איך זה עובד? Hushhh הוא כמו סוד - אתם 'מטמינים Hushhh' (הודעות קוליות או טקסט) בנקודה המדויקת שבה אתם נמצאים.\n• העולם הוא הפיד שלכם: הפיד דינמי ומשתנה לפי המיקום שלכם - הוא תמיד יציג את מה שקורה סביבכם ברגע זה.",
+  "tutorial_p2_title": "החשיפה של ה-Hushhh",
+  "tutorial_p2_content": "ה-Hushhh בפיד מופיעים במצב 'מטושטש' כל עוד אתם רחוקים.\n• Hushhh הופך לזמין לפתיחה רק כשאתם נמצאים פיזית במרחק של עד 15 מטרים ממנו.\n• ברגע שתגיעו לטווח, הטשטוש ייעלם ותוכלו לקרוא את הטקסט או ללחוץ Play ולהאזין.\n• על המפה תוכלו לחפש תדר פועם כדי לדעת איפה יש פעילות מעניינת ברדיוס של 200 מטר סביבכם.",
+  "tutorial_p3_title": "Hushhh רגיל או קבוצתי?",
+  "tutorial_p3_content": "לא כל Hushhh נועד לאדם אחד. אתם קובעים את החוקים:\n• Hushhh רגיל פתוח לכל מי שמגיע לנקודה.\n• Hushhh קבוצתי = אתגר קבוצתי! ניתן לפתוח אותו רק אם כמות משתמשים מסוימת (החל מ-3) נמצאת בנקודה בו-זמנית בחלון זמן מוגדר.\n• תעלו רמה: הצלחה בהפעלת Hushhh קבוצתיים מעלה את הסטטוס שלכם - צבע ההילה סביב ה-Hushhh משתנה ומשתמשים אחרים יזהו אתכם כיוצרים מעניינים.",
+  "tutorial_p4_title": "איפה התוכן שלי?",
+  "tutorial_p4_content": "התוכן ב-Hushhh הוא זמני וחי, מה שיוצר דחיפות ואותנטיות:\n• מנגנון המחיקה: Hushhh שלא נפתחו לצפייה או כאלו שעברו 60 יום נמחקים מהעולם כדי לשמור על המפה נקייה.\n• כפתור השמירה: מצאתם Hushhh שאתם חייבים לשמור? תוכלו לשמור עד 50 Hushhh (שלכם או של אחרים) בפרופיל שלכם, והם לא יימחקו לעולם.\n• איכות מעל הכל: הפרופיל שלכם מציג את Hushhh מובחרים שפרסמתם - אלו ששרדו את מבחן הזמן והעניין של הקהילה.\nפספסתם משהו? אל דאגה. תמיד תוכלו לחזור להסבר המלא דרך תפריט ההגדרות באפליקציה.\nמוכנים להטמין את ה-Hushhh הראשון שלכם?",
+  "action_understand": "הבנתי",
+  "drawer_what_is_hush": "מה זה Hushhh?"
 }

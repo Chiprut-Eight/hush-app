@@ -24,19 +24,19 @@ class AppLocalizationsHe extends AppLocalizations {
   String get signInWithApple => 'התחברות עם Apple';
 
   @override
-  String get feedTitle => 'סודות בקרבת מקום';
+  String get feedTitle => 'Hushhh בקרבת מקום';
 
   @override
-  String get feedEmpty => 'אין סודות בסביבה... הסתובב כדי לגלות לחישות נסתרות';
+  String get feedEmpty => 'אין Hushhh בסביבה... הסתובב כדי לגלות לחישות נסתרות';
 
   @override
-  String get feedLoading => 'מאזין לסודות...';
+  String get feedLoading => 'מאזין ל-Hushhh...';
 
   @override
   String get mapTitle => 'מפת הד';
 
   @override
-  String get createTitle => 'הטמן סוד';
+  String get createTitle => 'הטמן Hushhh';
 
   @override
   String get profileTitle => 'פרופיל';
@@ -46,28 +46,28 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get secretPlaceholder =>
-      'מה עובר לך בראש? שמור את זה בסוד... (עד 140 תווים)';
+      'מה עובר לך בראש? שמור את זה ב-Hushhh... (עד 140 תווים)';
 
   @override
-  String get recordVoice => 'הקלט סוד קולי';
+  String get recordVoice => 'הקלט Hushhh קולי';
 
   @override
   String get stopRecording => 'עצור הקלטה';
 
   @override
-  String get publishSecret => 'הטמן סוד';
+  String get publishSecret => 'הטמן Hushhh';
 
   @override
-  String get hideSecretAction => 'הטמן סוד';
+  String get hideSecretAction => 'הטמן Hushhh';
 
   @override
-  String get regularSecret => 'סוד רגיל';
+  String get regularSecret => 'Hushhh רגיל';
 
   @override
   String get regularSecretDesc => 'גלוי לכולם בקרבת מקום באופן מיידי.';
 
   @override
-  String get groupSecret => 'סוד קבוצתי';
+  String get groupSecret => 'Hushhh קבוצתי';
 
   @override
   String get groupSecretDesc => 'דורש מספר אנשים בקרבת מקום כדי להיפתח.';
@@ -76,7 +76,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get selectTier => 'בחר דרגה מינימלית';
 
   @override
-  String get secretType => 'סוג הסוד';
+  String get secretType => 'סוג ה-Hushhh';
 
   @override
   String get peopleRequired => 'כמות אנשים נדרשת';
@@ -93,7 +93,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get voiceTab => 'קול';
 
   @override
-  String get secretReady => 'הסוד מוכן';
+  String get secretReady => 'ה-Hushhh מוכן';
 
   @override
   String get tapToRecord => 'הקש כדי להקליט';
@@ -126,7 +126,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get reveal => 'התקרב כדי לחשוף...';
 
   @override
-  String get revealed => 'הסוד נחשף!';
+  String get revealed => 'ה-Hushhh נחשף!';
 
   @override
   String metersAway(int distance) {
@@ -140,29 +140,29 @@ class AppLocalizationsHe extends AppLocalizations {
   String get contentWarning => 'אזהרת תוכן';
 
   @override
-  String get downvotedWarning => 'סוד זה קיבל הרבה דיסלייקים.';
+  String get downvotedWarning => 'Hushhh זה קיבל הרבה דיסלייקים.';
 
   @override
   String get viewAnyway => 'הצג בכל זאת';
 
   @override
   String get saveLimitWarning =>
-      'ניתן לשמור עד 50 סודות שלך או של משתמשים אחרים';
+      'ניתן לשמור עד 50 Hushhh שלך או של משתמשים אחרים';
 
   @override
-  String get publishedSecrets => 'סודות שפורסמו';
+  String get publishedSecrets => 'Hushhh שפורסמו';
 
   @override
-  String get savedSecrets => 'סודות שנשמרו';
+  String get savedSecrets => 'Hushhh שנשמרו';
 
   @override
-  String get mySecretsTab => 'הסודות שלי';
+  String get mySecretsTab => 'ה-Hushhh שלי';
 
   @override
-  String get noPlantedSecrets => 'טרם הטמנת סודות.';
+  String get noPlantedSecrets => 'טרם הטמנת Hushhh.';
 
   @override
-  String get noSavedSecrets => 'לא נמצאו סודות שמורים.';
+  String get noSavedSecrets => 'לא נמצאו Hushhh שמורים.';
 
   @override
   String get enableNotifications => 'אפשר התראות';
@@ -186,7 +186,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get locationPermissionDenied =>
-      'הרשאת מיקום נדחתה. HUSH צריך את המיקום שלך כדי לגלות סודות בסביבה.';
+      'הרשאת מיקום נדחתה. HUSH צריך את המיקום שלך כדי לגלות Hushhh בסביבה.';
 
   @override
   String get locationUnavailable => 'מיקום לא זמין';
@@ -225,7 +225,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get ghostModeRestricted => 'פעולות החשבון שלך מוגבלות.';
 
   @override
-  String get cannotPlantGhost => 'אינך יכול להטמין סודות כרגע.';
+  String get cannotPlantGhost => 'אינך יכול להטמין Hushhh כרגע.';
 
   @override
   String get noReports => 'אין דיווחים ממתינים';
@@ -320,14 +320,14 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String publishedSecretAgo(int hours) {
-    return 'פורסם סוד לפני $hours שעות';
+    return 'פורסם Hushhh לפני $hours שעות';
   }
 
   @override
   String get tapToViewMap => 'לחץ לצפייה במפה';
 
   @override
-  String get noActiveSecrets => 'אין סודות פעילים';
+  String get noActiveSecrets => 'אין Hushhh פעילים';
 
   @override
   String get anonymousUser => 'אנונימי';
@@ -371,7 +371,7 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get reportTitle => 'דיווח על סוד';
+  String get reportTitle => 'דיווח על Hushhh';
 
   @override
   String get reportReason => 'מדוע את/ה מדווח/ת?';
@@ -410,11 +410,11 @@ class AppLocalizationsHe extends AppLocalizations {
   String get appealSubmit => 'שלח ערעור';
 
   @override
-  String get deleteSecretTitle => 'מחיקת סוד';
+  String get deleteSecretTitle => 'מחיקת Hushhh';
 
   @override
   String get deleteSecretConfirm =>
-      'האם אתה בטוח שברצונך למחוק את הסוד? לא ניתן לבטל פעולה זו.';
+      'האם אתה בטוח שברצונך למחוק את ה-Hushhh? לא ניתן לבטל פעולה זו.';
 
   @override
   String get comments => 'תגובות';
@@ -432,15 +432,15 @@ class AppLocalizationsHe extends AppLocalizations {
   String get commentPlaceholder => 'כתוב תגובה...';
 
   @override
-  String get directionToSecret => 'כיוון אל הסוד';
+  String get directionToSecret => 'כיוון אל ה-Hushhh';
 
   @override
   String groupUnlockProgress(int count) {
-    return 'רגע! דרושים עוד $count אנשים כדי לחשוף את הסוד הזה.';
+    return 'רגע! דרושים עוד $count אנשים כדי לחשוף את ה-Hushhh הזה.';
   }
 
   @override
-  String get groupUnlockSuccess => 'הקבוצה התאחדה. הסוד נחשף!';
+  String get groupUnlockSuccess => 'הקבוצה התאחדה. ה-Hushhh נחשף!';
 
   @override
   String get maintenanceTitle => 'תחזוקה';
@@ -484,4 +484,38 @@ class AppLocalizationsHe extends AppLocalizations {
   String migrationError(String error) {
     return 'שגיאה במהלך העדכון: $error';
   }
+
+  @override
+  String get tutorial_p1_title => 'ברוכים הבאים ל-Hushhh';
+
+  @override
+  String get tutorial_p1_content =>
+      'אנחנו רשת חברתית גאוגרפית שבה המרחב הפיזי הופך ללוח ה-Hushhh שלכם.\n• איך זה עובד? Hushhh הוא כמו סוד - אתם \'מטמינים Hushhh\' (הודעות קוליות או טקסט) בנקודה המדויקת שבה אתם נמצאים.\n• העולם הוא הפיד שלכם: הפיד דינמי ומשתנה לפי המיקום שלכם - הוא תמיד יציג את מה שקורה סביבכם ברגע זה.';
+
+  @override
+  String get tutorial_p2_title => 'החשיפה של ה-Hushhh';
+
+  @override
+  String get tutorial_p2_content =>
+      'ה-Hushhh בפיד מופיעים במצב \'מטושטש\' כל עוד אתם רחוקים.\n• Hushhh הופך לזמין לפתיחה רק כשאתם נמצאים פיזית במרחק של עד 15 מטרים ממנו.\n• ברגע שתגיעו לטווח, הטשטוש ייעלם ותוכלו לקרוא את הטקסט או ללחוץ Play ולהאזין.\n• על המפה תוכלו לחפש תדר פועם כדי לדעת איפה יש פעילות מעניינת ברדיוס של 200 מטר סביבכם.';
+
+  @override
+  String get tutorial_p3_title => 'Hushhh רגיל או קבוצתי?';
+
+  @override
+  String get tutorial_p3_content =>
+      'לא כל Hushhh נועד לאדם אחד. אתם קובעים את החוקים:\n• Hushhh רגיל פתוח לכל מי שמגיע לנקודה.\n• Hushhh קבוצתי = אתגר קבוצתי! ניתן לפתוח אותו רק אם כמות משתמשים מסוימת (החל מ-3) נמצאת בנקודה בו-זמנית בחלון זמן מוגדר.\n• תעלו רמה: הצלחה בהפעלת Hushhh קבוצתיים מעלה את הסטטוס שלכם - צבע ההילה סביב ה-Hushhh משתנה ומשתמשים אחרים יזהו אתכם כיוצרים מעניינים.';
+
+  @override
+  String get tutorial_p4_title => 'איפה התוכן שלי?';
+
+  @override
+  String get tutorial_p4_content =>
+      'התוכן ב-Hushhh הוא זמני וחי, מה שיוצר דחיפות ואותנטיות:\n• מנגנון המחיקה: Hushhh שלא נפתחו לצפייה או כאלו שעברו 60 יום נמחקים מהעולם כדי לשמור על המפה נקייה.\n• כפתור השמירה: מצאתם Hushhh שאתם חייבים לשמור? תוכלו לשמור עד 50 Hushhh (שלכם או של אחרים) בפרופיל שלכם, והם לא יימחקו לעולם.\n• איכות מעל הכל: הפרופיל שלכם מציג את Hushhh מובחרים שפרסמתם - אלו ששרדו את מבחן הזמן והעניין של הקהילה.\nפספסתם משהו? אל דאגה. תמיד תוכלו לחזור להסבר המלא דרך תפריט ההגדרות באפליקציה.\nמוכנים להטמין את ה-Hushhh הראשון שלכם?';
+
+  @override
+  String get action_understand => 'הבנתי';
+
+  @override
+  String get drawer_what_is_hush => 'מה זה Hushhh?';
 }

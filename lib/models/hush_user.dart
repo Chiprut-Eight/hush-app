@@ -17,6 +17,7 @@ class HushUser {
   
   // Onboarding
   final bool isOnboarded;
+  final bool hasSeenTutorial;
   final String? firstName;
   final String? lastName;
   final DateTime? dateOfBirth;
@@ -44,6 +45,7 @@ class HushUser {
     this.ghostModeUntil,
     DateTime? createdAt,
     this.isOnboarded = false,
+    this.hasSeenTutorial = false,
     this.firstName,
     this.lastName,
     this.dateOfBirth,
@@ -70,6 +72,7 @@ class HushUser {
       ghostModeUntil: (data['ghostModeUntil'] as Timestamp?)?.toDate(),
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isOnboarded: data['isOnboarded'] ?? false,
+      hasSeenTutorial: data['hasSeenTutorial'] ?? false,
       firstName: data['firstName'],
       lastName: data['lastName'],
       dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
@@ -95,6 +98,7 @@ class HushUser {
     'ghostModeUntil': ghostModeUntil != null ? Timestamp.fromDate(ghostModeUntil!) : null,
     'createdAt': Timestamp.fromDate(createdAt),
     'isOnboarded': isOnboarded,
+    'hasSeenTutorial': hasSeenTutorial,
     'firstName': firstName,
     'lastName': lastName,
     'dateOfBirth': dateOfBirth != null ? Timestamp.fromDate(dateOfBirth!) : null,

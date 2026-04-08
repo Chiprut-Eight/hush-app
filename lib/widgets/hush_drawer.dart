@@ -6,6 +6,7 @@ import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../widgets/tutorial_popup.dart';
 import '../screens/admin_screen.dart';
 
 class HushDrawer extends StatelessWidget {
@@ -30,35 +31,49 @@ class HushDrawer extends StatelessWidget {
                 bottom: BorderSide(color: HushColors.borderSubtle, width: 1),
               ),
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // App Logo
-                  Container(
-                    width: 64,
-                    height: 64,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: HushColors.textAccent, width: 2),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/logo_hushhh.jpeg'),
-                        fit: BoxFit.cover,
+            padding: EdgeInsets.zero,
+            child: Stack(
+              children: [
+                // Close Button
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: IconButton(
+                    icon: const Icon(Icons.close, color: Colors.white70),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      // App Logo
+                      Container(
+                        width: 64,
+                        height: 64,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          border: Border.all(color: HushColors.textAccent, width: 2),
+                          image: const DecorationImage(
+                            image: AssetImage('assets/images/logo_hushhh.jpeg'),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
                       ),
-                    ),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'HUSH',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 2,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'HUSH',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
 
@@ -122,6 +137,22 @@ class HushDrawer extends StatelessWidget {
                     },
                   ),
                 ],
+
+                const Divider(color: Colors.white10, indent: 16, endIndent: 16),
+
+                // What is Hushhh? (Tutorial)
+                ListTile(
+                  leading: const Icon(Icons.info_outline, size: 22, color: HushColors.textAccent),
+                  title: Text(l10n.drawer_what_is_hush, style: const TextStyle(color: Colors.white)),
+                  onTap: () {
+                    Navigator.pop(context); // Close drawer
+                    showDialog(
+                      context: context,
+                      barrierDismissible: true,
+                      builder: (_) => const TutorialPopup(),
+                    );
+                  },
+                ),
               ],
             ),
           ),

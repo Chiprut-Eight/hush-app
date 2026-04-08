@@ -131,19 +131,19 @@ abstract class AppLocalizations {
   /// No description provided for @feedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Nearby Secrets'**
+  /// **'Nearby Hushhh'**
   String get feedTitle;
 
   /// No description provided for @feedEmpty.
   ///
   /// In en, this message translates to:
-  /// **'No secrets nearby... Walk around to discover hidden whispers'**
+  /// **'No Hushhh nearby... Walk around to discover hidden whispers'**
   String get feedEmpty;
 
   /// No description provided for @feedLoading.
   ///
   /// In en, this message translates to:
-  /// **'Listening for secrets...'**
+  /// **'Listening for Hushhh...'**
   String get feedLoading;
 
   /// No description provided for @mapTitle.
@@ -155,7 +155,7 @@ abstract class AppLocalizations {
   /// No description provided for @createTitle.
   ///
   /// In en, this message translates to:
-  /// **'Drop a Secret'**
+  /// **'Drop a Hushhh'**
   String get createTitle;
 
   /// No description provided for @profileTitle.
@@ -173,13 +173,13 @@ abstract class AppLocalizations {
   /// No description provided for @secretPlaceholder.
   ///
   /// In en, this message translates to:
-  /// **'What\'s on your mind? Keep it secret... (max 140 chars)'**
+  /// **'What\'s on your mind? Keep it Hushhh... (max 140 chars)'**
   String get secretPlaceholder;
 
   /// No description provided for @recordVoice.
   ///
   /// In en, this message translates to:
-  /// **'Record Voice Secret'**
+  /// **'Record Voice Hushhh'**
   String get recordVoice;
 
   /// No description provided for @stopRecording.
@@ -191,19 +191,19 @@ abstract class AppLocalizations {
   /// No description provided for @publishSecret.
   ///
   /// In en, this message translates to:
-  /// **'Drop Secret'**
+  /// **'Drop Hushhh'**
   String get publishSecret;
 
   /// No description provided for @hideSecretAction.
   ///
   /// In en, this message translates to:
-  /// **'Hide Secret'**
+  /// **'Hide Hushhh'**
   String get hideSecretAction;
 
   /// No description provided for @regularSecret.
   ///
   /// In en, this message translates to:
-  /// **'Regular Secret'**
+  /// **'Regular Hushhh'**
   String get regularSecret;
 
   /// No description provided for @regularSecretDesc.
@@ -215,7 +215,7 @@ abstract class AppLocalizations {
   /// No description provided for @groupSecret.
   ///
   /// In en, this message translates to:
-  /// **'Group Secret'**
+  /// **'Group Hushhh'**
   String get groupSecret;
 
   /// No description provided for @groupSecretDesc.
@@ -233,7 +233,7 @@ abstract class AppLocalizations {
   /// No description provided for @secretType.
   ///
   /// In en, this message translates to:
-  /// **'Secret Type'**
+  /// **'Hushhh Type'**
   String get secretType;
 
   /// No description provided for @peopleRequired.
@@ -263,7 +263,7 @@ abstract class AppLocalizations {
   /// No description provided for @secretReady.
   ///
   /// In en, this message translates to:
-  /// **'Secret Ready'**
+  /// **'Hushhh Ready'**
   String get secretReady;
 
   /// No description provided for @tapToRecord.
@@ -329,7 +329,7 @@ abstract class AppLocalizations {
   /// No description provided for @revealed.
   ///
   /// In en, this message translates to:
-  /// **'Secret Revealed!'**
+  /// **'Hushhh Revealed!'**
   String get revealed;
 
   /// No description provided for @metersAway.
@@ -353,7 +353,7 @@ abstract class AppLocalizations {
   /// No description provided for @downvotedWarning.
   ///
   /// In en, this message translates to:
-  /// **'This secret has been heavily downvoted.'**
+  /// **'This Hushhh has been heavily downvoted.'**
   String get downvotedWarning;
 
   /// No description provided for @viewAnyway.
@@ -365,37 +365,37 @@ abstract class AppLocalizations {
   /// No description provided for @saveLimitWarning.
   ///
   /// In en, this message translates to:
-  /// **'You can save up to 50 secrets combined.'**
+  /// **'You can save up to 50 Hushhh combined.'**
   String get saveLimitWarning;
 
   /// No description provided for @publishedSecrets.
   ///
   /// In en, this message translates to:
-  /// **'Published Secrets'**
+  /// **'Published Hushhh'**
   String get publishedSecrets;
 
   /// No description provided for @savedSecrets.
   ///
   /// In en, this message translates to:
-  /// **'Saved Secrets'**
+  /// **'Saved Hushhh'**
   String get savedSecrets;
 
   /// No description provided for @mySecretsTab.
   ///
   /// In en, this message translates to:
-  /// **'My Secrets'**
+  /// **'My Hushhh'**
   String get mySecretsTab;
 
   /// No description provided for @noPlantedSecrets.
   ///
   /// In en, this message translates to:
-  /// **'You haven\'t planted any secrets yet.'**
+  /// **'You haven\'t planted any Hushhh yet.'**
   String get noPlantedSecrets;
 
   /// No description provided for @noSavedSecrets.
   ///
   /// In en, this message translates to:
-  /// **'No saved secrets found.'**
+  /// **'No saved Hushhh found.'**
   String get noSavedSecrets;
 
   /// No description provided for @enableNotifications.
@@ -437,7 +437,7 @@ abstract class AppLocalizations {
   /// No description provided for @locationPermissionDenied.
   ///
   /// In en, this message translates to:
-  /// **'Location permission denied. HUSH needs your location to discover nearby secrets.'**
+  /// **'Location permission denied. HUSH needs your location to discover nearby Hushhh.'**
   String get locationPermissionDenied;
 
   /// No description provided for @locationUnavailable.
@@ -515,7 +515,7 @@ abstract class AppLocalizations {
   /// No description provided for @cannotPlantGhost.
   ///
   /// In en, this message translates to:
-  /// **'You cannot plant secrets right now.'**
+  /// **'You cannot plant Hushhh right now.'**
   String get cannotPlantGhost;
 
   /// No description provided for @noReports.
@@ -695,7 +695,7 @@ abstract class AppLocalizations {
   /// No description provided for @publishedSecretAgo.
   ///
   /// In en, this message translates to:
-  /// **'Published a secret {hours}h ago'**
+  /// **'Published a Hushhh {hours}h ago'**
   String publishedSecretAgo(int hours);
 
   /// No description provided for @tapToViewMap.
@@ -707,7 +707,7 @@ abstract class AppLocalizations {
   /// No description provided for @noActiveSecrets.
   ///
   /// In en, this message translates to:
-  /// **'No active secrets'**
+  /// **'No active Hushhh'**
   String get noActiveSecrets;
 
   /// No description provided for @anonymousUser.
@@ -767,7 +767,7 @@ abstract class AppLocalizations {
   /// No description provided for @reportTitle.
   ///
   /// In en, this message translates to:
-  /// **'Report Secret'**
+  /// **'Report Hushhh'**
   String get reportTitle;
 
   /// No description provided for @reportReason.
@@ -845,13 +845,13 @@ abstract class AppLocalizations {
   /// No description provided for @deleteSecretTitle.
   ///
   /// In en, this message translates to:
-  /// **'Delete Secret'**
+  /// **'Delete Hushhh'**
   String get deleteSecretTitle;
 
   /// No description provided for @deleteSecretConfirm.
   ///
   /// In en, this message translates to:
-  /// **'Are you sure you want to delete this secret? This cannot be undone.'**
+  /// **'Are you sure you want to delete this Hushhh? This cannot be undone.'**
   String get deleteSecretConfirm;
 
   /// No description provided for @comments.
@@ -887,19 +887,19 @@ abstract class AppLocalizations {
   /// No description provided for @directionToSecret.
   ///
   /// In en, this message translates to:
-  /// **'Direction to secret'**
+  /// **'Direction to Hushhh'**
   String get directionToSecret;
 
   /// No description provided for @groupUnlockProgress.
   ///
   /// In en, this message translates to:
-  /// **'Wait! {count} more people are needed to reveal this secret.'**
+  /// **'Wait! {count} more people are needed to reveal this Hushhh.'**
   String groupUnlockProgress(int count);
 
   /// No description provided for @groupUnlockSuccess.
   ///
   /// In en, this message translates to:
-  /// **'The group has unified. Secret revealed!'**
+  /// **'The group has unified. Hushhh revealed!'**
   String get groupUnlockSuccess;
 
   /// No description provided for @maintenanceTitle.
@@ -979,6 +979,66 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Error during migration: {error}'**
   String migrationError(String error);
+
+  /// No description provided for @tutorial_p1_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to Hushhh'**
+  String get tutorial_p1_title;
+
+  /// No description provided for @tutorial_p1_content.
+  ///
+  /// In en, this message translates to:
+  /// **'We are a geographic social network where physical space becomes your Hushhh board.\n• How does it work? Hushhh is like a secret - you \'plant a Hushhh\' (voice or text message) at the exact point where you are.\n• The world is your feed: The feed is dynamic and changes according to your location - it will always show what is happening around you right now.'**
+  String get tutorial_p1_content;
+
+  /// No description provided for @tutorial_p2_title.
+  ///
+  /// In en, this message translates to:
+  /// **'The Reveal of the Hushhh'**
+  String get tutorial_p2_title;
+
+  /// No description provided for @tutorial_p2_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Hushhh in the feed appear in a \'blurred\' state as long as you are far away.\n• Hushhh becomes available for opening only when you are physically within 15 meters.\n• Once you reach the range, the blur will disappear and you can read the text or press Play and listen.\n• On the map, you can look for a pulsating frequency to see interesting activity within a 200m radius.'**
+  String get tutorial_p2_content;
+
+  /// No description provided for @tutorial_p3_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular or Group Hushhh?'**
+  String get tutorial_p3_title;
+
+  /// No description provided for @tutorial_p3_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Not every Hushhh is for one person. You set the rules:\n• Regular Hushhh is open to anyone who arrives at the point.\n• Group Hushhh = Group challenge! It can only be opened if a certain number of users (minimum 3) are at the point simultaneously in a defined time window.\n• Level Up: Success in activating group Hushhh increases your status - the halo color around the Hushhh changes, identifying you as an interesting creator.'**
+  String get tutorial_p3_content;
+
+  /// No description provided for @tutorial_p4_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Where is my content?'**
+  String get tutorial_p4_title;
+
+  /// No description provided for @tutorial_p4_content.
+  ///
+  /// In en, this message translates to:
+  /// **'Content in Hushhh is temporary and live, creating urgency and authenticity:\n• Deletion mechanism: Hushhh that haven\'t been viewed or are older than 60 days are deleted to keep the map clean.\n• Save button: Found a Hushhh you must keep? You can save up to 50 Hushhh in your profile, and they will never be deleted.\n• Quality above all: Your profile displays distinguished Hushhh you\'ve published - those that survived the test of time.\nMissed something? Don\'t worry. You can always return to the full explanation through the settings menu.\nReady to plant your first Hushhh?'**
+  String get tutorial_p4_content;
+
+  /// No description provided for @action_understand.
+  ///
+  /// In en, this message translates to:
+  /// **'I Got It'**
+  String get action_understand;
+
+  /// No description provided for @drawer_what_is_hush.
+  ///
+  /// In en, this message translates to:
+  /// **'What is Hushhh?'**
+  String get drawer_what_is_hush;
 }
 
 class _AppLocalizationsDelegate
