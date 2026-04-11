@@ -55,5 +55,10 @@
 		<string>HUSH needs microphone access for you to record voice secrets.</string>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>remote-notification</string>
+			<string>fetch</string>
+		</array>
 	</dict>
 </plist>
