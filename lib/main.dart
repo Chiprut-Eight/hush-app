@@ -12,6 +12,8 @@ import 'screens/onboarding_screen.dart';
 import 'package:confetti/confetti.dart';
 import 'dart:async';
 import 'providers/ui_provider.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'services/notification_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
 
@@ -26,6 +28,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  // Register FCM background handler (must be top-level)
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
   runApp(const HushApp());
 }
 

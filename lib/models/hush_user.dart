@@ -31,6 +31,9 @@ class HushUser {
   // Search Optimization
   final String searchName;
 
+  // Push Notifications
+  final String? fcmToken;
+
   HushUser({
     required this.uid,
     this.displayName,
@@ -54,6 +57,7 @@ class HushUser {
     this.followingIds = const [],
     this.followerIds = const [],
     this.searchName = '',
+    this.fcmToken,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory HushUser.fromFirestore(DocumentSnapshot doc) {
@@ -81,6 +85,7 @@ class HushUser {
       followingIds: List<String>.from(data['followingIds'] ?? []),
       followerIds: List<String>.from(data['followerIds'] ?? []),
       searchName: data['searchName'] ?? '',
+      fcmToken: data['fcmToken'],
     );
   }
 
@@ -107,5 +112,6 @@ class HushUser {
     'followingIds': followingIds,
     'followerIds': followerIds,
     'searchName': searchName,
+    'fcmToken': fcmToken,
   };
 }

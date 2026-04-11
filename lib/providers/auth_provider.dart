@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
+import '../services/notification_service.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -43,6 +44,9 @@ class AuthProvider extends ChangeNotifier {
       
       // Initial fetch to ensure loading finishes quickly
       _hushUser = await _authService.getUserProfile(user.uid);
+      
+      // Initialize push notifications
+      await NotificationService().init(user.uid);
     } else {
       _hushUser = null;
     }
@@ -71,6 +75,9 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> signOut() async {
+    if (_firebaseUser != null) {
+      await NotificationService().clearToken(_firebaseUser!.uid);
+    }
     _userSubscription?.cancel();
     await _authService.signOut();
   }
