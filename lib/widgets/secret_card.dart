@@ -534,14 +534,16 @@ class _SecretCardState extends State<SecretCard> {
     
     final l10n = AppLocalizations.of(context)!;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return GestureDetector(
       onTap: isInRange && !_revealed ? _handleReveal : null,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: const Color(0xFF1E2638).withValues(alpha: 0.6),
+          color: isDark ? const Color(0xFF1E2638).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.85),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.1), width: 1),
+          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : HushColors.borderLightMode, width: 1),
           boxShadow: [
             // Inner bright glow
             BoxShadow(
@@ -589,12 +591,12 @@ class _SecretCardState extends State<SecretCard> {
                                     backgroundColor: _getTierColor(),
                                     child: CircleAvatar(
                                       radius: 16,
-                                      backgroundColor: HushColors.bgPrimary,
+                                      backgroundColor: isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight,
                                       backgroundImage: _currentSecret.creatorPhotoURL != null && _currentSecret.creatorPhotoURL != 'generic'
                                           ? NetworkImage(_currentSecret.creatorPhotoURL!)
                                           : null,
                                       child: _currentSecret.creatorPhotoURL == 'generic' || _currentSecret.creatorPhotoURL == null
-                                          ? const HushIcon(HushIcons.person, size: 18, color: Colors.white54)
+                                          ? HushIcon(HushIcons.person, size: 18, color: isDark ? Colors.white54 : HushColors.textSecondaryLight)
                                           : null,
                                     ),
                                   ),

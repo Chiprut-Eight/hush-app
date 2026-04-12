@@ -113,18 +113,19 @@ class _MapScreenState extends State<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
       drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(l10n.mapTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: HushColors.bgPrimary.withValues(alpha: 0.8),
+        title: Text(l10n.mapTitle, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
+        backgroundColor: (isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight).withValues(alpha: 0.8),
         elevation: 0,
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const HushIcon(HushIcons.target, size: 20, color: Colors.white),
+            icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: () {
               if (_currentPosition != null) {
                 _mapController.move(
@@ -137,7 +138,7 @@ class _MapScreenState extends State<MapScreen> {
             },
           ),
           IconButton(
-            icon: const HushIcon(HushIcons.refresh, size: 20, color: Colors.white),
+            icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: _fetchMapData,
           ),
         ],

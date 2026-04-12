@@ -93,31 +93,31 @@ class _FeedScreenState extends State<FeedScreen> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
       drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(l10n.feedTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+        title: Text(l10n.feedTitle, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
         actions: [
           IconButton(
-            icon: const HushIcon(HushIcons.refresh, size: 20, color: Colors.white),
+            icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: _fetchSecrets,
           ),
         ],
       ),
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              HushColors.bgPrimary,
-              Color(0xFF0D1320),
-              HushColors.bgPrimary,
-            ],
+            colors: isDark 
+              ? [HushColors.bgPrimary, const Color(0xFF0D1320), HushColors.bgPrimary]
+              : [HushColors.bgPrimaryLight, HushColors.bgPrimaryLight, HushColors.bgPrimaryLight],
           ),
         ),
         child: SafeArea(
@@ -144,7 +144,7 @@ class _FeedScreenState extends State<FeedScreen> {
               Text(
                 _error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.white),
+                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
@@ -177,7 +177,7 @@ class _FeedScreenState extends State<FeedScreen> {
     return RefreshIndicator(
       onRefresh: _fetchSecrets,
       color: HushColors.textAccent,
-      backgroundColor: HushColors.bgPrimary,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       child: ListView.builder(
         padding: const EdgeInsets.only(bottom: 80, top: 8),
         itemCount: _secrets.length,
