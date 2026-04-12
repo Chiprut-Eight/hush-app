@@ -5,7 +5,6 @@ import 'dart:io' show Platform;
 import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:screen_protector/screen_protector.dart';
-import 'package:no_screenshot/no_screenshot.dart';
 
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
@@ -24,13 +23,14 @@ class AuthProvider extends ChangeNotifier {
   bool get loading => _loading;
   bool get isAuthenticated => _firebaseUser != null;
 
+  static const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
+
   AuthProvider() {
     _authService.authStateChanges.listen(_onAuthStateChanged);
   }
 
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true;
-    final noScreenshot = NoScreenshot.instance;
 
     if (Platform.isIOS) {
       try {
@@ -45,12 +45,12 @@ class AuthProvider extends ChangeNotifier {
     } else if (Platform.isAndroid) {
       try {
         if (enablePrevention) {
-          await noScreenshot.screenshotOff(); // screenshotOff disables screenshot functionality natively
+          await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
         } else {
-          await noScreenshot.screenshotOn(); // screenshotOn enables screenshot functionality natively
+          await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
         }
       } catch (e) {
-        debugPrint('no_screenshot plugin error: $e');
+        debugPrint('Native screenshot channel error: $e');
       }
     }
   }
