@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:async';
 import 'dart:io' show Platform;
-import 'package:flutter_windowmanager/flutter_windowmanager.dart';
+import 'dart:async';
+import 'package:flutter/services.dart';
+import 'package:screen_protector/screen_protector.dart';
+
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
-
-import 'package:screen_protector/screen_protector.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -27,6 +27,8 @@ class AuthProvider extends ChangeNotifier {
     _authService.authStateChanges.listen(_onAuthStateChanged);
   }
 
+  static const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
+
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true;
     
@@ -43,12 +45,12 @@ class AuthProvider extends ChangeNotifier {
     } else if (Platform.isAndroid) {
       try {
         if (enablePrevention) {
-          await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
+          await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
         } else {
-          await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
+          await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
         }
       } catch (e) {
-        debugPrint('FlutterWindowManager error: $e');
+        debugPrint('Native screenshot channel error: $e');
       }
     }
   }
