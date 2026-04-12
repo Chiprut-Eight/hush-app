@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
@@ -25,12 +26,20 @@ class AuthProvider extends ChangeNotifier {
     _authService.authStateChanges.listen(_onAuthStateChanged);
   }
 
+  static const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
+
   Future<void> _updateScreenshotPolicy() async {
     try {
       if (_hushUser?.isAdmin == true) {
+        // Run cross-platform plugin
         await ScreenProtector.preventScreenshotOff();
+        // Run fallback native android channel
+        await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
       } else {
+        // Run cross-platform plugin
         await ScreenProtector.preventScreenshotOn();
+        // Run fallback native android channel
+        await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
       }
     } catch (e) {
       debugPrint('Screen protector error: $e');

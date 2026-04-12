@@ -31,7 +31,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
-  int _activeTab = 0; // 0 = text, 1 = voice
+  int _activeTab = 1; // 0 = text, 1 = voice
   String _secretType = 'regular'; // 'regular' or 'group'
   double _requiredUsers = 3;
 

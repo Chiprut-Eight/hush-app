@@ -75,7 +75,7 @@ class _HushAppState extends State<HushApp> {
             _confettiController.play();
           });
 
-          final currentTheme = themeProvider.isDarkMode ? hushDarkTheme() : hushLightTheme();
+          final currentTheme = hushDarkTheme();
 
           return MaterialApp(
             title: 'HUSH',

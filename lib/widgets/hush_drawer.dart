@@ -86,22 +86,6 @@ class HushDrawer extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                // Theme Toggle
-                SwitchListTile(
-                  secondary: HushIcon(
-                    isDark ? Icons.dark_mode : Icons.light_mode, 
-                    size: 22, 
-                    color: HushColors.textAccent
-                  ),
-                  title: Text(
-                    isDark ? 'Dark Mode' : 'Light Mode', 
-                    style: TextStyle(color: isDark ? Colors.white : Colors.black87)
-                  ),
-                  activeThumbColor: HushColors.textAccent,
-                  value: isDark,
-                  onChanged: (bool value) => themeProvider.toggleTheme(),
-                ),
-
                 // Language Toggle
                 ListTile(
                   leading: const HushIcon(HushIcons.feed, size: 22, color: HushColors.textAccent),
