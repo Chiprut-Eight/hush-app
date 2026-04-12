@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
 import 'dart:io' show Platform;
+import 'package:flutter_windowmanager/flutter_windowmanager.dart';
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
@@ -45,12 +46,12 @@ class AuthProvider extends ChangeNotifier {
     } else if (Platform.isAndroid) {
       try {
         if (enablePrevention) {
-          await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
+          await FlutterWindowManager.addFlags(FlutterWindowManager.FLAG_SECURE);
         } else {
-          await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
+          await FlutterWindowManager.clearFlags(FlutterWindowManager.FLAG_SECURE);
         }
       } catch (e) {
-        debugPrint('Native screenshot channel error: $e');
+        debugPrint('FlutterWindowManager error: $e');
       }
     }
   }
