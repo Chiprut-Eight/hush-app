@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
@@ -27,8 +26,6 @@ class AuthProvider extends ChangeNotifier {
   AuthProvider() {
     _authService.authStateChanges.listen(_onAuthStateChanged);
   }
-
-  static const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
 
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true;
