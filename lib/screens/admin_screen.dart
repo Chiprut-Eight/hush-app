@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import '../providers/ui_provider.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
@@ -346,6 +347,35 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
   bool _isMigrating = false;
   String? _status;
 
+  Future<void> _sendTestNotification(BuildContext context) async {
+    final plugin = FlutterLocalNotificationsPlugin();
+    await plugin.show(
+      999,
+      'Someone liked your Hushhh ❤️',
+      'Your Hushhh is getting attention!',
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'hush_notifications',
+          'Hushhh Notifications',
+          channelDescription: 'Notifications from the Hushhh app',
+          importance: Importance.high,
+          priority: Priority.high,
+          icon: '@mipmap/launcher_icon',
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentBadge: true,
+          presentSound: true,
+        ),
+      ),
+    );
+    if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Test notification sent! Check your notification tray.')),
+      );
+    }
+  }
+
   String _getStatus(AppLocalizations l10n) {
     if (_status == null) return l10n.migrationReady;
     return _status!;
@@ -467,6 +497,16 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
               label: Text(l10n.testConfetti),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.amber.shade800,
+                foregroundColor: Colors.white,
+              ),
+            ),
+            const SizedBox(height: 16),
+            ElevatedButton.icon(
+              onPressed: () => _sendTestNotification(context),
+              icon: const Icon(Icons.notifications_active),
+              label: const Text('Test Push Notification'),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: HushColors.gradientPurple,
                 foregroundColor: Colors.white,
               ),
             ),
