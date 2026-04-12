@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'dart:io' show Platform;
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
@@ -31,26 +32,26 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true;
     
-    // 1. Cross-platform plugin (iOS + Android)
-    try {
-      if (enablePrevention) {
-        await ScreenProtector.preventScreenshotOn();
-      } else {
-        await ScreenProtector.preventScreenshotOff();
+    if (Platform.isIOS) {
+      try {
+        if (enablePrevention) {
+          await ScreenProtector.preventScreenshotOn();
+        } else {
+          await ScreenProtector.preventScreenshotOff();
+        }
+      } catch (e) {
+        debugPrint('ScreenProtector plugin error: $e');
       }
-    } catch (e) {
-      debugPrint('ScreenProtector plugin error: $e');
-    }
-
-    // 2. Fallback native Android channel (FLAG_SECURE)
-    try {
-      if (enablePrevention) {
-        await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
-      } else {
-        await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
+    } else if (Platform.isAndroid) {
+      try {
+        if (enablePrevention) {
+          await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
+        } else {
+          await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
+        }
+      } catch (e) {
+        debugPrint('Native screenshot channel error: $e');
       }
-    } catch (e) {
-      debugPrint('Native screenshot channel error: $e');
     }
   }
 
