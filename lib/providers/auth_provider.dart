@@ -29,20 +29,28 @@ class AuthProvider extends ChangeNotifier {
   static const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
 
   Future<void> _updateScreenshotPolicy() async {
+    final bool enablePrevention = _hushUser?.isAdmin != true;
+    
+    // 1. Cross-platform plugin (iOS + Android)
     try {
-      if (_hushUser?.isAdmin == true) {
-        // Run cross-platform plugin
-        await ScreenProtector.preventScreenshotOff();
-        // Run fallback native android channel
-        await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
-      } else {
-        // Run cross-platform plugin
+      if (enablePrevention) {
         await ScreenProtector.preventScreenshotOn();
-        // Run fallback native android channel
-        await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
+      } else {
+        await ScreenProtector.preventScreenshotOff();
       }
     } catch (e) {
-      debugPrint('Screen protector error: $e');
+      debugPrint('ScreenProtector plugin error: $e');
+    }
+
+    // 2. Fallback native Android channel (FLAG_SECURE)
+    try {
+      if (enablePrevention) {
+        await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
+      } else {
+        await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
+      }
+    } catch (e) {
+      debugPrint('Native screenshot channel error: $e');
     }
   }
 
