@@ -213,5 +213,17 @@
   "testPushNotification": "Test Push Notification",
   "testPushTitle": "Someone liked your Hushhh ❤️",
   "testPushBody": "Your Hushhh is getting attention!",
-  "testPushSuccess": "Test notification sent! Check your notification tray."
+  "testPushSuccess": "Test notification sent! Check your notification tray.",
+  "distanceAwayMeters": "{distance}m away",
+  "@distanceAwayMeters": {
+    "placeholders": {
+      "distance": { "type": "int" }
+    }
+  },
+  "distanceAwayKm": "{distance}km away",
+  "@distanceAwayKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  }
 }

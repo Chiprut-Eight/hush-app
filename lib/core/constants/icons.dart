@@ -63,4 +63,5 @@ class HushIcons {
   static const IconData error        = PhosphorIconsLight.warningCircle;
   static const IconData hearingOff   = PhosphorIconsLight.earSlash;
   static const IconData textSnippet  = PhosphorIconsLight.fileText;
+  static const IconData eye          = PhosphorIconsLight.eye;
 }

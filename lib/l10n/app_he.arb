@@ -213,5 +213,17 @@
   "testPushNotification": "בדיקת התראת פוש",
   "testPushTitle": "מישהו עשה לייק ל-Hushhh שלך ❤️",
   "testPushBody": "ה-Hushhh שלך מקבל תשומת לב!",
-  "testPushSuccess": "התראת הבדיקה נשלחה! בדוק את מגירת ההתראות שלך."
+  "testPushSuccess": "התראת הבדיקה נשלחה! בדוק את מגירת ההתראות שלך.",
+  "distanceAwayMeters": "במרחק {distance} מ'",
+  "@distanceAwayMeters": {
+    "placeholders": {
+      "distance": { "type": "int" }
+    }
+  },
+  "distanceAwayKm": "במרחק {distance} ק\"מ",
+  "@distanceAwayKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  }
 }

@@ -638,7 +638,9 @@ class _SecretCardState extends State<SecretCard> {
                             children: [
                               if (distance != null)
                                 Text(
-                                  '${distance.toInt()}m away',
+                                  distance > 1000 
+                                      ? l10n.distanceAwayKm((distance / 1000).toStringAsFixed(1))
+                                      : l10n.distanceAwayMeters(distance.toInt()),
                                   style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
                                 ),
                               if (isOwner) ...[
@@ -707,26 +709,14 @@ class _SecretCardState extends State<SecretCard> {
                                 color: _revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3),
                                 onTap: _revealed ? () => _showCommentsSheet(context, l10n) : null,
                               ),
+                              const SizedBox(width: 16),
                               Row(
                                 children: [
-                                  HushIcon(_currentSecret.textContent != null ? HushIcons.textSnippet : HushIcons.mic, size: 14, color: HushColors.textSecondary),
+                                  const HushIcon(HushIcons.eye, size: 16, color: HushColors.textSecondary),
                                   const SizedBox(width: 4),
                                   Text('${_currentSecret.views}', style: const TextStyle(color: HushColors.textSecondary)),
                                 ],
                               ),
-                              // --- COMMENTS BUTTON (only if revealed) ---
-                              if (_revealed) ...[
-                                const SizedBox(width: 12),
-                                GestureDetector(
-                                  onTap: () => _showCommentsSheet(context, l10n),
-                                  child: Row(
-                                    children: [
-                                      HushIcon(HushIcons.comment, size: 16, color: HushColors.textSecondary),
-                                      const SizedBox(width: 4),
-                                    ],
-                                  ),
-                                ),
-                              ],
                             ],
                           ),
                           Row(

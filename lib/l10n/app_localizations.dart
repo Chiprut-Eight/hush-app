@@ -1063,6 +1063,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Test notification sent! Check your notification tray.'**
   String get testPushSuccess;
+
+  /// No description provided for @distanceAwayMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance}m away'**
+  String distanceAwayMeters(int distance);
+
+  /// No description provided for @distanceAwayKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance}km away'**
+  String distanceAwayKm(String distance);
 }
 
 class _AppLocalizationsDelegate

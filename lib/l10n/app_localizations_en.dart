@@ -532,4 +532,14 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get testPushSuccess =>
       'Test notification sent! Check your notification tray.';
+
+  @override
+  String distanceAwayMeters(int distance) {
+    return '${distance}m away';
+  }
+
+  @override
+  String distanceAwayKm(String distance) {
+    return '${distance}km away';
+  }
 }

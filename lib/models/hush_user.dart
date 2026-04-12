@@ -33,6 +33,9 @@ class HushUser {
 
   // Push Notifications
   final String? fcmToken;
+  
+  // Admin System
+  final bool isAdmin;
 
   HushUser({
     required this.uid,
@@ -46,7 +49,6 @@ class HushUser {
     this.savedSecretIds = const [],
     this.isGhostMode = false,
     this.ghostModeUntil,
-    DateTime? createdAt,
     this.isOnboarded = false,
     this.hasSeenTutorial = false,
     this.firstName,
@@ -54,10 +56,12 @@ class HushUser {
     this.dateOfBirth,
     this.gender,
     this.useGenericPhoto = false,
+    this.searchName = '',
     this.followingIds = const [],
     this.followerIds = const [],
-    this.searchName = '',
     this.fcmToken,
+    this.isAdmin = false,
+    DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
   factory HushUser.fromFirestore(DocumentSnapshot doc) {
@@ -86,6 +90,7 @@ class HushUser {
       followerIds: List<String>.from(data['followerIds'] ?? []),
       searchName: data['searchName'] ?? '',
       fcmToken: data['fcmToken'],
+      isAdmin: data['isAdmin'] ?? false,
     );
   }
 
@@ -113,5 +118,6 @@ class HushUser {
     'followerIds': followerIds,
     'searchName': searchName,
     'fcmToken': fcmToken,
+    'isAdmin': isAdmin,
   };
 }

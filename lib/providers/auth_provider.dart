@@ -6,6 +6,8 @@ import '../models/hush_user.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
 
+import 'package:screen_protector/screen_protector.dart';
+
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
 
@@ -23,6 +25,18 @@ class AuthProvider extends ChangeNotifier {
     _authService.authStateChanges.listen(_onAuthStateChanged);
   }
 
+  Future<void> _updateScreenshotPolicy() async {
+    try {
+      if (_hushUser?.isAdmin == true) {
+        await ScreenProtector.preventScreenshotOff();
+      } else {
+        await ScreenProtector.preventScreenshotOn();
+      }
+    } catch (e) {
+      debugPrint('Screen protector error: $e');
+    }
+  }
+
   Future<void> _onAuthStateChanged(User? user) async {
     _firebaseUser = user;
     
@@ -38,17 +52,20 @@ class AuthProvider extends ChangeNotifier {
           .listen((snapshot) {
         if (snapshot.exists) {
           _hushUser = HushUser.fromFirestore(snapshot);
+          _updateScreenshotPolicy();
           notifyListeners();
         }
       });
       
       // Initial fetch to ensure loading finishes quickly
       _hushUser = await _authService.getUserProfile(user.uid);
+      _updateScreenshotPolicy();
       
       // Initialize push notifications
       await NotificationService().init(user.uid);
     } else {
       _hushUser = null;
+      _updateScreenshotPolicy();
     }
     _loading = false;
     notifyListeners();

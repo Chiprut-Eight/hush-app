@@ -531,4 +531,14 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get testPushSuccess =>
       'התראת הבדיקה נשלחה! בדוק את מגירת ההתראות שלך.';
+
+  @override
+  String distanceAwayMeters(int distance) {
+    return 'במרחק $distance מ\'';
+  }
+
+  @override
+  String distanceAwayKm(String distance) {
+    return 'במרחק $distance ק\"מ';
+  }
 }

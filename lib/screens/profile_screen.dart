@@ -282,7 +282,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                     1: Padding(
                       padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text(l10n.savedSecrets, style: TextStyle(color: _activeTabIndex == 1 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
+                      child: Text('${l10n.savedSecrets} (${_savedSecrets.length})', style: TextStyle(color: _activeTabIndex == 1 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
                     ),
                   },
                   onValueChanged: (int? value) {
