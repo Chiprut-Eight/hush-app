@@ -61,6 +61,7 @@ class MainActivity : FlutterActivity() {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
                 val viewGroup = window.decorView.rootView as? ViewGroup
                 if (viewGroup != null) setSurfaceViewSecure(viewGroup, false)
+                android.widget.Toast.makeText(context, "Screenshot UNLOCKED for Admin", android.widget.Toast.LENGTH_SHORT).show()
                 result.success(true)
             } else {
                 result.notImplemented()

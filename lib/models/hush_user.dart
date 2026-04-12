@@ -90,7 +90,7 @@ class HushUser {
       followerIds: List<String>.from(data['followerIds'] ?? []),
       searchName: data['searchName'] ?? '',
       fcmToken: data['fcmToken'],
-      isAdmin: data['isAdmin'] ?? false,
+      isAdmin: data['isAdmin'] == true || data['isAdmin'] == 'true',
     );
   }
 
