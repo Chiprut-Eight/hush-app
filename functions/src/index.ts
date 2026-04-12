@@ -5,26 +5,45 @@ admin.initializeApp();
 const db = admin.firestore();
 
 // ============================================================
+// LOCALIZATION: Bilingual notification texts (EN / HE)
+// ============================================================
+interface LocalizedText {
+  en: string;
+  he: string;
+}
+
+function t(texts: LocalizedText, lang: string): string {
+  return lang === "he" ? texts.he : texts.en;
+}
+
+// ============================================================
 // HELPER: Send push notification to a specific user
+// Reads user's 'language' field for localization
 // ============================================================
 async function sendPushToUser(
   userId: string,
-  title: string,
-  body: string,
+  title: LocalizedText,
+  body: LocalizedText,
   data?: { [key: string]: string }
 ): Promise<void> {
   const userDoc = await db.collection("users").doc(userId).get();
-  const fcmToken = userDoc.data()?.fcmToken;
+  const userData = userDoc.data();
+  const fcmToken = userData?.fcmToken;
 
   if (!fcmToken) {
     console.log(`No FCM token for user ${userId}, skipping notification.`);
     return;
   }
 
+  const lang = userData?.language || "en";
+
   try {
     await admin.messaging().send({
       token: fcmToken,
-      notification: { title, body },
+      notification: {
+        title: t(title, lang),
+        body: t(body, lang),
+      },
       data: data || {},
       android: {
         priority: "high",
@@ -42,7 +61,7 @@ async function sendPushToUser(
         },
       },
     });
-    console.log(`Notification sent to ${userId}: ${title}`);
+    console.log(`Notification sent to ${userId} [${lang}]: ${t(title, lang)}`);
   } catch (error: any) {
     // If token is invalid, clean it up
     if (
@@ -61,7 +80,7 @@ async function sendPushToUser(
 
 // ============================================================
 // 1. DECAY CRON JOB — Runs every night at 2:00 AM
-//    Now respects Immunity (saveCount > 0) and sends notifications
+//    Respects Immunity (saveCount > 0) and sends notifications
 // ============================================================
 export const decaySecretsJob = functions.pubsub
   .schedule("0 2 * * *")
@@ -93,28 +112,32 @@ export const decaySecretsJob = functions.pubsub
       // IMMUNITY: Skip saved secrets
       if (saveCount > 0) continue;
 
-      let reason = "";
+      let reasonEN = "";
+      let reasonHE = "";
 
       // Rule A: Absolute delete after 60 days
       if (createdAt <= sixtyDaysAgo) {
-        reason = "Hushhh expired (60 days)";
+        reasonEN = "Your Hushhh expired after 60 days";
+        reasonHE = "ה-Hushhh שלך פג תוקף לאחר 60 יום";
       }
       // Rule B: 0 listens in 1 week
       else if (createdAt <= oneWeekAgo && (secret.views || 0) === 0) {
-        reason = "Hushhh had 0 listens in 7 days";
+        reasonEN = "Your Hushhh had 0 listens in 7 days";
+        reasonHE = "ה-Hushhh שלך לא זכה לאף האזנה ב-7 ימים";
       }
       // Rule C: < 5 listens in 3 weeks
       else if (createdAt <= threeWeeksAgo && (secret.views || 0) < 5) {
-        reason = "Hushhh had less than 5 listens in 21 days";
+        reasonEN = "Your Hushhh had less than 5 listens in 21 days";
+        reasonHE = "ה-Hushhh שלך לא הגיע ל-5 האזנות ב-21 יום";
       }
 
-      if (reason) {
+      if (reasonEN) {
         // Notify creator before deletion
         if (secret.creatorId) {
           await sendPushToUser(
             secret.creatorId,
-            "Hushhh Removed 🗑️",
-            reason,
+            { en: "Hushhh Removed 🗑️", he: "Hushhh הוסר 🗑️" },
+            { en: reasonEN, he: reasonHE },
             { type: "decay", secretId: doc.id }
           );
         }
@@ -149,8 +172,8 @@ export const onNewLike = functions.firestore
 
     await sendPushToUser(
       creatorId,
-      "Someone liked your Hushhh ❤️",
-      "Your Hushhh is getting attention!",
+      { en: "Someone liked your Hushhh ❤️", he: "מישהו עשה לייק ל-Hushhh שלך ❤️" },
+      { en: "Your Hushhh is getting attention!", he: "ה-Hushhh שלך מקבל תשומת לב!" },
       { type: "like", secretId: change.after.id }
     );
   });
@@ -176,11 +199,18 @@ export const onNewComment = functions.firestore
     if (comment.userId === creatorId) return;
 
     const commenterName = comment.userName || "Someone";
+    const commentPreview = comment.text?.substring(0, 100) || "";
 
     await sendPushToUser(
       creatorId,
-      `${commenterName} commented 💬`,
-      comment.text?.substring(0, 100) || "New comment on your Hushhh",
+      {
+        en: `${commenterName} commented 💬`,
+        he: `${commenterName} הגיב/ה 💬`,
+      },
+      {
+        en: commentPreview || "New comment on your Hushhh",
+        he: commentPreview || "תגובה חדשה על ה-Hushhh שלך",
+      },
       { type: "comment", secretId }
     );
   });
@@ -216,8 +246,14 @@ export const onNewFollower = functions.firestore
 
       await sendPushToUser(
         targetUserId,
-        `${followerName} followed you 👋`,
-        "You have a new follower!",
+        {
+          en: `${followerName} followed you 👋`,
+          he: `${followerName} עוקב/ת אחריך 👋`,
+        },
+        {
+          en: "You have a new follower!",
+          he: "יש לך עוקב/ת חדש/ה!",
+        },
         { type: "follower", followerId }
       );
     }
@@ -253,8 +289,14 @@ export const onNewSecret = functions.firestore
     const promises = batchFollowers.map((followerId) =>
       sendPushToUser(
         followerId,
-        `${creatorName} planted a new Hushhh 🌱`,
-        "Go explore and find it!",
+        {
+          en: `${creatorName} planted a new Hushhh 🌱`,
+          he: `${creatorName} הטמין/ה Hushhh חדש 🌱`,
+        },
+        {
+          en: "Go explore and find it!",
+          he: "צאו לחפש ולגלות!",
+        },
         { type: "new_secret", secretId: snap.id, creatorId }
       )
     );
@@ -305,8 +347,14 @@ export const onSecretExpiringSoon = functions.pubsub
       if (secret.creatorId) {
         await sendPushToUser(
           secret.creatorId,
-          "Your Hushhh expires soon ⏳",
-          "Save it to keep it alive forever! It will be removed in 3 days.",
+          {
+            en: "Your Hushhh expires soon ⏳",
+            he: "ה-Hushhh שלך עומד לפוג ⏳",
+          },
+          {
+            en: "Save it to keep it alive forever! It will be removed in 3 days.",
+            he: "שמור אותו כדי לשמר אותו לנצח! הוא יימחק בעוד 3 ימים.",
+          },
           { type: "expiring", secretId: doc.id }
         );
         notifiedCount++;
