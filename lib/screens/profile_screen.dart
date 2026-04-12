@@ -12,6 +12,7 @@ import '../widgets/secret_card.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -31,6 +32,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Secret> _savedSecrets = [];
   bool _isLoading = true;
   int _activeTabIndex = 0; // 0 for 'My Secrets', 1 for 'Saved Secrets'
+  Position? _userPosition;
 
   @override
   void initState() {
@@ -71,6 +73,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
       final now = DateTime.now();
       final myActive = results[0].where((s) => Secret.isSurvivor(s, now)).toList();
       final savedActive = results[1].where((s) => Secret.isSurvivor(s, now)).toList();
+      
+      try {
+        bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+        if (serviceEnabled) {
+          LocationPermission permission = await Geolocator.checkPermission();
+          if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+            _userPosition = await Geolocator.getCurrentPosition();
+          }
+        }
+      } catch (e) {
+        debugPrint('Could not fetch location for profile view: $e');
+      }
       
       if (mounted) {
         setState(() {
@@ -335,6 +349,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     
     return list.map((secret) => SecretCard(
       secret: secret,
+      userPosition: _userPosition,
       onDelete: isMe ? _fetchProfileData : null,
     )).toList();
   }
