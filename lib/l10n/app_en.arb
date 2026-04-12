@@ -209,5 +209,9 @@
   "tutorial_p4_title": "Where is my content?",
   "tutorial_p4_content": "Content in Hushhh is temporary and live, creating urgency and authenticity:\n• Deletion mechanism: Hushhh that haven't been viewed or are older than 60 days are deleted to keep the map clean.\n• Save button: Found a Hushhh you must keep? You can save up to 50 Hushhh in your profile, and they will never be deleted.\n• Quality above all: Your profile displays distinguished Hushhh you've published - those that survived the test of time.\nMissed something? Don't worry. You can always return to the full explanation through the settings menu.\nReady to plant your first Hushhh?",
   "action_understand": "I Got It",
-  "drawer_what_is_hush": "What is Hushhh?"
+  "drawer_what_is_hush": "What is Hushhh?",
+  "testPushNotification": "Test Push Notification",
+  "testPushTitle": "Someone liked your Hushhh ❤️",
+  "testPushBody": "Your Hushhh is getting attention!",
+  "testPushSuccess": "Test notification sent! Check your notification tray."
 }
