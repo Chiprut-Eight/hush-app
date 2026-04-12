@@ -449,6 +449,18 @@ class AppLocalizationsHe extends AppLocalizations {
   String get testConfetti => 'בדיקת אנימציית קונפטי';
 
   @override
+  String get testPushNotification => 'בדיקת התראת פוש';
+
+  @override
+  String get testPushTitle => 'מישהו עשה לייק ל-Hushhh שלך ❤️';
+
+  @override
+  String get testPushBody => 'ה-Hushhh שלך מקבל תשומת לב!';
+
+  @override
+  String get testPushSuccess => 'התראת הבדיקה נשלחה! בדוק את מגירת ההתראות שלך.';
+
+  @override
   String get migrateUsers => 'עדכון משתמשים (קבוצתי)';
 
   @override

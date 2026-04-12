@@ -450,6 +450,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get testConfetti => 'Test Confetti Animation';
 
   @override
+  String get testPushNotification => 'Test Push Notification';
+
+  @override
+  String get testPushTitle => 'Someone liked your Hushhh ❤️';
+
+  @override
+  String get testPushBody => 'Your Hushhh is getting attention!';
+
+  @override
+  String get testPushSuccess => 'Test notification sent! Check your notification tray.';
+
+  @override
   String get migrateUsers => 'Migrate Users (Batch)';
 
   @override

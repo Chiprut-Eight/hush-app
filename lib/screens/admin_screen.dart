@@ -348,11 +348,12 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
   String? _status;
 
   Future<void> _sendTestNotification(BuildContext context) async {
+    final l10n = AppLocalizations.of(context)!;
     final plugin = FlutterLocalNotificationsPlugin();
     await plugin.show(
       999,
-      'Someone liked your Hushhh ❤️',
-      'Your Hushhh is getting attention!',
+      l10n.testPushTitle,
+      l10n.testPushBody,
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'hush_notifications',
@@ -371,7 +372,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
     );
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Test notification sent! Check your notification tray.')),
+        SnackBar(content: Text(l10n.testPushSuccess)),
       );
     }
   }
@@ -504,7 +505,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
             ElevatedButton.icon(
               onPressed: () => _sendTestNotification(context),
               icon: const Icon(Icons.notifications_active),
-              label: const Text('Test Push Notification'),
+              label: Text(l10n.testPushNotification),
               style: ElevatedButton.styleFrom(
                 backgroundColor: HushColors.gradientPurple,
                 foregroundColor: Colors.white,

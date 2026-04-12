@@ -914,6 +914,30 @@ abstract class AppLocalizations {
   /// **'Test Confetti Animation'**
   String get testConfetti;
 
+  /// No description provided for @testPushNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Test Push Notification'**
+  String get testPushNotification;
+
+  /// No description provided for @testPushTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Someone liked your Hushhh ❤️'**
+  String get testPushTitle;
+
+  /// No description provided for @testPushBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Hushhh is getting attention!'**
+  String get testPushBody;
+
+  /// No description provided for @testPushSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Test notification sent! Check your notification tray.'**
+  String get testPushSuccess;
+
   /// No description provided for @migrateUsers.
   ///
   /// In en, this message translates to:
