@@ -259,7 +259,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   _buildStatRow(l10n.publishedSecrets, '${_mySecrets.length}'),
                   _buildStatRow(l10n.followers, '${user.followerIds.length}'),
-                  _buildStatRow(l10n.distinguished, '${user.distinguishedCount}'),
                 ],
               ),
             ),

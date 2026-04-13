@@ -188,11 +188,33 @@ class SecretService {
     });
   }
 
-  /// Increment view count
+  /// Increment view count uniquely per user
   Future<void> viewSecret(String secretId) async {
-    await _secretsRef.doc(secretId).update({
-      'views': FieldValue.increment(1),
-    });
+    final user = _auth.currentUser;
+    if (user == null) return;
+    
+    final docRef = _secretsRef.doc(secretId);
+
+    try {
+      await _firestore.runTransaction((transaction) async {
+        final snapshot = await transaction.get(docRef);
+        if (!snapshot.exists) return;
+
+        final data = snapshot.data() as Map<String, dynamic>;
+        final viewedBy = List<String>.from(data['viewedBy'] ?? []);
+
+        // Only increment if the user has not viewed this secret before
+        if (!viewedBy.contains(user.uid)) {
+          viewedBy.add(user.uid);
+          transaction.update(docRef, {
+            'viewedBy': viewedBy,
+            'views': FieldValue.increment(1),
+          });
+        }
+      });
+    } catch (e) {
+      print('Error updating unique view count: $e');
+    }
   }
 
   /// Verify and attempt to unlock a group secret via Cloud Function

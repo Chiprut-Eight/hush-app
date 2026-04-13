@@ -170,6 +170,30 @@ class _SecretCardState extends State<SecretCard> {
     if (_currentSecret.isGroup && !_currentSecret.unlockedBy.contains(currentUser.uid)) {
       if (widget.userPosition == null) return;
       
+      // Show instant feedback using local state to avoid noticeable network delay
+      if (mounted) {
+        final requiredCountLocal = _currentSecret.requiredUsers ?? 3;
+        var remainingLocal = requiredCountLocal - _activeParticipantsCount;
+        if (remainingLocal < 1) remainingLocal = 1; // Ensure logical display before server responds
+        
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              l10n.groupUnlockProgress(remainingLocal),
+              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.w500),
+            ),
+            backgroundColor: HushColors.bgCard.withValues(alpha: 0.95),
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(12),
+              side: const BorderSide(color: HushColors.textAccent, width: 0.5),
+            ),
+            elevation: 8,
+            duration: const Duration(seconds: 4),
+          ),
+        );
+      }
+
       final result = await _secretService.verifyGroupUnlock(
         secretId: _currentSecret.id,
         lat: widget.userPosition!.latitude,
@@ -179,6 +203,7 @@ class _SecretCardState extends State<SecretCard> {
       // Start Live Subscriptions if not already started (Handled by initState now)
       
       if (result['success'] == true) {
+        if (mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
         setState(() => _revealed = true);
         if (_currentSecret.type == 'voice') _initAudio();
         _secretService.viewSecret(_currentSecret.id);
@@ -624,7 +649,7 @@ class _SecretCardState extends State<SecretCard> {
                                         ),
                                         const SizedBox(height: 2),
                                         Text(
-                                          isGroup ? 'Group Secret' : 'Regular Secret',
+                                          isGroup ? l10n.groupSecret : l10n.regularSecret,
                                           style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
                                         ),
                                       ],
