@@ -7,6 +7,7 @@ import '../providers/auth_provider.dart';
 import '../services/social_service.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
@@ -104,6 +105,9 @@ class _FollowingScreenState extends State<FollowingScreen> {
         title: Text(l10n.followingTabTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        actions: const [
+          NotificationsButton(),
+        ],
       ),
       body: Column(
         children: [

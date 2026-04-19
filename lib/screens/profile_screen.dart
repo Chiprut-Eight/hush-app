@@ -11,6 +11,7 @@ import '../services/social_service.dart';
 import '../widgets/secret_card.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -140,10 +141,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final isFollowing = currentUser?.followingIds.contains(user.uid) ?? false;
 
     return Scaffold(
-      drawer: isMe ? const HushDrawer() : null,
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser)),
         leading: !isMe ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)) : null,
+        actions: const [
+          NotificationsButton(),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {

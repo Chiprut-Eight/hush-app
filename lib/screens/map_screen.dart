@@ -10,6 +10,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
@@ -124,6 +125,7 @@ class _MapScreenState extends State<MapScreen> {
         elevation: 0,
         centerTitle: false,
         actions: [
+          const NotificationsButton(),
           IconButton(
             icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: () {
@@ -194,7 +196,7 @@ class _MapScreenState extends State<MapScreen> {
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_matter/{z}/{x}/{y}{r}.png',
+              urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
               subdomains: const ['a', 'b', 'c', 'd'],
               userAgentPackageName: 'com.hush.app',
               retinaMode: MediaQuery.of(context).devicePixelRatio > 1.0,

@@ -16,11 +16,25 @@ async function sendPushToUser(userId, title, body, data) {
     const userDoc = await db.collection("users").doc(userId).get();
     const userData = userDoc.data();
     const fcmToken = userData === null || userData === void 0 ? void 0 : userData.fcmToken;
+    const lang = (userData === null || userData === void 0 ? void 0 : userData.language) || "en";
+    // Persistent Notification History
+    try {
+        const notifRef = db.collection("users").doc(userId).collection("notifications").doc();
+        await notifRef.set({
+            title: title,
+            body: body,
+            data: data || {},
+            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            read: false
+        });
+    }
+    catch (err) {
+        console.error(`Failed to save notification to history for ${userId}:`, err);
+    }
     if (!fcmToken) {
-        console.log(`No FCM token for user ${userId}, skipping notification.`);
+        console.log(`No FCM token for user ${userId}, skipping push delivery.`);
         return;
     }
-    const lang = (userData === null || userData === void 0 ? void 0 : userData.language) || "en";
     try {
         await admin.messaging().send({
             token: fcmToken,

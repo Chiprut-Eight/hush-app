@@ -14,6 +14,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
 
 /// Web-aligned Create Screen
 class CreateScreen extends StatefulWidget {
@@ -214,7 +216,12 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     
     if (user?.isGhostMode == true) {
       return Scaffold(
-        appBar: AppBar(title: Text(l10n.createTitle), centerTitle: true),
+        drawer: const HushDrawer(),
+        appBar: AppBar(
+          title: Text(l10n.createTitle), 
+          centerTitle: true,
+          actions: const [NotificationsButton()],
+        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -237,6 +244,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
+        actions: const [NotificationsButton()],
       ),
       body: SafeArea(
         child: SingleChildScrollView(

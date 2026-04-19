@@ -9,6 +9,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
@@ -104,6 +105,7 @@ class _FeedScreenState extends State<FeedScreen> {
         elevation: 0,
         centerTitle: false,
         actions: [
+          const NotificationsButton(),
           IconButton(
             icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: _fetchSecrets,
