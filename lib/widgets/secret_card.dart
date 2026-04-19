@@ -846,18 +846,30 @@ class _SecretCardState extends State<SecretCard> {
   Widget _buildContent(bool isInRange, AppLocalizations l10n) {
     if (!isInRange || !_revealed) {
       // --- DEEP SMOKY BLUR — Out-of-range Hushhh looks locked and mysterious ---
+      // --- REALISTIC SMOKE OVERLAY ---
       return ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: SizedBox(
-          height: 100, // Slightly taller to allow smoke to breathe
+          height: 100,
           child: Stack(
             children: [
-              // 1. Transparent/semi-transparent Deep Base
+              // 1. Deep Base
               Container(
-                color: const Color(0xFF0A0D18).withValues(alpha: 0.6),
+                color: const Color(0xFF04060A).withValues(alpha: 0.8),
               ),
               
-              // 2. Fake blurred text lines to give the illusion of text underneath
+              // 2. The Smoke Texture Asset mixed with the background
+              Positioned.fill(
+                child: Opacity(
+                  opacity: 0.7,
+                  child: Image.asset(
+                    'assets/images/smoke_texture.png',
+                    fit: BoxFit.cover,
+                  ),
+                ),
+              ),
+              
+              // 3. Fake blurred content lines under the smoke
               Positioned(
                 top: 24, left: 20, right: 90,
                 child: Container(
@@ -879,48 +891,26 @@ class _SecretCardState extends State<SecretCard> {
                 ),
               ),
               
-              // 3. Base BackdropFilter to blur the fake text
+              // 4. Subtle Blur over the texture + fake text to create depth and softness
               Positioned.fill(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
-                  child: Container(color: Colors.black.withValues(alpha: 0.3)),
+                  filter: ImageFilter.blur(sigmaX: 3.5, sigmaY: 3.5),
+                  child: const SizedBox.expand(),
                 ),
               ),
               
-              // 4. Actual Cloud / Smoke Plumes (Organic shapes)
-              Positioned(
-                top: -40, left: -20,
-                child: Icon(Icons.cloud, size: 140, color: Colors.white.withValues(alpha: 0.2)),
-              ),
-              Positioned(
-                bottom: -50, right: -10,
-                child: Icon(Icons.cloud, size: 160, color: Colors.white.withValues(alpha: 0.15)),
-              ),
-              // Subtle colored mystical smoke
-              Positioned(
-                top: -10, right: 40,
-                child: Icon(Icons.cloud, size: 120, color: const Color(0xFF9B59B6).withValues(alpha: 0.1)), 
-              ),
-              Positioned(
-                bottom: 0, left: 40,
-                child: Icon(Icons.cloud, size: 100, color: const Color(0xFF1ABC9C).withValues(alpha: 0.08)),
-              ),
-              
-              // 5. SECOND HEAVY BLUR (Turns the static cloud icons into thick smooth smoke)
+              // 5. A gentle dark gradient to make it moody
               Positioned.fill(
-                child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          const Color(0xFF080B14).withValues(alpha: 0.6),
-                          Colors.transparent,
-                          const Color(0xFF0A0D18).withValues(alpha: 0.7),
-                        ],
-                      ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF080B14).withValues(alpha: 0.6),
+                        Colors.transparent,
+                        const Color(0xFF080B14).withValues(alpha: 0.8),
+                      ],
                     ),
                   ),
                 ),
@@ -933,7 +923,7 @@ class _SecretCardState extends State<SecretCard> {
                   children: [
                     Icon(
                       Icons.lock_outline_rounded,
-                      color: Colors.white.withValues(alpha: 0.6),
+                      color: Colors.white.withValues(alpha: 0.9),
                       size: 20,
                     ),
                     const SizedBox(width: 8),
@@ -941,10 +931,17 @@ class _SecretCardState extends State<SecretCard> {
                       l10n.secretReady,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
-                        fontSize: 15,
+                        fontSize: 16,
                         fontWeight: FontWeight.w600,
                         color: Colors.white,
                         letterSpacing: 1.2,
+                        shadows: [
+                          Shadow(
+                            color: Colors.black54,
+                            offset: Offset(0, 1),
+                            blurRadius: 4,
+                          )
+                        ]
                       ),
                     ),
                   ],
