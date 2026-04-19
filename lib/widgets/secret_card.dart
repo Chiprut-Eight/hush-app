@@ -53,6 +53,7 @@ class _SecretCardState extends State<SecretCard> {
 
   bool _userLiked = false;
   bool _userDisliked = false;
+  bool _savingInProgress = false;
   
   StreamSubscription<CompassEvent>? _compassSubscription;
   StreamSubscription<int>? _attemptsSubscription;
@@ -769,18 +770,17 @@ class _SecretCardState extends State<SecretCard> {
                               ),
                               const SizedBox(width: 16),
                               GestureDetector(
-                                onTap: (_revealed) ? () {
-                                  if (currentUser != null) {
-                                    if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(content: Text(l10n.saveLimitWarning)),
-                                      );
-                                      return;
-                                    }
-                                    setState(() {
-                                      _secretService.toggleSaveSecret(_currentSecret.id);
-                                    });
+                                onTap: (_revealed && !_savingInProgress) ? () async {
+                                  if (currentUser == null) return;
+                                  if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text(l10n.saveLimitWarning)),
+                                    );
+                                    return;
                                   }
+                                  if (mounted) setState(() => _savingInProgress = true);
+                                  await _secretService.toggleSaveSecret(_currentSecret.id);
+                                  if (mounted) setState(() => _savingInProgress = false);
                                 } : null,
                                 child: Row(
                                   children: [

@@ -69,8 +69,13 @@ class AuthProvider extends ChangeNotifier {
           .snapshots()
           .listen((snapshot) {
         if (snapshot.exists) {
+          final prevIsAdmin = _hushUser?.isAdmin;
           _hushUser = HushUser.fromFirestore(snapshot);
-          _updateScreenshotPolicy();
+          // Only update screenshot policy when admin status changes, not on every field update
+          // (avoids repeated Toast popups when saving/liking changes the user doc)
+          if (_hushUser?.isAdmin != prevIsAdmin) {
+            _updateScreenshotPolicy();
+          }
           notifyListeners();
         }
       });

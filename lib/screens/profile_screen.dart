@@ -72,7 +72,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
       
       final now = DateTime.now();
       final myActive = results[0].where((s) => Secret.isSurvivor(s, now)).toList();
-      final savedActive = results[1].where((s) => Secret.isSurvivor(s, now)).toList();
+      // Saved secrets are always shown — isSurvivor immunity applies at Firestore level,
+      // but client-side we trust the user's explicit save action. Never filter them out.
+      final savedActive = results[1]; // Don't filter by isSurvivor — saved = immune
       
       try {
         bool serviceEnabled = await Geolocator.isLocationServiceEnabled();

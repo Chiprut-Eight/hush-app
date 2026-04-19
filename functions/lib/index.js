@@ -235,36 +235,56 @@ exports.onNewSecret = functions.firestore
 });
 // ============================================================
 // 6. EXPIRING SOON — Daily cron at 10:00 AM
-//    Warns creators 3 days before their Hushhh expires (60 day mark)
+//    Warns creators 48 hours before their Hushhh is deleted
+//    Covers ALL 3 decay rules (60-day, 0 views/7 days, <5 views/21 days)
 // ============================================================
 exports.onSecretExpiringSoon = functions.pubsub
     .schedule("0 10 * * *")
     .timeZone("Asia/Jerusalem")
     .onRun(async () => {
+    var _a;
     const now = new Date();
-    const fiftySevenDaysAgo = new Date(now.getTime() - 57 * 24 * 60 * 60 * 1000);
+    // Rule A: 60-day absolute expiry → warn at day 58
     const fiftyEightDaysAgo = new Date(now.getTime() - 58 * 24 * 60 * 60 * 1000);
-    // Find secrets created 57-58 days ago (will expire in 2-3 days)
-    const expiringQuery = await db
-        .collection("secrets")
+    const fiftySevenDaysAgo = new Date(now.getTime() - 57 * 24 * 60 * 60 * 1000);
+    // Rule B: 0 views in 7 days → warn at day 5 (2 days before cutoff)
+    const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000);
+    const fourDaysAgo = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000);
+    // Rule C: <5 views in 21 days → warn at day 19 (2 days before cutoff)
+    const nineteenDaysAgo = new Date(now.getTime() - 19 * 24 * 60 * 60 * 1000);
+    const eighteenDaysAgo = new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000);
+    const allSecrets = await db.collection("secrets")
         .where("isHidden", "==", false)
-        .where("createdAt", ">=", admin.firestore.Timestamp.fromDate(fiftyEightDaysAgo))
-        .where("createdAt", "<=", admin.firestore.Timestamp.fromDate(fiftySevenDaysAgo))
         .get();
     let notifiedCount = 0;
-    for (const doc of expiringQuery.docs) {
+    for (const doc of allSecrets.docs) {
         const secret = doc.data();
-        // Don't warn if saved (immune)
+        const createdAt = (_a = secret.createdAt) === null || _a === void 0 ? void 0 : _a.toDate();
+        if (!createdAt || !secret.creatorId)
+            continue;
+        // IMMUNITY: Don't warn about saved secrets
         if ((secret.saveCount || 0) > 0)
             continue;
-        if (secret.creatorId) {
-            await sendPushToUser(secret.creatorId, {
-                en: "Your Hushhh expires soon ⏳",
-                he: "ה-Hushhh שלך עומד לפוג ⏳",
-            }, {
-                en: "Save it to keep it alive forever! It will be removed in 3 days.",
-                he: "שמור אותו כדי לשמר אותו לנצח! הוא יימחק בעוד 3 ימים.",
-            }, { type: "expiring", secretId: doc.id });
+        const views = secret.views || 0;
+        let warningEN = "";
+        let warningHE = "";
+        // Rule A: Approaching 60-day absolute expiry
+        if (createdAt <= fiftyEightDaysAgo && createdAt >= fiftySevenDaysAgo) {
+            warningEN = "Your Hushhh has been alive for 58 days and will be deleted in 2 days. Save it now to protect it forever!";
+            warningHE = "ה-Hushhh שלך קיים כבר 58 ימים ויימחק בעוד יומיים. שמור אותו עכשיו כדי לשמר אותו לנצח!";
+        }
+        // Rule B: 0 views after 5 days (will hit 7-day cutoff in 2 days)
+        else if (createdAt <= fiveDaysAgo && createdAt >= fourDaysAgo && views === 0) {
+            warningEN = "Your Hushhh has had 0 views in 5 days. It will be deleted in 2 days unless someone discovers it. Share a hint nearby!";
+            warningHE = "ה-Hushhh שלך לא קיבל אף צפייה ב-5 ימים. הוא יימחק בעוד יומיים אלא אם מישהו יגלה אותו. שתף רמז בקרבת מקום!";
+        }
+        // Rule C: <5 views after 19 days (will hit 21-day cutoff in 2 days)
+        else if (createdAt <= nineteenDaysAgo && createdAt >= eighteenDaysAgo && views < 5) {
+            warningEN = `Your Hushhh has only ${views} view${views === 1 ? "" : "s"} after 19 days. It will be deleted in 2 days. Save it to keep it forever!`;
+            warningHE = `ל-Hushhh שלך יש רק ${views} ${views === 1 ? "צפייה" : "צפיות"} אחרי 19 ימים. הוא יימחק בעוד יומיים. שמור אותו כדי לשמר א­ותו לנצח!`;
+        }
+        if (warningEN && secret.creatorId) {
+            await sendPushToUser(secret.creatorId, { en: "⚠️ Your Hushhh is about to be deleted", he: "⚠️ ה-Hushhh שלך עומד להימחק" }, { en: warningEN, he: warningHE }, { type: "expiring", secretId: doc.id });
             notifiedCount++;
         }
     }
