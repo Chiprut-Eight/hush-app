@@ -708,9 +708,16 @@ class _SecretCardState extends State<SecretCard> {
                                 color: _userLiked ? Colors.pink : HushColors.textSecondary,
                                 onTap: _revealed ? () {
                                   setState(() {
-                                    if (_userDisliked) _userDisliked = false;
+                                    if (_userDisliked) {
+                                      _userDisliked = false;
+                                      _secretService.undislikeSecret(_currentSecret.id);
+                                    }
                                     _userLiked = !_userLiked;
-                                    if (_userLiked) _secretService.likeSecret(_currentSecret.id);
+                                    if (_userLiked) {
+                                      _secretService.likeSecret(_currentSecret.id);
+                                    } else {
+                                      _secretService.unlikeSecret(_currentSecret.id);
+                                    }
                                   });
                                 } : () {},
                               ),
@@ -722,9 +729,16 @@ class _SecretCardState extends State<SecretCard> {
                                 color: _userDisliked ? Colors.orange : HushColors.textSecondary,
                                 onTap: _revealed ? () {
                                   setState(() {
-                                    if (_userLiked) _userLiked = false;
+                                    if (_userLiked) {
+                                      _userLiked = false;
+                                      _secretService.unlikeSecret(_currentSecret.id);
+                                    }
                                     _userDisliked = !_userDisliked;
-                                    if (_userDisliked) _secretService.dislikeSecret(_currentSecret.id);
+                                    if (_userDisliked) {
+                                      _secretService.dislikeSecret(_currentSecret.id);
+                                    } else {
+                                      _secretService.undislikeSecret(_currentSecret.id);
+                                    }
                                   });
                                 } : null,
                               ),
@@ -831,65 +845,116 @@ class _SecretCardState extends State<SecretCard> {
 
   Widget _buildContent(bool isInRange, AppLocalizations l10n) {
     if (!isInRange || !_revealed) {
-      // --- ENHANCED SMOKY BLUR EFFECT ---
+      // --- DEEP SMOKY BLUR — Out-of-range Hushhh looks locked and mysterious ---
       return ClipRRect(
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          decoration: BoxDecoration(
-            color: Colors.black.withValues(alpha: 0.8), // Dark base
-          ),
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          height: 80,
           child: Stack(
             children: [
-              // Dummy content to be blurred
+              // Base dark canvas
               Container(
-                padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
-                child: Column(
-                  children: [
-                    if (_currentSecret.textContent != null)
-                      Container(height: 20, width: double.infinity, color: HushColors.textAccent.withValues(alpha: 0.3))
-                    else
-                      Container(height: 40, width: double.infinity, color: HushColors.textAccent.withValues(alpha: 0.3)),
-                  ],
+                color: const Color(0xFF080B14),
+              ),
+              // Dummy blurred content lines (creates visual depth to blur)
+              Positioned(
+                top: 18, left: 16, right: 60,
+                child: Container(
+                  height: 10, 
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.07),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
               ),
-              // The heavy smoky blur overlay
+              Positioned(
+                top: 36, left: 16, right: 110,
+                child: Container(
+                  height: 10, 
+                  decoration: BoxDecoration(
+                    color: Colors.white.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ),
+              // Heavy Gaussian blur pass
               Positioned.fill(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: RadialGradient(
-                        center: Alignment.center,
-                        radius: 1.5,
-                        colors: [
-                          Colors.black.withValues(alpha: 0.4),
-                          Colors.grey.shade900.withValues(alpha: 0.7),
-                          Colors.black.withValues(alpha: 0.9),
-                        ],
-                      ),
+                  filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
+                  child: const SizedBox.expand(),
+                ),
+              ),
+              // Smoky dark gradient overlay — layered for depth
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                      colors: [
+                        const Color(0xFF0A0D18).withValues(alpha: 0.92),
+                        const Color(0xFF12152A).withValues(alpha: 0.82),
+                        const Color(0xFF080B14).withValues(alpha: 0.95),
+                      ],
                     ),
                   ),
                 ),
               ),
-              // Centered mystical text
+              // Subtle violet/teal smoke wisps at the edges
+              Positioned(
+                top: -20, left: -20, right: -20,
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.topCenter,
+                      radius: 1.0,
+                      colors: [
+                        const Color(0xFF9B59B6).withValues(alpha: 0.12),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Positioned(
+                bottom: -20, left: -20, right: -20,
+                child: Container(
+                  height: 60,
+                  decoration: BoxDecoration(
+                    gradient: RadialGradient(
+                      center: Alignment.bottomCenter,
+                      radius: 1.0,
+                      colors: [
+                        const Color(0xFF1ABC9C).withValues(alpha: 0.08),
+                        Colors.transparent,
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              // Lock icon + text label
               Positioned.fill(
-                child: Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Text(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.lock_outline_rounded,
+                      color: Colors.white.withValues(alpha: 0.22),
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
                       l10n.secretReady,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontSize: 16,
-                        color: HushColors.textAccent.withValues(alpha: 0.7),
+                        fontSize: 13,
+                        color: Colors.white.withValues(alpha: 0.28),
                         fontWeight: FontWeight.w500,
-                        letterSpacing: 1.2,
-                        shadows: [
-                          Shadow(color: HushColors.tierRed.withValues(alpha: 0.5), blurRadius: 10),
-                        ]
+                        letterSpacing: 2.0,
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ],

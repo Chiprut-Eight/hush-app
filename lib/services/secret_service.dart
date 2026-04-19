@@ -181,10 +181,24 @@ class SecretService {
     });
   }
 
+  /// Remove a like from a secret
+  Future<void> unlikeSecret(String secretId) async {
+    await _secretsRef.doc(secretId).update({
+      'likes': FieldValue.increment(-1),
+    });
+  }
+
   /// Dislike a secret
   Future<void> dislikeSecret(String secretId) async {
     await _secretsRef.doc(secretId).update({
       'dislikes': FieldValue.increment(1),
+    });
+  }
+
+  /// Remove a dislike from a secret
+  Future<void> undislikeSecret(String secretId) async {
+    await _secretsRef.doc(secretId).update({
+      'dislikes': FieldValue.increment(-1),
     });
   }
 
