@@ -200,6 +200,17 @@ class _MapScreenState extends State<MapScreen> {
               subdomains: const ['a', 'b', 'c', 'd'],
               userAgentPackageName: 'com.hush.app',
               retinaMode: MediaQuery.of(context).devicePixelRatio > 1.0,
+              tileBuilder: (context, tileWidget, tile) {
+                return ColorFiltered(
+                  colorFilter: const ColorFilter.matrix([
+                    1.4, 0, 0, 0, 30,  // Red (lifted)
+                    0, 1.4, 0, 0, 35,  // Green (lifted, slight tint)
+                    0, 0, 1.5, 0, 45,  // Blue (lifted, more tint)
+                    0, 0, 0, 1, 0,
+                  ]),
+                  child: tileWidget,
+                );
+              },
             ),
             MarkerLayer(
               markers: [

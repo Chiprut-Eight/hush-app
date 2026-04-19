@@ -849,109 +849,102 @@ class _SecretCardState extends State<SecretCard> {
       return ClipRRect(
         borderRadius: BorderRadius.circular(14),
         child: SizedBox(
-          height: 80,
+          height: 100, // Slightly taller to allow smoke to breathe
           child: Stack(
             children: [
-              // Base dark canvas
+              // 1. Transparent/semi-transparent Deep Base
               Container(
-                color: const Color(0xFF080B14),
+                color: const Color(0xFF0A0D18).withValues(alpha: 0.6),
               ),
-              // Dummy blurred content lines (creates visual depth to blur)
+              
+              // 2. Fake blurred text lines to give the illusion of text underneath
               Positioned(
-                top: 18, left: 16, right: 60,
+                top: 24, left: 20, right: 90,
                 child: Container(
                   height: 10, 
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.07),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
               ),
               Positioned(
-                top: 36, left: 16, right: 110,
+                top: 48, left: 20, right: 140,
                 child: Container(
                   height: 10, 
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.05),
+                    color: Colors.white.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(6),
                   ),
                 ),
               ),
-              // Heavy Gaussian blur pass
+              
+              // 3. Base BackdropFilter to blur the fake text
               Positioned.fill(
                 child: BackdropFilter(
-                  filter: ImageFilter.blur(sigmaX: 22, sigmaY: 22),
-                  child: const SizedBox.expand(),
+                  filter: ImageFilter.blur(sigmaX: 6, sigmaY: 6),
+                  child: Container(color: Colors.black.withValues(alpha: 0.3)),
                 ),
               ),
-              // Smoky dark gradient overlay — layered for depth
+              
+              // 4. Actual Cloud / Smoke Plumes (Organic shapes)
+              Positioned(
+                top: -40, left: -20,
+                child: Icon(Icons.cloud, size: 140, color: Colors.white.withValues(alpha: 0.2)),
+              ),
+              Positioned(
+                bottom: -50, right: -10,
+                child: Icon(Icons.cloud, size: 160, color: Colors.white.withValues(alpha: 0.15)),
+              ),
+              // Subtle colored mystical smoke
+              Positioned(
+                top: -10, right: 40,
+                child: Icon(Icons.cloud, size: 120, color: const Color(0xFF9B59B6).withValues(alpha: 0.1)), 
+              ),
+              Positioned(
+                bottom: 0, left: 40,
+                child: Icon(Icons.cloud, size: 100, color: const Color(0xFF1ABC9C).withValues(alpha: 0.08)),
+              ),
+              
+              // 5. SECOND HEAVY BLUR (Turns the static cloud icons into thick smooth smoke)
               Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        const Color(0xFF0A0D18).withValues(alpha: 0.92),
-                        const Color(0xFF12152A).withValues(alpha: 0.82),
-                        const Color(0xFF080B14).withValues(alpha: 0.95),
-                      ],
+                child: BackdropFilter(
+                  filter: ImageFilter.blur(sigmaX: 16, sigmaY: 16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          const Color(0xFF080B14).withValues(alpha: 0.6),
+                          Colors.transparent,
+                          const Color(0xFF0A0D18).withValues(alpha: 0.7),
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
-              // Subtle violet/teal smoke wisps at the edges
-              Positioned(
-                top: -20, left: -20, right: -20,
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.topCenter,
-                      radius: 1.0,
-                      colors: [
-                        const Color(0xFF9B59B6).withValues(alpha: 0.12),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Positioned(
-                bottom: -20, left: -20, right: -20,
-                child: Container(
-                  height: 60,
-                  decoration: BoxDecoration(
-                    gradient: RadialGradient(
-                      center: Alignment.bottomCenter,
-                      radius: 1.0,
-                      colors: [
-                        const Color(0xFF1ABC9C).withValues(alpha: 0.08),
-                        Colors.transparent,
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              // Lock icon + text label
+
+              // 6. Center Text & Lock Icon
               Positioned.fill(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Icon(
                       Icons.lock_outline_rounded,
-                      color: Colors.white.withValues(alpha: 0.22),
-                      size: 18,
+                      color: Colors.white.withValues(alpha: 0.6),
+                      size: 20,
                     ),
                     const SizedBox(width: 8),
                     Text(
                       l10n.secretReady,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.white.withValues(alpha: 0.28),
-                        fontWeight: FontWeight.w500,
-                        letterSpacing: 2.0,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.white,
+                        letterSpacing: 1.2,
                       ),
                     ),
                   ],
