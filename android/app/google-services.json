@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "187237532355-7jmse5fsofhnd2n9iu5ivss7kkmk15u4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hush.hush_app",
+            "certificate_hash": "d100f6d8237b5808d469c17ec9318c1223769be5"
+          }
+        },
+        {
           "client_id": "187237532355-rqikbss7r7dcs618f50j8bveebs0tmp4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -37,6 +45,13 @@
             {
               "client_id": "187237532355-r7q2cijbe14kmrehuj0k843aivbgesa5.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "187237532355-5bcgc4nd6g3h88adk8i5dlaoj8ch74t2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.hush.hushApp"
+              }
             }
           ]
         }
