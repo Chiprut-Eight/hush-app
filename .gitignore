@@ -44,5 +44,8 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+# Android build reports (generated automatically, not source code)
+/android/build/reports/
+
 # Sensitive keys — NEVER commit these
 *.p8
