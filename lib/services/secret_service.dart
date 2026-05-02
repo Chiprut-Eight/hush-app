@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -227,7 +228,7 @@ class SecretService {
         }
       });
     } catch (e) {
-      print('Error updating unique view count: $e');
+      debugPrint('Error updating unique view count: $e');
     }
   }
 

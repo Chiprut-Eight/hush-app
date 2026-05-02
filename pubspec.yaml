@@ -75,7 +75,7 @@ flutter:
 
 flutter_native_splash:
   color: "#0D1320"
-  image: "assets/images/logo_hushhh.jpeg"
+  image: "assets/images/logo_hushhh2.jpeg"
   android: true
   ios: true
   android_gravity: center
@@ -83,14 +83,14 @@ flutter_native_splash:
   fullscreen: true
   android_12:
     color: "#0D1320"
-    image: "assets/images/logo_hushhh.jpeg"
+    image: "assets/images/logo_hushhh2.jpeg"
     icon_background_color: "#0D1320"
-    image_dark: "assets/images/logo_hushhh.jpeg"
+    image_dark: "assets/images/logo_hushhh2.jpeg"
     color_dark: "#0D1320"
     icon_background_color_dark: "#0D1320"
 
 flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
-  image_path: "assets/images/logo_hushhh.jpeg"
+  image_path: "assets/images/logo_hushhh2.jpeg"
   min_sdk_android: 23

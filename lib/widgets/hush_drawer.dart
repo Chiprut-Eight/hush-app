@@ -59,7 +59,7 @@ class HushDrawer extends StatelessWidget {
                           shape: BoxShape.circle,
                           border: Border.all(color: HushColors.textAccent, width: 2),
                           image: const DecorationImage(
-                            image: AssetImage('assets/images/logo_hushhh.jpeg'),
+                            image: AssetImage('assets/images/logo_hushhh2.jpeg'),
                             fit: BoxFit.cover,
                           ),
                         ),

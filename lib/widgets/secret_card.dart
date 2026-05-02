@@ -704,7 +704,7 @@ class _SecretCardState extends State<SecretCard> {
                             children: [
                               _InteractionButton(
                                 icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
-                                count: _currentSecret.likes + (_userLiked ? 1 : 0),
+                                count: _currentSecret.likes,
                                 isActive: _userLiked,
                                 color: _userLiked ? Colors.pink : HushColors.textSecondary,
                                 onTap: _revealed ? () {
@@ -725,7 +725,7 @@ class _SecretCardState extends State<SecretCard> {
                               const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.thumbsDown,
-                                count: _currentSecret.dislikes + (_userDisliked ? 1 : 0),
+                                count: _currentSecret.dislikes,
                                 isActive: _userDisliked,
                                 color: _userDisliked ? Colors.orange : HushColors.textSecondary,
                                 onTap: _revealed ? () {

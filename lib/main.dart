@@ -99,7 +99,7 @@ class _HushAppState extends State<HushApp> {
                             child: Directionality(
                               textDirection: TextDirection.ltr,
                               child: Image.asset(
-                                'assets/images/top_banner.png',
+                                'assets/images/top_banner2.png',
                                 width: MediaQuery.of(context).size.width * 0.38, // Shrunk from 0.45
                                 fit: BoxFit.contain,
                               ),

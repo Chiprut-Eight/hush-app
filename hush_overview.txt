@@ -1,0 +1,31 @@
+HUSH — Geo-Acoustic Social Network
+
+מה זה?
+HUSH היא אפליקציית Flutter (Android + iOS) שמאפשרת למשתמשים לפרסם "סודות" — טקסט או הקלטת קול — גאוגרפית במפה. הסודות מופיעים רק למי שנמצא בטווח גאוגרפי קרוב.
+
+ארכיטקטורה
+- Framework: Flutter (Dart), SDK ^3.10.7
+- Backend: Firebase (Auth, Firestore, Storage, Messaging, Functions)
+- State Management: Provider
+- מפות: flutter_map + OpenStreetMap (CartoDB dark tiles)
+- אודיו: record (הקלטה) + just_audio (השמעה)
+- Auth: Google Sign-In + Apple Sign-In
+
+מסכים עיקריים
+- LoginScreen — כניסה עם Google/Apple
+- OnboardingScreen — הגדרת פרופיל ראשונית
+- AppShell — Navigation shell ראשי
+- FeedScreen — פיד סודות קרובים
+- MapScreen — "Echo Map" — מפה עם markers פועמים לכל סוד
+- CreateScreen — יצירת סוד (טקסט/קול)
+- ProfileScreen — פרופיל משתמש
+- FollowingScreen — מעקב אחרי משתמשים
+- AdminScreen — ניהול (רק לאדמין)
+
+מנגנונים ייחודיים
+1. Decay & Immunity — סוד שלא נצפה מספיק זמן "מת" ונמחק אוטומטית. אם משתמש שמר אותו — הוא חי לנצח.
+2. Tier System — משתמשים עולים ברמות (1-10) לפי כמות הסודות שפרסמו ומספר "distinguished". כל רמה עם צבע ייחודי.
+3. Group Secrets — סוד שדורש X משתמשים להתאסף יחד בחלון זמן ספציפי כדי לפתוח אותו (מאומת דרך Cloud Function).
+4. Ghost Mode — מצב/עונש למשתמשים שעברו על הכללים.
+5. Screenshot Prevention — הגדרת FLAG_SECURE ב-Android למניעת צילומי מסך (למעט משתמש אדמין).
+6. FCM Push Notifications — מערכת התראות (Push Notifications) לסודות חדשים קרובים.
