@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:geolocator/geolocator.dart';
@@ -393,6 +394,8 @@ class _SecretCardState extends State<SecretCard> {
   /// Show comments bottom sheet
   Future<void> _showCommentsSheet(BuildContext context, AppLocalizations l10n) async {
     final TextEditingController commentController = TextEditingController();
+    String? _editingCommentId;
+    final currentUser = context.read<AuthProvider>().firebaseUser;
     
     await showModalBottomSheet(
       context: context,
@@ -448,41 +451,91 @@ class _SecretCardState extends State<SecretCard> {
                               itemBuilder: (ctx, i) {
                                 final c = comments[i];
                                 final commentTime = (c['createdAt'] as DateTime?) ?? DateTime.now();
-                                return Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 6),
-                                  child: Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 14,
-                                        backgroundColor: HushColors.bgCard,
-                                        backgroundImage: c['userPhotoURL'] != null && c['userPhotoURL'] != 'generic'
-                                            ? NetworkImage(c['userPhotoURL'])
-                                            : null,
-                                        child: c['userPhotoURL'] == null || c['userPhotoURL'] == 'generic'
-                                            ? const HushIcon(HushIcons.person, size: 14, color: Colors.white54)
-                                            : null,
-                                      ),
-                                      const SizedBox(width: 10),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(c['userName'] ?? l10n.anonymousUser, 
-                                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                                                const SizedBox(width: 8),
-                                                Text(getTimeAgo(commentTime, l10n),
-                                                  style: const TextStyle(color: HushColors.textMuted, fontSize: 11)),
+                                return GestureDetector(
+                                  onLongPress: () {
+                                    showModalBottomSheet(
+                                      context: ctx,
+                                      backgroundColor: HushColors.bgCard,
+                                      builder: (menuCtx) {
+                                        return SafeArea(
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              ListTile(
+                                                leading: const HushIcon(HushIcons.copy, color: Colors.white),
+                                                title: Text(l10n.copy ?? 'Copy', style: const TextStyle(color: Colors.white)),
+                                                onTap: () {
+                                                  Clipboard.setData(ClipboardData(text: c['text'] ?? ''));
+                                                  Navigator.pop(menuCtx);
+                                                },
+                                              ),
+                                              if (currentUser?.uid == c['userId']) ...[
+                                                ListTile(
+                                                  leading: const HushIcon(HushIcons.edit, color: Colors.white),
+                                                  title: Text(l10n.edit ?? 'Edit', style: const TextStyle(color: Colors.white)),
+                                                  onTap: () {
+                                                    setSheetState(() {
+                                                      _editingCommentId = c['id'];
+                                                      commentController.text = c['text'] ?? '';
+                                                    });
+                                                    Navigator.pop(menuCtx);
+                                                  },
+                                                ),
+                                                ListTile(
+                                                  leading: const HushIcon(HushIcons.trash, color: HushColors.tierRed),
+                                                  title: Text(l10n.delete ?? 'Delete', style: const TextStyle(color: HushColors.tierRed)),
+                                                  onTap: () async {
+                                                    await _secretService.deleteComment(_currentSecret.id, c['id']);
+                                                    if (menuCtx.mounted) Navigator.pop(menuCtx);
+                                                  },
+                                                ),
                                               ],
-                                            ),
-                                            const SizedBox(height: 4),
-                                            Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
-                                          ],
+                                            ],
+                                          ),
+                                        );
+                                      },
+                                    );
+                                  },
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    child: Row(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 14,
+                                          backgroundColor: HushColors.bgCard,
+                                          backgroundImage: c['userPhotoURL'] != null && c['userPhotoURL'] != 'generic'
+                                              ? NetworkImage(c['userPhotoURL'])
+                                              : null,
+                                          child: c['userPhotoURL'] == null || c['userPhotoURL'] == 'generic'
+                                              ? const HushIcon(HushIcons.person, size: 14, color: Colors.white54)
+                                              : null,
                                         ),
-                                      ),
-                                    ],
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Row(
+                                                children: [
+                                                  Text(c['userName'] ?? l10n.anonymousUser, 
+                                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                                                  const SizedBox(width: 8),
+                                                  Text(getTimeAgo(commentTime, l10n),
+                                                    style: const TextStyle(color: HushColors.textMuted, fontSize: 11)),
+                                                  if (c['isEdited'] == true) ...[
+                                                    const SizedBox(width: 4),
+                                                    const Text('(edited)', style: TextStyle(color: HushColors.textMuted, fontSize: 10, fontStyle: FontStyle.italic)),
+                                                  ],
+                                                ],
+                                              ),
+                                              const SizedBox(height: 4),
+                                              Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 );
                               },
@@ -494,34 +547,68 @@ class _SecretCardState extends State<SecretCard> {
                       // Input field
                       Padding(
                         padding: const EdgeInsets.all(12),
-                        child: Row(
+                        child: Column(
                           children: [
-                            Expanded(
-                              child: TextField(
-                                controller: commentController,
-                                style: const TextStyle(color: Colors.white),
-                                decoration: InputDecoration(
-                                  hintText: l10n.commentPlaceholder,
-                                  hintStyle: const TextStyle(color: HushColors.textMuted),
-                                  filled: true,
-                                  fillColor: HushColors.bgCard,
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(20),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                            if (_editingCommentId != null)
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: 8),
+                                child: Row(
+                                  children: [
+                                    const Text('Editing comment...', style: TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                                    const Spacer(),
+                                    GestureDetector(
+                                      onTap: () {
+                                        setSheetState(() {
+                                          _editingCommentId = null;
+                                          commentController.clear();
+                                        });
+                                      },
+                                      child: const Icon(Icons.close, size: 16, color: HushColors.textMuted),
+                                    )
+                                  ],
                                 ),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            IconButton(
-                              icon: const HushIcon(HushIcons.send, size: 20, color: HushColors.textAccent),
-                              onPressed: () async {
-                                final text = commentController.text.trim();
-                                if (text.isEmpty) return;
-                                await _secretService.addComment(_currentSecret.id, text);
-                                commentController.clear();
-                              },
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: TextField(
+                                    controller: commentController,
+                                    style: const TextStyle(color: Colors.white),
+                                    decoration: InputDecoration(
+                                      hintText: l10n.commentPlaceholder,
+                                      hintStyle: const TextStyle(color: HushColors.textMuted),
+                                      filled: true,
+                                      fillColor: HushColors.bgCard,
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(20),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                IconButton(
+                                  icon: HushIcon(_editingCommentId != null ? HushIcons.check : HushIcons.send, size: 20, color: HushColors.textAccent),
+                                  onPressed: () async {
+                                    final text = commentController.text.trim();
+                                    if (text.isEmpty) return;
+                                    
+                                    if (_editingCommentId != null) {
+                                      await _secretService.editComment(_currentSecret.id, _editingCommentId!, text);
+                                      if (ctx.mounted) {
+                                        setSheetState(() {
+                                          _editingCommentId = null;
+                                          commentController.clear();
+                                        });
+                                      }
+                                    } else {
+                                      await _secretService.addComment(_currentSecret.id, text);
+                                      commentController.clear();
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),

@@ -429,6 +429,15 @@ class SecretService {
             }).toList());
   }
 
+  /// Edit a comment
+  Future<void> editComment(String secretId, String commentId, String newText) async {
+    await _secretsRef.doc(secretId).collection('comments').doc(commentId).update({
+      'text': newText,
+      'isEdited': true,
+      'editedAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   /// Delete a comment
   Future<void> deleteComment(String secretId, String commentId) async {
     await _secretsRef.doc(secretId).collection('comments').doc(commentId).delete();
