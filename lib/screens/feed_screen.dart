@@ -48,6 +48,11 @@ class _FeedScreenState extends State<FeedScreen> {
   }
 
   Future<void> _fetchSecrets() async {
+    // Get current user info before any async gaps
+    final authProvider = context.read<AuthProvider>();
+    final uid = authProvider.firebaseUser?.uid;
+    final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
+
     setState(() {
       _isLoading = true;
       _error = null;
@@ -72,11 +77,6 @@ class _FeedScreenState extends State<FeedScreen> {
       }
 
       Position position = await Geolocator.getCurrentPosition();
-
-      // Get current user info for showing own + saved secrets regardless of distance
-      final authProvider = context.read<AuthProvider>();
-      final uid = authProvider.firebaseUser?.uid;
-      final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
 
       final secrets = await _secretService.getNearbySecrets(
         position.latitude,

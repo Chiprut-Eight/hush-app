@@ -46,6 +46,11 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<void> _fetchMapData() async {
+    // Get current user info before any async gaps
+    final authProvider = context.read<AuthProvider>();
+    final uid = authProvider.firebaseUser?.uid;
+    final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
+
     setState(() {
       _isLoading = true;
       _error = null;
@@ -68,10 +73,6 @@ class _MapScreenState extends State<MapScreen> {
       }
 
       _currentPosition = await Geolocator.getCurrentPosition();
-
-      final authProvider = context.read<AuthProvider>();
-      final uid = authProvider.firebaseUser?.uid;
-      final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
 
       final secrets = await _secretService.getSecretsForMap(
         _currentPosition!.latitude, 
