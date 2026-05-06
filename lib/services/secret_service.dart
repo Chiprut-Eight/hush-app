@@ -68,6 +68,13 @@ class SecretService {
     return secrets;
   }
 
+  /// Fetch a single secret by ID
+  Future<Secret?> getSecret(String secretId) async {
+    final doc = await _secretsRef.doc(secretId).get();
+    if (!doc.exists) return null;
+    return Secret.fromFirestore(doc);
+  }
+
   /// Fetch all secrets created by a specific user
   Future<List<Secret>> getUserSecrets(String userId) async {
     final snapshot = await _secretsRef
@@ -395,6 +402,11 @@ class SecretService {
       'text': text,
       'createdAt': FieldValue.serverTimestamp(),
     });
+
+    // Update comment count on secret
+    await _secretsRef.doc(secretId).update({
+      'commentCount': FieldValue.increment(1),
+    });
   }
 
   /// Get comments stream for a secret
@@ -420,6 +432,11 @@ class SecretService {
   /// Delete a comment
   Future<void> deleteComment(String secretId, String commentId) async {
     await _secretsRef.doc(secretId).collection('comments').doc(commentId).delete();
+    
+    // Decrement comment count
+    await _secretsRef.doc(secretId).update({
+      'commentCount': FieldValue.increment(-1),
+    });
   }
 
   /// Get all secrets for map display.

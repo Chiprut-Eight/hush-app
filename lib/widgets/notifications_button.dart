@@ -5,6 +5,7 @@ import '../providers/auth_provider.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
+import '../screens/secret_detail_screen.dart';
 
 class NotificationsButton extends StatelessWidget {
   const NotificationsButton({super.key});
@@ -90,42 +91,57 @@ class NotificationsButton extends StatelessWidget {
                           final body = bodyObj?[langCode] ?? bodyObj?['en'] ?? '';
                           final isRead = data['read'] == true;
                           
-                          return Container(
-                            color: isRead ? Colors.transparent : HushColors.textAccent.withValues(alpha: 0.1),
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                CircleAvatar(
-                                  radius: 18,
-                                  backgroundColor: HushColors.bgCard,
-                                  child: const HushIcon(HushIcons.bell, size: 16, color: HushColors.textAccent),
-                                ),
-                                const SizedBox(width: 12),
-                                Expanded(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        title,
-                                        style: TextStyle(
-                                          color: isDark ? Colors.white : Colors.black87,
-                                          fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
-                                          fontSize: 14,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        body,
-                                        style: const TextStyle(
-                                          color: HushColors.textSecondary,
-                                          fontSize: 13,
-                                        ),
-                                      ),
-                                    ],
+                          final secretId = data['data']?['secretId'];
+                          
+                          return InkWell(
+                            onTap: () {
+                              Navigator.pop(context); // Close the bottom sheet
+                              if (secretId != null) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SecretDetailScreen(secretId: secretId),
                                   ),
-                                ),
-                              ],
+                                );
+                              }
+                            },
+                            child: Container(
+                              color: isRead ? Colors.transparent : HushColors.textAccent.withValues(alpha: 0.1),
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CircleAvatar(
+                                    radius: 18,
+                                    backgroundColor: HushColors.bgCard,
+                                    child: const HushIcon(HushIcons.bell, size: 16, color: HushColors.textAccent),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          title,
+                                          style: TextStyle(
+                                            color: isDark ? Colors.white : Colors.black87,
+                                            fontWeight: isRead ? FontWeight.normal : FontWeight.bold,
+                                            fontSize: 14,
+                                          ),
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          body,
+                                          style: const TextStyle(
+                                            color: HushColors.textSecondary,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           );
                         },

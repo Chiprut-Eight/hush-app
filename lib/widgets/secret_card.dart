@@ -761,7 +761,7 @@ class _SecretCardState extends State<SecretCard> {
                               const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.comment,
-                                count: 0,
+                                count: _currentSecret.commentCount,
                                 isActive: false,
                                 color: _revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3),
                                 onTap: _revealed ? () async {
