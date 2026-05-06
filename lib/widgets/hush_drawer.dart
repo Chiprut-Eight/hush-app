@@ -9,6 +9,8 @@ import '../providers/theme_provider.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/tutorial_popup.dart';
 import '../screens/admin_screen.dart';
+import '../screens/privacy_policy_screen.dart';
+import '../screens/terms_of_service_screen.dart';
 
 class HushDrawer extends StatelessWidget {
   const HushDrawer({super.key});
@@ -117,6 +119,7 @@ class HushDrawer extends StatelessWidget {
                   title: Text(l10n.termsOfService, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   onTap: () {
                     Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen()));
                   },
                 ),
                 ListTile(
@@ -124,6 +127,7 @@ class HushDrawer extends StatelessWidget {
                   title: Text(l10n.privacyPolicy, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   onTap: () {
                     Navigator.pop(context);
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
                   },
                 ),
 
