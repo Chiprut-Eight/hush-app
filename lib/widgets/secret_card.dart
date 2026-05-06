@@ -24,6 +24,8 @@ class SecretCard extends StatefulWidget {
   final Position? userPosition;
   final VoidCallback? onReveal;
   final VoidCallback? onDelete;
+  final VoidCallback? onInteractionStart;
+  final VoidCallback? onInteractionEnd;
 
   const SecretCard({
     super.key, 
@@ -31,6 +33,8 @@ class SecretCard extends StatefulWidget {
     this.userPosition,
     this.onReveal,
     this.onDelete,
+    this.onInteractionStart,
+    this.onInteractionEnd,
   });
 
   @override
@@ -289,9 +293,9 @@ class _SecretCardState extends State<SecretCard> {
   }
 
   /// Show report dialog
-  void _showReportDialog(BuildContext context, AppLocalizations l10n) {
+  Future<void> _showReportDialog(BuildContext context, AppLocalizations l10n) async {
     String? selectedReason;
-    showDialog(
+    await showDialog(
       context: context,
       builder: (ctx) {
         return StatefulBuilder(builder: (ctx, setDialogState) {
@@ -360,8 +364,8 @@ class _SecretCardState extends State<SecretCard> {
   }
 
   /// Show delete confirmation
-  void _showDeleteConfirmation(BuildContext context, AppLocalizations l10n) {
-    showDialog(
+  Future<void> _showDeleteConfirmation(BuildContext context, AppLocalizations l10n) async {
+    await showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
         backgroundColor: HushColors.bgCard,
@@ -387,10 +391,10 @@ class _SecretCardState extends State<SecretCard> {
   }
 
   /// Show comments bottom sheet
-  void _showCommentsSheet(BuildContext context, AppLocalizations l10n) {
+  Future<void> _showCommentsSheet(BuildContext context, AppLocalizations l10n) async {
     final TextEditingController commentController = TextEditingController();
     
-    showModalBottomSheet(
+    await showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: HushColors.bgPrimary,
@@ -681,7 +685,11 @@ class _SecretCardState extends State<SecretCard> {
                               if (isOwner) ...[
                                 const SizedBox(width: 8),
                                 GestureDetector(
-                                  onTap: () => _showDeleteConfirmation(context, l10n),
+                                  onTap: () async {
+                                    if (widget.onInteractionStart != null) widget.onInteractionStart!();
+                                    await _showDeleteConfirmation(context, l10n);
+                                    if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
+                                  },
                                   child: const HushIcon(HushIcons.trash, size: 20, color: HushColors.tierRed),
                                 ),
                               ],
@@ -756,7 +764,11 @@ class _SecretCardState extends State<SecretCard> {
                                 count: 0,
                                 isActive: false,
                                 color: _revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3),
-                                onTap: _revealed ? () => _showCommentsSheet(context, l10n) : null,
+                                onTap: _revealed ? () async {
+                                  if (widget.onInteractionStart != null) widget.onInteractionStart!();
+                                  await _showCommentsSheet(context, l10n);
+                                  if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
+                                } : null,
                               ),
                               const SizedBox(width: 16),
                               Row(
@@ -772,7 +784,11 @@ class _SecretCardState extends State<SecretCard> {
                             children: [
                               // --- REPORT BUTTON ---
                               GestureDetector(
-                                onTap: _revealed ? () => _showReportDialog(context, l10n) : null,
+                                onTap: _revealed ? () async {
+                                  if (widget.onInteractionStart != null) widget.onInteractionStart!();
+                                  await _showReportDialog(context, l10n);
+                                  if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
+                                } : null,
                                 child: HushIcon(HushIcons.flag, size: 18, color: (_revealed || isOwner) ? HushColors.tierRed : HushColors.tierRed.withValues(alpha: 0.3)),
                               ),
                               const SizedBox(width: 16),

@@ -33,12 +33,26 @@ class _FeedScreenState extends State<FeedScreen> {
   void initState() {
     super.initState();
     _fetchSecrets();
+    _startAutoRefresh();
+  }
+
+  void _startAutoRefresh() {
+    _autoRefreshTimer?.cancel();
     // Task 2: Auto-refresh every 45 seconds
     _autoRefreshTimer = Timer.periodic(const Duration(seconds: 45), (_) {
       if (!_isLoading) {
         _fetchSecrets();
       }
     });
+  }
+
+  void _pauseAutoRefresh() {
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = null;
+  }
+
+  void _resumeAutoRefresh() {
+    _startAutoRefresh();
   }
 
   @override
@@ -200,6 +214,8 @@ class _FeedScreenState extends State<FeedScreen> {
             secret: _secrets[index],
             userPosition: _userPosition,
             onDelete: _fetchSecrets,
+            onInteractionStart: _pauseAutoRefresh,
+            onInteractionEnd: _resumeAutoRefresh,
           );
         },
       ),
