@@ -394,7 +394,7 @@ class _SecretCardState extends State<SecretCard> {
   /// Show comments bottom sheet
   Future<void> _showCommentsSheet(BuildContext context, AppLocalizations l10n) async {
     final TextEditingController commentController = TextEditingController();
-    String? _editingCommentId;
+    String? editingCommentId;
     final currentUser = context.read<AuthProvider>().firebaseUser;
     
     await showModalBottomSheet(
@@ -463,7 +463,7 @@ class _SecretCardState extends State<SecretCard> {
                                             children: [
                                               ListTile(
                                                 leading: const HushIcon(HushIcons.copy, color: Colors.white),
-                                                title: Text(l10n.copy ?? 'Copy', style: const TextStyle(color: Colors.white)),
+                                                title: const Text('Copy', style: TextStyle(color: Colors.white)),
                                                 onTap: () {
                                                   Clipboard.setData(ClipboardData(text: c['text'] ?? ''));
                                                   Navigator.pop(menuCtx);
@@ -472,10 +472,10 @@ class _SecretCardState extends State<SecretCard> {
                                               if (currentUser?.uid == c['userId']) ...[
                                                 ListTile(
                                                   leading: const HushIcon(HushIcons.edit, color: Colors.white),
-                                                  title: Text(l10n.edit ?? 'Edit', style: const TextStyle(color: Colors.white)),
+                                                  title: const Text('Edit', style: TextStyle(color: Colors.white)),
                                                   onTap: () {
                                                     setSheetState(() {
-                                                      _editingCommentId = c['id'];
+                                                      editingCommentId = c['id'];
                                                       commentController.text = c['text'] ?? '';
                                                     });
                                                     Navigator.pop(menuCtx);
@@ -483,7 +483,7 @@ class _SecretCardState extends State<SecretCard> {
                                                 ),
                                                 ListTile(
                                                   leading: const HushIcon(HushIcons.trash, color: HushColors.tierRed),
-                                                  title: Text(l10n.delete ?? 'Delete', style: const TextStyle(color: HushColors.tierRed)),
+                                                  title: Text(l10n.delete, style: const TextStyle(color: HushColors.tierRed)),
                                                   onTap: () async {
                                                     await _secretService.deleteComment(_currentSecret.id, c['id']);
                                                     if (menuCtx.mounted) Navigator.pop(menuCtx);
@@ -549,7 +549,7 @@ class _SecretCardState extends State<SecretCard> {
                         padding: const EdgeInsets.all(12),
                         child: Column(
                           children: [
-                            if (_editingCommentId != null)
+                            if (editingCommentId != null)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Row(
@@ -559,7 +559,7 @@ class _SecretCardState extends State<SecretCard> {
                                     GestureDetector(
                                       onTap: () {
                                         setSheetState(() {
-                                          _editingCommentId = null;
+                                          editingCommentId = null;
                                           commentController.clear();
                                         });
                                       },
@@ -589,16 +589,16 @@ class _SecretCardState extends State<SecretCard> {
                                 ),
                                 const SizedBox(width: 8),
                                 IconButton(
-                                  icon: HushIcon(_editingCommentId != null ? HushIcons.check : HushIcons.send, size: 20, color: HushColors.textAccent),
+                                  icon: HushIcon(editingCommentId != null ? HushIcons.check : HushIcons.send, size: 20, color: HushColors.textAccent),
                                   onPressed: () async {
                                     final text = commentController.text.trim();
                                     if (text.isEmpty) return;
                                     
-                                    if (_editingCommentId != null) {
-                                      await _secretService.editComment(_currentSecret.id, _editingCommentId!, text);
+                                    if (editingCommentId != null) {
+                                      await _secretService.editComment(_currentSecret.id, editingCommentId!, text);
                                       if (ctx.mounted) {
                                         setSheetState(() {
-                                          _editingCommentId = null;
+                                          editingCommentId = null;
                                           commentController.clear();
                                         });
                                       }

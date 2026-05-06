@@ -27,6 +27,9 @@ class HushIcons {
   static const IconData touch        = PhosphorIconsLight.handTap;
   static const IconData send         = PhosphorIconsLight.paperPlaneRight;
   static const IconData trash        = PhosphorIconsLight.trash;
+  static const IconData copy         = PhosphorIconsLight.copy;
+  static const IconData edit         = PhosphorIconsLight.pencil;
+  static const IconData check        = PhosphorIconsLight.check;
   static const IconData stop         = PhosphorIconsLight.stopCircle;
   static const IconData heart        = PhosphorIconsLight.heart;
   static const IconData heartFilled  = PhosphorIconsFill.heart;
