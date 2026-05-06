@@ -71,7 +71,9 @@ class _SecretCardState extends State<SecretCard> {
       _showWarning = true;
     }
     
-    final currentUser = context.read<AuthProvider>().firebaseUser;
+    final authProvider = context.read<AuthProvider>();
+    final currentUser = authProvider.firebaseUser;
+    final hushUser = authProvider.hushUser;
     
     // Start live secret data stream
     _secretDocSubscription = _secretService
@@ -80,8 +82,9 @@ class _SecretCardState extends State<SecretCard> {
       if (mounted) {
         setState(() {
           _currentSecret = updatedSecret;
-          // Auto-reveal for creators OR if already unlocked
-          if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid)) {
+          bool isSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
+          // Auto-reveal for creators OR if already unlocked OR if saved
+          if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSaved) {
             if (!_revealed) {
               _revealed = true;
               if (_currentSecret.type == 'voice') _initAudio();
@@ -557,6 +560,10 @@ class _SecretCardState extends State<SecretCard> {
     bool isGroup = _currentSecret.isGroup; // Use model's isGroup instead of type check
     bool userSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
     bool isOwner = currentUser?.uid == _currentSecret.creatorId;
+    
+    if (userSaved || isOwner) {
+      isInRange = true;
+    }
     
     final l10n = AppLocalizations.of(context)!;
 
