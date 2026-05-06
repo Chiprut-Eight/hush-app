@@ -386,14 +386,14 @@ class SecretService {
   }
 
   /// Add a comment to a secret
-  Future<void> addComment(String secretId, String text) async {
+  Future<void> addComment(String secretId, String text, {String? replyToUserId, String? replyToUserName}) async {
     final user = _auth.currentUser;
     if (user == null) return;
 
     final userDoc = await _firestore.collection('users').doc(user.uid).get();
     final userData = userDoc.data() ?? {};
 
-    await _secretsRef.doc(secretId).collection('comments').add({
+    final commentData = {
       'userId': user.uid,
       'userName': '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty
           ? '${userData['firstName']} ${userData['lastName']}'.trim()
@@ -401,7 +401,14 @@ class SecretService {
       'userPhotoURL': userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
       'text': text,
       'createdAt': FieldValue.serverTimestamp(),
-    });
+    };
+    
+    if (replyToUserId != null) {
+      commentData['replyToUserId'] = replyToUserId;
+      commentData['replyToUserName'] = replyToUserName ?? 'Someone';
+    }
+
+    await _secretsRef.doc(secretId).collection('comments').add(commentData);
 
     // Update comment count on secret
     await _secretsRef.doc(secretId).update({
@@ -425,6 +432,9 @@ class SecretService {
                 'userPhotoURL': data['userPhotoURL'],
                 'text': data['text'],
                 'createdAt': (data['createdAt'] as Timestamp?)?.toDate(),
+                'isEdited': data['isEdited'] ?? false,
+                'replyToUserId': data['replyToUserId'],
+                'replyToUserName': data['replyToUserName'],
               };
             }).toList());
   }

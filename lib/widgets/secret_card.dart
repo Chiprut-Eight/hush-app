@@ -395,6 +395,8 @@ class _SecretCardState extends State<SecretCard> {
   Future<void> _showCommentsSheet(BuildContext context, AppLocalizations l10n) async {
     final TextEditingController commentController = TextEditingController();
     String? editingCommentId;
+    String? replyingToUserId;
+    String? replyingToUserName;
     final currentUser = context.read<AuthProvider>().firebaseUser;
     
     await showModalBottomSheet(
@@ -490,6 +492,19 @@ class _SecretCardState extends State<SecretCard> {
                                                   },
                                                 ),
                                               ],
+                                              ListTile(
+                                                leading: const HushIcon(HushIcons.comment, color: Colors.white),
+                                                title: const Text('Reply', style: TextStyle(color: Colors.white)),
+                                                onTap: () {
+                                                  setSheetState(() {
+                                                    editingCommentId = null;
+                                                    commentController.clear();
+                                                    replyingToUserId = c['userId'];
+                                                    replyingToUserName = c['userName'] ?? 'Someone';
+                                                  });
+                                                  Navigator.pop(menuCtx);
+                                                },
+                                              ),
                                             ],
                                           ),
                                         );
@@ -529,8 +544,25 @@ class _SecretCardState extends State<SecretCard> {
                                                   ],
                                                 ],
                                               ),
+                                              if (c['replyToUserId'] != null) ...[
+                                                const SizedBox(height: 2),
+                                                Text('▶ Replying to ${c['replyToUserName'] ?? 'Someone'}', 
+                                                  style: const TextStyle(color: HushColors.textAccent, fontSize: 12, fontWeight: FontWeight.w600)),
+                                              ],
                                               const SizedBox(height: 4),
                                               Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
+                                              const SizedBox(height: 4),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  setSheetState(() {
+                                                    editingCommentId = null;
+                                                    commentController.clear();
+                                                    replyingToUserId = c['userId'];
+                                                    replyingToUserName = c['userName'] ?? 'Someone';
+                                                  });
+                                                },
+                                                child: const Text('Reply', style: TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
+                                              ),
                                             ],
                                           ),
                                         ),
@@ -549,17 +581,24 @@ class _SecretCardState extends State<SecretCard> {
                         padding: const EdgeInsets.all(12),
                         child: Column(
                           children: [
-                            if (editingCommentId != null)
+                            if (editingCommentId != null || replyingToUserId != null)
                               Padding(
                                 padding: const EdgeInsets.only(bottom: 8),
                                 child: Row(
                                   children: [
-                                    const Text('Editing comment...', style: TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                                    Text(
+                                      editingCommentId != null 
+                                          ? 'Editing comment...' 
+                                          : 'Replying to @$replyingToUserName', 
+                                      style: const TextStyle(color: HushColors.textAccent, fontSize: 12)
+                                    ),
                                     const Spacer(),
                                     GestureDetector(
                                       onTap: () {
                                         setSheetState(() {
                                           editingCommentId = null;
+                                          replyingToUserId = null;
+                                          replyingToUserName = null;
                                           commentController.clear();
                                         });
                                       },
@@ -603,8 +642,19 @@ class _SecretCardState extends State<SecretCard> {
                                         });
                                       }
                                     } else {
-                                      await _secretService.addComment(_currentSecret.id, text);
-                                      commentController.clear();
+                                      await _secretService.addComment(
+                                        _currentSecret.id, 
+                                        text,
+                                        replyToUserId: replyingToUserId,
+                                        replyToUserName: replyingToUserName,
+                                      );
+                                      if (ctx.mounted) {
+                                        setSheetState(() {
+                                          replyingToUserId = null;
+                                          replyingToUserName = null;
+                                          commentController.clear();
+                                        });
+                                      }
                                     }
                                   },
                                 ),
