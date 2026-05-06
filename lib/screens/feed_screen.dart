@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/secret_card.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
@@ -71,7 +73,17 @@ class _FeedScreenState extends State<FeedScreen> {
 
       Position position = await Geolocator.getCurrentPosition();
 
-      final secrets = await _secretService.getNearbySecrets(position.latitude, position.longitude);
+      // Get current user info for showing own + saved secrets regardless of distance
+      final authProvider = context.read<AuthProvider>();
+      final uid = authProvider.firebaseUser?.uid;
+      final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
+
+      final secrets = await _secretService.getNearbySecrets(
+        position.latitude,
+        position.longitude,
+        userId: uid,
+        savedSecretIds: savedIds,
+      );
 
       if (mounted) {
         setState(() {

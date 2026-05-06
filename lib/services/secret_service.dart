@@ -33,23 +33,36 @@ class SecretService {
         .map((snapshot) => snapshot.docs.length);
   }
 
-  /// Fetch all non-hidden, non-expired secrets and filter by proximity
-  Future<List<Secret>> getNearbySecrets(double userLat, double userLng) async {
+  /// Fetch all non-hidden, non-expired secrets and filter by proximity.
+  /// User's own secrets and saved secrets always appear regardless of distance.
+  Future<List<Secret>> getNearbySecrets(
+    double userLat,
+    double userLng, {
+    String? userId,
+    List<String> savedSecretIds = const [],
+  }) async {
     final now = DateTime.now();
     final snapshot = await _secretsRef
         .where('isHidden', isEqualTo: false)
         .orderBy('createdAt', descending: true)
         .get();
 
+    final savedSet = savedSecretIds.toSet();
+
     final secrets = snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
         .where((secret) => Secret.isSurvivor(secret, now))
-        .where((secret) => 
-            GeoService.isWithinRadius(
-              userLat, userLng,
-              secret.lat, secret.lng,
-              AppConstants.feedRadiusMeters,
-            ))
+        .where((secret) {
+          // Always show user's own secrets and saved secrets
+          if (userId != null && secret.creatorId == userId) return true;
+          if (savedSet.contains(secret.id)) return true;
+          // Otherwise filter by proximity
+          return GeoService.isWithinRadius(
+            userLat, userLng,
+            secret.lat, secret.lng,
+            AppConstants.feedRadiusMeters,
+          );
+        })
         .toList();
 
     return secrets;
@@ -409,22 +422,35 @@ class SecretService {
     await _secretsRef.doc(secretId).collection('comments').doc(commentId).delete();
   }
 
-  /// Get all secrets for map display
-  Future<List<Secret>> getSecretsForMap(double userLat, double userLng) async {
+  /// Get all secrets for map display.
+  /// User's own secrets and saved secrets always appear regardless of distance.
+  Future<List<Secret>> getSecretsForMap(
+    double userLat,
+    double userLng, {
+    String? userId,
+    List<String> savedSecretIds = const [],
+  }) async {
     final now = DateTime.now();
     final snapshot = await _secretsRef
         .where('isHidden', isEqualTo: false)
         .get();
 
+    final savedSet = savedSecretIds.toSet();
+
     return snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
         .where((secret) => Secret.isSurvivor(secret, now))
-        .where((secret) =>
-            GeoService.isWithinRadius(
-              userLat, userLng,
-              secret.lat, secret.lng,
-              AppConstants.echoMapRadiusMeters,
-            ))
+        .where((secret) {
+          // Always show user's own secrets and saved secrets
+          if (userId != null && secret.creatorId == userId) return true;
+          if (savedSet.contains(secret.id)) return true;
+          // Otherwise filter by proximity
+          return GeoService.isWithinRadius(
+            userLat, userLng,
+            secret.lat, secret.lng,
+            AppConstants.echoMapRadiusMeters,
+          );
+        })
         .toList();
   }
 

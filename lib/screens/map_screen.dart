@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/secret_card.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
@@ -67,9 +69,15 @@ class _MapScreenState extends State<MapScreen> {
 
       _currentPosition = await Geolocator.getCurrentPosition();
 
+      final authProvider = context.read<AuthProvider>();
+      final uid = authProvider.firebaseUser?.uid;
+      final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
+
       final secrets = await _secretService.getSecretsForMap(
         _currentPosition!.latitude, 
-        _currentPosition!.longitude
+        _currentPosition!.longitude,
+        userId: uid,
+        savedSecretIds: savedIds,
       );
 
       if (mounted) {
