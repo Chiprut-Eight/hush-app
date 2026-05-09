@@ -225,5 +225,9 @@
     "placeholders": {
       "distance": { "type": "String" }
     }
-  }
+  },
+  "inviteFriends": "הזמינו חברים",
+  "inviteMessage": "נהנים ב-hushhh? הזמינו חברים, צרו hushhh קבוצתיים והמתינו שיפתחו אותם",
+  "dontShowAgain": "אל תציג שוב",
+  "shareAppText": "הצטרפו אליי ל-HUSH! הרשת החברתית הגיאו-אקוסטית. הורידו עכשיו: https://hushhh.app"
 }

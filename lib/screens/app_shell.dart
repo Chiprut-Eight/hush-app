@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'dart:async';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:share_plus/share_plus.dart';
 
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
@@ -36,6 +39,80 @@ class _AppShellState extends State<AppShell> {
     FollowingScreen(),
     ProfileScreen(),
   ];
+
+  Timer? _inviteTimer;
+
+  @override
+  void initState() {
+    super.initState();
+    _startInviteTimer();
+  }
+
+  @override
+  void dispose() {
+    _inviteTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _startInviteTimer() async {
+    final prefs = await SharedPreferences.getInstance();
+    final hasSeenInvite = prefs.getBool('hasSeenInvitePopup') ?? false;
+
+    if (!hasSeenInvite) {
+      _inviteTimer = Timer(const Duration(minutes: 2), () {
+        if (mounted) {
+          _showInvitePopup();
+        }
+      });
+    }
+  }
+
+  void _showInvitePopup() {
+    final l10n = AppLocalizations.of(context)!;
+    
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: HushColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Row(
+          children: [
+            const Icon(Icons.favorite, color: HushColors.tierRed),
+            const SizedBox(width: 8),
+            Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+          ],
+        ),
+        content: Text(
+          l10n.inviteMessage,
+          style: const TextStyle(color: HushColors.textSecondary, fontSize: 14),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('hasSeenInvitePopup', true);
+              if (ctx.mounted) Navigator.pop(ctx);
+            },
+            child: Text(l10n.dontShowAgain, style: const TextStyle(color: HushColors.textMuted)),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('hasSeenInvitePopup', true);
+              if (ctx.mounted) Navigator.pop(ctx);
+              Share.share(l10n.shareAppText);
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: HushColors.textAccent,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+            child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -171,18 +171,29 @@ exports.onNewComment = functions.firestore
     const creatorId = secret === null || secret === void 0 ? void 0 : secret.creatorId;
     if (!creatorId)
         return;
-    // Don't notify if the creator commented on their own secret
-    if (comment.userId === creatorId)
-        return;
     const commenterName = comment.userName || "Someone";
     const commentPreview = ((_a = comment.text) === null || _a === void 0 ? void 0 : _a.substring(0, 100)) || "";
-    await sendPushToUser(creatorId, {
-        en: `${commenterName} commented 💬`,
-        he: `${commenterName} הגיב/ה 💬`,
-    }, {
-        en: commentPreview || "New comment on your Hushhh",
-        he: commentPreview || "תגובה חדשה על ה-Hushhh שלך",
-    }, { type: "comment", secretId });
+    const replyToUserId = comment.replyToUserId;
+    // 1. Notify the user being replied to (if any and it's not themselves)
+    if (replyToUserId && replyToUserId !== comment.userId) {
+        await sendPushToUser(replyToUserId, {
+            en: `${commenterName} replied to you 💬`,
+            he: `${commenterName} הגיב/ה לך 💬`,
+        }, {
+            en: commentPreview || "New reply to your comment",
+            he: commentPreview || "תגובה חדשה לתגובה שלך",
+        }, { type: "comment", secretId });
+    }
+    // 2. Notify the secret creator (if they are not the ones commenting, and if they weren't just notified as the reply target)
+    if (creatorId !== comment.userId && creatorId !== replyToUserId) {
+        await sendPushToUser(creatorId, {
+            en: `${commenterName} commented 💬`,
+            he: `${commenterName} הגיב/ה 💬`,
+        }, {
+            en: commentPreview || "New comment on your Hushhh",
+            he: commentPreview || "תגובה חדשה על ה-Hushhh שלך",
+        }, { type: "comment", secretId });
+    }
 });
 // ============================================================
 // 4. NEW FOLLOWER — Notify the followed user

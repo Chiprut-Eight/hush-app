@@ -542,4 +542,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String distanceAwayKm(String distance) {
     return '${distance}km away';
   }
+
+  @override
+  String get inviteFriends => 'Invite Friends';
+
+  @override
+  String get inviteMessage =>
+      'Enjoying hushhh? Invite friends, create group hushhh and wait for them to open them';
+
+  @override
+  String get dontShowAgain => 'Don\'t show again';
+
+  @override
+  String get shareAppText =>
+      'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app';
 }

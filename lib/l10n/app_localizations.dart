@@ -1075,6 +1075,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{distance}km away'**
   String distanceAwayKm(String distance);
+
+  /// No description provided for @inviteFriends.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Friends'**
+  String get inviteFriends;
+
+  /// No description provided for @inviteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Enjoying hushhh? Invite friends, create group hushhh and wait for them to open them'**
+  String get inviteMessage;
+
+  /// No description provided for @dontShowAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t show again'**
+  String get dontShowAgain;
+
+  /// No description provided for @shareAppText.
+  ///
+  /// In en, this message translates to:
+  /// **'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app'**
+  String get shareAppText;
 }
 
 class _AppLocalizationsDelegate

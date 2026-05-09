@@ -225,5 +225,9 @@
     "placeholders": {
       "distance": { "type": "String" }
     }
-  }
+  },
+  "inviteFriends": "Invite Friends",
+  "inviteMessage": "Enjoying hushhh? Invite friends, create group hushhh and wait for them to open them",
+  "dontShowAgain": "Don't show again",
+  "shareAppText": "Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app"
 }

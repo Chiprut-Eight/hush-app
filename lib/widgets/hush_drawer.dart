@@ -11,6 +11,7 @@ import '../widgets/tutorial_popup.dart';
 import '../screens/admin_screen.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_service_screen.dart';
+import 'package:share_plus/share_plus.dart';
 
 class HushDrawer extends StatelessWidget {
   const HushDrawer({super.key});
@@ -97,6 +98,16 @@ class HushDrawer extends StatelessWidget {
                     style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold),
                   ),
                   onTap: () => localeProvider.toggleLocale(),
+                ),
+
+                // Invite Friends
+                ListTile(
+                  leading: Icon(Icons.person_add_alt_1_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
+                  title: Text(l10n.inviteFriends, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+                  onTap: () {
+                    Navigator.pop(context);
+                    Share.share(l10n.shareAppText);
+                  },
                 ),
 
                 // Settings
