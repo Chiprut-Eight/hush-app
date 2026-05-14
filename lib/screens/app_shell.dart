@@ -181,14 +181,14 @@ class _AppShellState extends State<AppShell> {
                       padding: const EdgeInsets.only(bottom: 4.0),
                       child: HushIcon(HushIcons.feed, size: 22, color: _currentIndex == 0 ? HushColors.textAccent : HushColors.textSecondary),
                     ),
-                    label: l10n.feedTitle,
+                    label: l10n.feedTabTitle,
                   ),
                   BottomNavigationBarItem(
                     icon: Padding(
                       padding: const EdgeInsets.only(bottom: 4.0),
                       child: HushIcon(HushIcons.map, size: 22, color: _currentIndex == 1 ? HushColors.textAccent : HushColors.textSecondary),
                     ),
-                    label: l10n.mapTitle,
+                    label: l10n.mapTabTitle,
                   ),
                   BottomNavigationBarItem(
                     icon: Container(

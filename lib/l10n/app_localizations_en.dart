@@ -27,6 +27,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get feedTitle => 'Nearby Hushhh';
 
   @override
+  String get feedTabTitle => 'Nearby';
+
+  @override
   String get feedEmpty =>
       'No Hushhh nearby... Walk around to discover hidden whispers';
 
@@ -35,6 +38,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapTitle => 'Echo Map';
+
+  @override
+  String get mapTabTitle => 'Map';
 
   @override
   String get createTitle => 'Drop a Hushhh';

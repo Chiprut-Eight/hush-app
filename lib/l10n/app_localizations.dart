@@ -130,9 +130,15 @@ abstract class AppLocalizations {
 
   /// No description provided for @feedTitle.
   ///
-  /// In en, this message translates to:
-  /// **'Nearby Hushhh'**
+  /// In he, this message translates to:
+  /// **'Hushhh בקרבתך'**
   String get feedTitle;
+
+  /// No description provided for @feedTabTitle.
+  ///
+  /// In he, this message translates to:
+  /// **'בקרבתך'**
+  String get feedTabTitle;
 
   /// No description provided for @feedEmpty.
   ///
@@ -148,9 +154,15 @@ abstract class AppLocalizations {
 
   /// No description provided for @mapTitle.
   ///
-  /// In en, this message translates to:
-  /// **'Echo Map'**
+  /// In he, this message translates to:
+  /// **'Hushhh בסביבה'**
   String get mapTitle;
+
+  /// No description provided for @mapTabTitle.
+  ///
+  /// In he, this message translates to:
+  /// **'בסביבה'**
+  String get mapTabTitle;
 
   /// No description provided for @createTitle.
   ///

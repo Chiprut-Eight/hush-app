@@ -27,6 +27,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get feedTitle => 'Hushhh בקרבתך';
 
   @override
+  String get feedTabTitle => 'בקרבתך';
+
+  @override
   String get feedEmpty => 'אין Hushhh בסביבה... הסתובב כדי לגלות לחישות נסתרות';
 
   @override
@@ -34,6 +37,9 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get mapTitle => 'Hushhh בסביבה';
+
+  @override
+  String get mapTabTitle => 'בסביבה';
 
   @override
   String get createTitle => 'הטמן Hushhh';
