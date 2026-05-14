@@ -98,8 +98,6 @@ class _AppShellState extends State<AppShell> {
           ),
           ElevatedButton(
             onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('hasSeenInvitePopup', true);
               if (ctx.mounted) Navigator.pop(ctx);
               Share.share(l10n.shareAppText);
             },
