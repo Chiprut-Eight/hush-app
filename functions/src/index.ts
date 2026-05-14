@@ -365,27 +365,32 @@ export const onNewSecret = functions.firestore
   });
 
 // ============================================================
-// 6. EXPIRING SOON — Daily cron at 10:00 AM
-//    Warns creators 48 hours before their Hushhh is deleted
+// 6. EXPIRING SOON — Daily cron at MIDNIGHT (00:00)
+//    MUST run BEFORE decaySecretsJob (02:00) so warnings go out first.
+//    Warns creators ~48 hours before their Hushhh is deleted.
 //    Covers ALL 3 decay rules (60-day, 0 views/7 days, <5 views/21 days)
+//    Uses 2-day wide windows to prevent secrets from "jumping" over
+//    the detection range between daily cron runs.
 // ============================================================
 export const onSecretExpiringSoon = functions.pubsub
-  .schedule("0 10 * * *")
+  .schedule("0 0 * * *")
   .timeZone("Asia/Jerusalem")
   .onRun(async () => {
     const now = new Date();
 
-    // Rule A: 60-day absolute expiry → warn at day 58
+    // Rule A: 60-day absolute expiry → warn between day 56-58
+    //   (2-day window ensures we catch it regardless of creation time)
     const fiftyEightDaysAgo = new Date(now.getTime() - 58 * 24 * 60 * 60 * 1000);
-    const fiftySevenDaysAgo = new Date(now.getTime() - 57 * 24 * 60 * 60 * 1000);
+    const fiftySixDaysAgo = new Date(now.getTime() - 56 * 24 * 60 * 60 * 1000);
 
-    // Rule B: 0 views in 7 days → warn at day 5 (2 days before cutoff)
+    // Rule B: 0 views in 7 days → warn between day 5-7
+    //   (warn up until the cutoff; decay job at 02:00 handles deletion)
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
     const fiveDaysAgo = new Date(now.getTime() - 5 * 24 * 60 * 60 * 1000);
-    const fourDaysAgo = new Date(now.getTime() - 4 * 24 * 60 * 60 * 1000);
 
-    // Rule C: <5 views in 21 days → warn at day 19 (2 days before cutoff)
+    // Rule C: <5 views in 21 days → warn between day 19-21
+    const twentyOneDaysAgo = new Date(now.getTime() - 21 * 24 * 60 * 60 * 1000);
     const nineteenDaysAgo = new Date(now.getTime() - 19 * 24 * 60 * 60 * 1000);
-    const eighteenDaysAgo = new Date(now.getTime() - 18 * 24 * 60 * 60 * 1000);
 
     const allSecrets = await db.collection("secrets")
       .where("isHidden", "==", false)
@@ -401,24 +406,27 @@ export const onSecretExpiringSoon = functions.pubsub
       // IMMUNITY: Don't warn about saved secrets
       if ((secret.saveCount || 0) > 0) continue;
 
+      // Skip if already warned (prevents duplicate notifications)
+      if (secret.expiryWarned === true) continue;
+
       const views = secret.views || 0;
       let warningEN = "";
       let warningHE = "";
 
       // Rule A: Approaching 60-day absolute expiry
-      if (createdAt <= fiftyEightDaysAgo && createdAt >= fiftySevenDaysAgo) {
-        warningEN = "Your Hushhh has been alive for 58 days and will be deleted in 2 days. Save it now to protect it forever!";
-        warningHE = "ה-Hushhh שלך קיים כבר 58 ימים ויימחק בעוד יומיים. שמור אותו עכשיו כדי לשמר אותו לנצח!";
+      if (createdAt <= fiftySixDaysAgo && createdAt >= fiftyEightDaysAgo) {
+        warningEN = "Your Hushhh has been alive for over 56 days and will be deleted soon. Save it now to protect it forever!";
+        warningHE = "ה-Hushhh שלך קיים כבר מעל 56 ימים ויימחק בקרוב. שמור אותו עכשיו כדי לשמר אותו לנצח!";
       }
-      // Rule B: 0 views after 5 days (will hit 7-day cutoff in 2 days)
-      else if (createdAt <= fiveDaysAgo && createdAt >= fourDaysAgo && views === 0) {
-        warningEN = "Your Hushhh has had 0 views in 5 days. It will be deleted in 2 days unless someone discovers it. Share a hint nearby!";
-        warningHE = "ה-Hushhh שלך לא קיבל אף צפייה ב-5 ימים. הוא יימחק בעוד יומיים אלא אם מישהו יגלה אותו. שתף רמז בקרבת מקום!";
+      // Rule B: 0 views between day 5-7 (will hit 7-day cutoff)
+      else if (createdAt <= fiveDaysAgo && createdAt >= sevenDaysAgo && views === 0) {
+        warningEN = "Your Hushhh has had 0 views and will be deleted soon unless someone discovers it. Share a hint nearby!";
+        warningHE = "ה-Hushhh שלך לא קיבל אף צפייה ויימחק בקרוב אלא אם מישהו יגלה אותו. שתף רמז בקרבת מקום!";
       }
-      // Rule C: <5 views after 19 days (will hit 21-day cutoff in 2 days)
-      else if (createdAt <= nineteenDaysAgo && createdAt >= eighteenDaysAgo && views < 5) {
-        warningEN = `Your Hushhh has only ${views} view${views === 1 ? "" : "s"} after 19 days. It will be deleted in 2 days. Save it to keep it forever!`;
-        warningHE = `ל-Hushhh שלך יש רק ${views} ${views === 1 ? "צפייה" : "צפיות"} אחרי 19 ימים. הוא יימחק בעוד יומיים. שמור אותו כדי לשמר א­ותו לנצח!`;
+      // Rule C: <5 views between day 19-21 (will hit 21-day cutoff)
+      else if (createdAt <= nineteenDaysAgo && createdAt >= twentyOneDaysAgo && views < 5) {
+        warningEN = `Your Hushhh has only ${views} view${views === 1 ? "" : "s"} and will be deleted soon. Save it to keep it forever!`;
+        warningHE = `ל-Hushhh שלך יש רק ${views} ${views === 1 ? "צפייה" : "צפיות"} ויימחק בקרוב. שמור אותו כדי לשמר אותו לנצח!`;
       }
 
       if (warningEN && secret.creatorId) {
@@ -428,6 +436,10 @@ export const onSecretExpiringSoon = functions.pubsub
           { en: warningEN, he: warningHE },
           { type: "expiring", secretId: doc.id }
         );
+
+        // Mark as warned to prevent duplicate notifications
+        await doc.ref.update({ expiryWarned: true });
+
         notifiedCount++;
       }
     }
