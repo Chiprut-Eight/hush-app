@@ -24,7 +24,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get signInWithApple => 'התחברות עם Apple';
 
   @override
-  String get feedTitle => 'Hushhh בקרבת מקום';
+  String get feedTitle => 'Hushhh בקרבתך';
 
   @override
   String get feedEmpty => 'אין Hushhh בסביבה... הסתובב כדי לגלות לחישות נסתרות';
@@ -33,7 +33,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get feedLoading => 'מאזין ל-Hushhh...';
 
   @override
-  String get mapTitle => 'מפת הד';
+  String get mapTitle => 'Hushhh בסביבה';
 
   @override
   String get createTitle => 'הטמן Hushhh';
