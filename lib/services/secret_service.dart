@@ -117,8 +117,8 @@ class SecretService {
       final callable = FirebaseFunctions.instance.httpsCallable('revealSecret');
       final result = await callable.call({
         'secretId': secretId,
-        ?'userLat': lat,
-        ?'userLng': lng,
+        if (lat != null) 'userLat': lat,
+        if (lng != null) 'userLng': lng,
       });
       return Map<String, dynamic>.from(result.data);
     } catch (e) {
@@ -148,8 +148,8 @@ class SecretService {
       'lat': lat,
       'lng': lng,
       'isGroup': isGroup,
-      ?'requiredUsers': requiredUsers,
-      ?'timeWindowMinutes': timeWindowMinutes,
+      if (requiredUsers != null) 'requiredUsers': requiredUsers,
+      if (timeWindowMinutes != null) 'timeWindowMinutes': timeWindowMinutes,
     });
     final data = Map<String, dynamic>.from(result.data);
     if (data['success'] != true) throw Exception(data['message'] ?? 'Create failed');
@@ -175,8 +175,8 @@ class SecretService {
       'lat': lat,
       'lng': lng,
       'isGroup': isGroup,
-      ?'requiredUsers': requiredUsers,
-      ?'timeWindowMinutes': timeWindowMinutes,
+      if (requiredUsers != null) 'requiredUsers': requiredUsers,
+      if (timeWindowMinutes != null) 'timeWindowMinutes': timeWindowMinutes,
     });
     final data = Map<String, dynamic>.from(result.data);
     if (data['success'] != true) throw Exception(data['message'] ?? 'Create failed');
