@@ -51,6 +51,11 @@ class _SecretCardState extends State<SecretCard> {
   
   bool _revealed = false;
   bool _showWarning = false;
+  bool _isRevealLoading = false;
+  
+  // Content from server (populated by revealSecret CF)
+  String? _revealedTextContent;
+  String? _revealedAudioURL;
   
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
@@ -90,9 +95,8 @@ class _SecretCardState extends State<SecretCard> {
           bool isSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
           // Auto-reveal for creators OR if already unlocked OR if saved
           if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSaved) {
-            if (!_revealed) {
-              _revealed = true;
-              if (_currentSecret.type == 'voice') _initAudio();
+            if (!_revealed && !_isRevealLoading) {
+              _fetchContentFromServer();
             }
           }
         });
@@ -120,12 +124,47 @@ class _SecretCardState extends State<SecretCard> {
 
 
 
+  /// Fetch content from server via Cloud Function
+  Future<void> _fetchContentFromServer() async {
+    if (_isRevealLoading || _revealed) return;
+    
+    setState(() => _isRevealLoading = true);
+    
+    try {
+      final result = await _secretService.revealSecret(
+        secretId: _currentSecret.id,
+        lat: widget.userPosition?.latitude,
+        lng: widget.userPosition?.longitude,
+      );
+      
+      if (result['success'] == true && mounted) {
+        setState(() {
+          _revealedTextContent = result['textContent'];
+          _revealedAudioURL = result['audioURL'];
+          _revealed = true;
+          _isRevealLoading = false;
+        });
+        if (_currentSecret.type == 'voice' && _revealedAudioURL != null) {
+          _initAudio();
+        }
+        _secretService.viewSecret(_currentSecret.id);
+      } else {
+        if (mounted) setState(() => _isRevealLoading = false);
+        debugPrint('revealSecret failed: ${result['error'] ?? result['message']}');
+      }
+    } catch (e) {
+      if (mounted) setState(() => _isRevealLoading = false);
+      debugPrint('_fetchContentFromServer error: $e');
+    }
+  }
+
   void _initAudio() async {
     try {
-      if (_currentSecret.audioURL == null) return;
+      final audioUrl = _revealedAudioURL;
+      if (audioUrl == null) return;
       
       // Use cached audio file for faster playback and lower data usage
-      final file = await _audioService.getCachedAudioFile(_currentSecret.audioURL!);
+      final file = await _audioService.getCachedAudioFile(audioUrl);
       await _audioPlayer.setFilePath(file.path);
       
       _audioPlayer.durationStream.listen((d) {
@@ -170,6 +209,7 @@ class _SecretCardState extends State<SecretCard> {
 
   void _handleReveal() async {
     if (_showWarning) return; // Must accept warning first
+    if (_isRevealLoading) return; // Already loading
     
     final currentUser = context.read<AuthProvider>().firebaseUser;
     if (currentUser == null) return;
@@ -178,6 +218,8 @@ class _SecretCardState extends State<SecretCard> {
     // Check if it's a group secret and needs unlocking
     if (_currentSecret.isGroup && !_currentSecret.unlockedBy.contains(currentUser.uid)) {
       if (widget.userPosition == null) return;
+      
+      setState(() => _isRevealLoading = true);
       
       // Show instant feedback using local state to avoid noticeable network delay
       if (mounted) {
@@ -209,13 +251,11 @@ class _SecretCardState extends State<SecretCard> {
         lng: widget.userPosition!.longitude,
       );
       
-      // Start Live Subscriptions if not already started (Handled by initState now)
-      
       if (result['success'] == true) {
         if (mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
-        setState(() => _revealed = true);
-        if (_currentSecret.type == 'voice') _initAudio();
-        _secretService.viewSecret(_currentSecret.id);
+        
+        // Fetch content from server after successful group unlock
+        await _fetchContentFromServer();
         
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -230,6 +270,8 @@ class _SecretCardState extends State<SecretCard> {
         
         if (widget.onReveal != null) widget.onReveal!();
       } else {
+        if (mounted) setState(() => _isRevealLoading = false);
+        
         // Show current progress localized
         if (mounted) {
           final requiredCount = (result['requiredCount'] as int?) ?? _currentSecret.requiredUsers ?? 3;
@@ -255,10 +297,8 @@ class _SecretCardState extends State<SecretCard> {
         }
       }
     } else {
-      // Regular secret or already unlocked group secret
-      setState(() => _revealed = true);
-      if (_currentSecret.type == 'voice') _initAudio();
-      _secretService.viewSecret(_currentSecret.id);
+      // Regular secret or already unlocked group secret — fetch from server
+      await _fetchContentFromServer();
       if (widget.onReveal != null) widget.onReveal!();
     }
   }
@@ -711,7 +751,7 @@ class _SecretCardState extends State<SecretCard> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return GestureDetector(
-      onTap: isInRange && !_revealed ? _handleReveal : null,
+      onTap: isInRange && !_revealed && !_isRevealLoading ? _handleReveal : null,
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -839,6 +879,23 @@ class _SecretCardState extends State<SecretCard> {
                       // --- CONTENT BLUR/REVEAL ---
                       if (_revealed || !isInRange)
                         _buildContent(isInRange, l10n)
+                      else if (_isRevealLoading)
+                        Container(
+                          padding: const EdgeInsets.symmetric(vertical: 24),
+                          decoration: BoxDecoration(
+                            color: HushColors.textAccent.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: const Center(
+                            child: SizedBox(
+                              width: 28, height: 28,
+                              child: CircularProgressIndicator(
+                                color: HushColors.textAccent,
+                                strokeWidth: 2.5,
+                              ),
+                            ),
+                          ),
+                        )
                       else if (isInRange && !_revealed)
                         _buildTapToReveal(l10n),
 
@@ -1115,8 +1172,8 @@ class _SecretCardState extends State<SecretCard> {
       // Revealed Content
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
-        child: _currentSecret.textContent != null
-          ? Text(_currentSecret.textContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4))
+        child: _revealedTextContent != null
+          ? Text(_revealedTextContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4))
           : Directionality(
               // Task 5: Force LTR for audio player
               textDirection: TextDirection.ltr,

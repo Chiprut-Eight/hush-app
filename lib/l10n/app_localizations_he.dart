@@ -543,16 +543,16 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get inviteFriends => 'Invite Friends';
+  String get inviteFriends => 'הזמינו חברים';
 
   @override
   String get inviteMessage =>
-      'Enjoying hushhh? Invite friends, create group hushhh and wait for them to open them';
+      'נהנים ב-hushhh? הזמינו חברים, צרו hushhh קבוצתיים והמתינו שיפתחו אותם';
 
   @override
-  String get dontShowAgain => 'Don\'t show again';
+  String get dontShowAgain => 'אל תציג שוב';
 
   @override
   String get shareAppText =>
-      'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app';
+      'הצטרפו אליי ל-HUSH! הרשת החברתית הגיאו-אקוסטית. הורידו עכשיו: https://hushhh.app';
 }

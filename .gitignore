@@ -49,3 +49,4 @@ app.*.map.json
 
 # Sensitive keys — NEVER commit these
 *.p8
+serviceAccountKey.json

@@ -35,6 +35,7 @@ class SecretService {
 
   /// Fetch all non-hidden, non-expired secrets and filter by proximity.
   /// User's own secrets and saved secrets always appear regardless of distance.
+  /// NOTE: Content (textContent/audioURL) is NOT included — use revealSecret() to get it.
   Future<List<Secret>> getNearbySecrets(
     double userLat,
     double userLng, {
@@ -102,7 +103,35 @@ class SecretService {
     return results;
   }
 
-  /// Create a new text secret
+  // ============================================================
+  // SECURE: Reveal secret content via Cloud Function
+  // ============================================================
+
+  /// Request secret content from server (with proximity verification)
+  Future<Map<String, dynamic>> revealSecret({
+    required String secretId,
+    double? lat,
+    double? lng,
+  }) async {
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('revealSecret');
+      final result = await callable.call({
+        'secretId': secretId,
+        ?'userLat': lat,
+        ?'userLng': lng,
+      });
+      return Map<String, dynamic>.from(result.data);
+    } catch (e) {
+      debugPrint('revealSecret error: $e');
+      return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  // ============================================================
+  // SECURE: Create secret via Cloud Function (V2)
+  // ============================================================
+
+  /// Create a new text secret via Cloud Function
   Future<String> createTextSecret({
     required String content,
     required double lat,
@@ -112,44 +141,22 @@ class SecretService {
     int? requiredUsers,
     int? timeWindowMinutes,
   }) async {
-    final user = _auth.currentUser;
-    if (user == null) throw Exception('Not authenticated');
-
-    // Get creator profile for denormalized data
-    final userDoc = await _firestore.collection('users').doc(user.uid).get();
-    final userData = userDoc.data() ?? {};
-
-    final docRef = _secretsRef.doc();
-    final secret = Secret(
-      id: docRef.id,
-      creatorId: user.uid,
-      creatorName: '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty 
-          ? '${userData['firstName']} ${userData['lastName']}'.trim() 
-          : user.displayName,
-      creatorPhotoURL: userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
-      creatorTierLevel: userData['tierLevel'] ?? 1,
-      creatorTierColor: _tierLevelToColor(userData['tierLevel'] ?? 1),
-      type: 'text',
-      textContent: content,
-      lat: lat,
-      lng: lng,
-      isGroup: isGroup,
-      minTierLevel: minTierLevel,
-      requiredUsers: requiredUsers,
-      timeWindowMinutes: timeWindowMinutes,
-    );
-
-    await docRef.set(secret.toFirestore());
-
-    // Increment the user's published count
-    await _firestore.collection('users').doc(user.uid).update({
-      'totalPublished': FieldValue.increment(1),
+    final callable = FirebaseFunctions.instance.httpsCallable('createSecretV2');
+    final result = await callable.call({
+      'type': 'text',
+      'textContent': content,
+      'lat': lat,
+      'lng': lng,
+      'isGroup': isGroup,
+      ?'requiredUsers': requiredUsers,
+      ?'timeWindowMinutes': timeWindowMinutes,
     });
-
-    return docRef.id;
+    final data = Map<String, dynamic>.from(result.data);
+    if (data['success'] != true) throw Exception(data['message'] ?? 'Create failed');
+    return data['secretId'] as String;
   }
 
-  /// Create a voice secret with audio URL
+  /// Create a voice secret via Cloud Function
   Future<String> createVoiceSecret({
     required String audioURL,
     required int audioDuration,
@@ -160,95 +167,73 @@ class SecretService {
     int? requiredUsers,
     int? timeWindowMinutes,
   }) async {
-    final user = _auth.currentUser;
-    if (user == null) throw Exception('Not authenticated');
-
-    final userDoc = await _firestore.collection('users').doc(user.uid).get();
-    final userData = userDoc.data() ?? {};
-
-    final docRef = _secretsRef.doc();
-    final secret = Secret(
-      id: docRef.id,
-      creatorId: user.uid,
-      creatorName: '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty 
-          ? '${userData['firstName']} ${userData['lastName']}'.trim() 
-          : user.displayName,
-      creatorPhotoURL: userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
-      creatorTierLevel: userData['tierLevel'] ?? 1,
-      creatorTierColor: _tierLevelToColor(userData['tierLevel'] ?? 1),
-      type: 'voice',
-      audioURL: audioURL,
-      audioDuration: audioDuration,
-      lat: lat,
-      lng: lng,
-      isGroup: isGroup,
-      minTierLevel: minTierLevel,
-      requiredUsers: requiredUsers,
-      timeWindowMinutes: timeWindowMinutes,
-    );
-
-    await docRef.set(secret.toFirestore());
-    await _firestore.collection('users').doc(user.uid).update({
-      'totalPublished': FieldValue.increment(1),
+    final callable = FirebaseFunctions.instance.httpsCallable('createSecretV2');
+    final result = await callable.call({
+      'type': 'voice',
+      'audioURL': audioURL,
+      'audioDuration': audioDuration,
+      'lat': lat,
+      'lng': lng,
+      'isGroup': isGroup,
+      ?'requiredUsers': requiredUsers,
+      ?'timeWindowMinutes': timeWindowMinutes,
     });
-
-    return docRef.id;
+    final data = Map<String, dynamic>.from(result.data);
+    if (data['success'] != true) throw Exception(data['message'] ?? 'Create failed');
+    return data['secretId'] as String;
   }
+
+  // ============================================================
+  // SECURE: Interactions via Cloud Function
+  // ============================================================
 
   /// Like a secret
   Future<void> likeSecret(String secretId) async {
-    await _secretsRef.doc(secretId).update({
-      'likes': FieldValue.increment(1),
-    });
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
+      await callable.call({'secretId': secretId, 'action': 'like'});
+    } catch (e) {
+      debugPrint('likeSecret error: $e');
+    }
   }
 
   /// Remove a like from a secret
   Future<void> unlikeSecret(String secretId) async {
-    await _secretsRef.doc(secretId).update({
-      'likes': FieldValue.increment(-1),
-    });
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
+      await callable.call({'secretId': secretId, 'action': 'unlike'});
+    } catch (e) {
+      debugPrint('unlikeSecret error: $e');
+    }
   }
 
   /// Dislike a secret
   Future<void> dislikeSecret(String secretId) async {
-    await _secretsRef.doc(secretId).update({
-      'dislikes': FieldValue.increment(1),
-    });
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
+      await callable.call({'secretId': secretId, 'action': 'dislike'});
+    } catch (e) {
+      debugPrint('dislikeSecret error: $e');
+    }
   }
 
   /// Remove a dislike from a secret
   Future<void> undislikeSecret(String secretId) async {
-    await _secretsRef.doc(secretId).update({
-      'dislikes': FieldValue.increment(-1),
-    });
+    try {
+      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
+      await callable.call({'secretId': secretId, 'action': 'undislike'});
+    } catch (e) {
+      debugPrint('undislikeSecret error: $e');
+    }
   }
 
   /// Increment view count uniquely per user
   Future<void> viewSecret(String secretId) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-    
-    final docRef = _secretsRef.doc(secretId);
-
     try {
-      await _firestore.runTransaction((transaction) async {
-        final snapshot = await transaction.get(docRef);
-        if (!snapshot.exists) return;
-
-        final data = snapshot.data() as Map<String, dynamic>;
-        final viewedBy = List<String>.from(data['viewedBy'] ?? []);
-
-        // Only increment if the user has not viewed this secret before
-        if (!viewedBy.contains(user.uid)) {
-          viewedBy.add(user.uid);
-          transaction.update(docRef, {
-            'viewedBy': viewedBy,
-            'views': FieldValue.increment(1),
-          });
-        }
-      });
+      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
+      await callable.call({'secretId': secretId, 'action': 'view'});
     } catch (e) {
-      debugPrint('Error updating unique view count: $e');
+      debugPrint('viewSecret error: $e');
     }
   }
 
@@ -293,7 +278,6 @@ class SecretService {
       'secretId': secretId,
       'reporterId': user.uid,
       'reporterName': user.displayName,
-      'reporterEmail': user.email,
       'reason': reason,
       'status': 'pending',
       'createdAt': FieldValue.serverTimestamp(),
@@ -372,17 +356,10 @@ class SecretService {
     });
   }
 
-  /// Delete a secret (creator only)
+  /// Delete a secret (via Cloud Function — deletes doc + storage)
   Future<void> deleteSecret(String secretId) async {
-    final user = _auth.currentUser;
-    if (user == null) return;
-    
-    await _secretsRef.doc(secretId).delete();
-    
-    // Decrement published count
-    await _firestore.collection('users').doc(user.uid).update({
-      'totalPublished': FieldValue.increment(-1),
-    });
+    final callable = FirebaseFunctions.instance.httpsCallable('deleteSecretV2');
+    await callable.call({'secretId': secretId});
   }
 
   /// Add a comment to a secret
@@ -490,12 +467,4 @@ class SecretService {
         .toList();
   }
 
-  String _tierLevelToColor(int level) {
-    const colors = [
-      '#8b8b8b', '#4a9eff', '#34d399', '#fbbf24', '#f97316',
-      '#ef4444', '#a855f7', '#ec4899', '#06b6d4', '#ffd700',
-    ];
-    return colors[(level - 1).clamp(0, 9)];
-  }
 }
-
