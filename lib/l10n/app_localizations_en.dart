@@ -562,4 +562,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shareAppText =>
       'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app';
+
+  @override
+  String get copyComment => 'Copy';
+
+  @override
+  String get editComment => 'Edit';
+
+  @override
+  String get replyComment => 'Reply';
+
+  @override
+  String get editingComment => 'Editing comment...';
+
+  @override
+  String replyingTo(String name) {
+    return 'Replying to @$name';
+  }
+
+  @override
+  String get commentEdited => '(edited)';
 }

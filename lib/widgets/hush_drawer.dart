@@ -94,7 +94,7 @@ class HushDrawer extends StatelessWidget {
                   leading: const HushIcon(HushIcons.feed, size: 22, color: HushColors.textAccent),
                   title: Text(l10n.language, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                   trailing: Text(
-                    localeProvider.isHebrew ? 'עברית' : 'English',
+                    localeProvider.isHebrew ? 'English' : 'Hebrew',
                     style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold),
                   ),
                   onTap: () => localeProvider.toggleLocale(),

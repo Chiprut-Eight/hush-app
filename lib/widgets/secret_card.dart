@@ -147,7 +147,11 @@ class _SecretCardState extends State<SecretCard> {
         if (_currentSecret.type == 'voice' && _revealedAudioURL != null) {
           _initAudio();
         }
-        _secretService.viewSecret(_currentSecret.id);
+        // Don't count creator's own view — prevents artificial decay prevention
+        final currentUid = context.read<AuthProvider>().firebaseUser?.uid;
+        if (currentUid != null && currentUid != _currentSecret.creatorId) {
+          _secretService.viewSecret(_currentSecret.id);
+        }
       } else {
         if (mounted) setState(() => _isRevealLoading = false);
         debugPrint('revealSecret failed: ${result['error'] ?? result['message']}');
@@ -202,7 +206,11 @@ class _SecretCardState extends State<SecretCard> {
     if (_isPlaying) {
       _audioPlayer.pause();
     } else {
-      _secretService.viewSecret(_currentSecret.id);
+      // Don't count creator's own view — prevents artificial decay prevention
+      final currentUid = context.read<AuthProvider>().firebaseUser?.uid;
+      if (currentUid != null && currentUid != _currentSecret.creatorId) {
+        _secretService.viewSecret(_currentSecret.id);
+      }
       _audioPlayer.play();
     }
   }
@@ -505,7 +513,7 @@ class _SecretCardState extends State<SecretCard> {
                                             children: [
                                               ListTile(
                                                 leading: const HushIcon(HushIcons.copy, color: Colors.white),
-                                                title: const Text('Copy', style: TextStyle(color: Colors.white)),
+                                                title: Text(l10n.copyComment, style: const TextStyle(color: Colors.white)),
                                                 onTap: () {
                                                   Clipboard.setData(ClipboardData(text: c['text'] ?? ''));
                                                   Navigator.pop(menuCtx);
@@ -514,7 +522,7 @@ class _SecretCardState extends State<SecretCard> {
                                               if (currentUser?.uid == c['userId']) ...[
                                                 ListTile(
                                                   leading: const HushIcon(HushIcons.edit, color: Colors.white),
-                                                  title: const Text('Edit', style: TextStyle(color: Colors.white)),
+                                                  title: Text(l10n.editComment, style: const TextStyle(color: Colors.white)),
                                                   onTap: () {
                                                     setSheetState(() {
                                                       editingCommentId = c['id'];
@@ -534,7 +542,7 @@ class _SecretCardState extends State<SecretCard> {
                                               ],
                                               ListTile(
                                                 leading: const HushIcon(HushIcons.comment, color: Colors.white),
-                                                title: const Text('Reply', style: TextStyle(color: Colors.white)),
+                                                title: Text(l10n.replyComment, style: const TextStyle(color: Colors.white)),
                                                 onTap: () {
                                                   setSheetState(() {
                                                     editingCommentId = null;
@@ -580,13 +588,13 @@ class _SecretCardState extends State<SecretCard> {
                                                     style: const TextStyle(color: HushColors.textMuted, fontSize: 11)),
                                                   if (c['isEdited'] == true) ...[
                                                     const SizedBox(width: 4),
-                                                    const Text('(edited)', style: TextStyle(color: HushColors.textMuted, fontSize: 10, fontStyle: FontStyle.italic)),
+                                                    Text(l10n.commentEdited, style: const TextStyle(color: HushColors.textMuted, fontSize: 10, fontStyle: FontStyle.italic)),
                                                   ],
                                                 ],
                                               ),
                                               if (c['replyToUserId'] != null) ...[
                                                 const SizedBox(height: 2),
-                                                Text('▶ Replying to ${c['replyToUserName'] ?? 'Someone'}', 
+                                                Text('▶ ${l10n.replyingTo(c['replyToUserName'] ?? l10n.anonymousUser)}', 
                                                   style: const TextStyle(color: HushColors.textAccent, fontSize: 12, fontWeight: FontWeight.w600)),
                                               ],
                                               const SizedBox(height: 4),
@@ -601,7 +609,7 @@ class _SecretCardState extends State<SecretCard> {
                                                     replyingToUserName = c['userName'] ?? 'Someone';
                                                   });
                                                 },
-                                                child: const Text('Reply', style: TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
+                                                child: Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
                                               ),
                                             ],
                                           ),
@@ -628,8 +636,8 @@ class _SecretCardState extends State<SecretCard> {
                                   children: [
                                     Text(
                                       editingCommentId != null 
-                                          ? 'Editing comment...' 
-                                          : 'Replying to @$replyingToUserName', 
+                                          ? l10n.editingComment 
+                                          : l10n.replyingTo(replyingToUserName ?? l10n.anonymousUser), 
                                       style: const TextStyle(color: HushColors.textAccent, fontSize: 12)
                                     ),
                                     const Spacer(),
@@ -916,7 +924,7 @@ class _SecretCardState extends State<SecretCard> {
                                 count: _currentSecret.likes,
                                 isActive: _userLiked,
                                 color: _userLiked ? Colors.pink : HushColors.textSecondary,
-                                onTap: _revealed ? () {
+                                onTap: _revealed && !isOwner ? () {
                                   setState(() {
                                     if (_userDisliked) {
                                       _userDisliked = false;
@@ -937,7 +945,7 @@ class _SecretCardState extends State<SecretCard> {
                                 count: _currentSecret.dislikes,
                                 isActive: _userDisliked,
                                 color: _userDisliked ? Colors.orange : HushColors.textSecondary,
-                                onTap: _revealed ? () {
+                                onTap: _revealed && !isOwner ? () {
                                   setState(() {
                                     if (_userLiked) {
                                       _userLiked = false;

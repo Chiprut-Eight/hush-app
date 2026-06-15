@@ -783,6 +783,15 @@ exports.interactWithSecret = functions.https.onCall(async (data, context) => {
         throw new functions.https.HttpsError("resource-exhausted", "Too many requests");
     }
     const secretRef = db.collection("secrets").doc(secretId);
+    // Block creator's own interactions — prevents artificial decay prevention
+    const secretSnap = await secretRef.get();
+    if (!secretSnap.exists) {
+        throw new functions.https.HttpsError("not-found", "Secret not found");
+    }
+    const secretData = secretSnap.data();
+    if (secretData.creatorId === uid && ["view", "like", "dislike"].includes(action)) {
+        return { success: true, skipped: true };
+    }
     switch (action) {
         case "like":
             await secretRef.update({ likes: admin.firestore.FieldValue.increment(1) });

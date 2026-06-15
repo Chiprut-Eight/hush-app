@@ -130,14 +130,14 @@ abstract class AppLocalizations {
 
   /// No description provided for @feedTitle.
   ///
-  /// In he, this message translates to:
-  /// **'Hushhh בקרבתך'**
+  /// In en, this message translates to:
+  /// **'Nearby Hushhh'**
   String get feedTitle;
 
   /// No description provided for @feedTabTitle.
   ///
-  /// In he, this message translates to:
-  /// **'בקרבתך'**
+  /// In en, this message translates to:
+  /// **'Nearby'**
   String get feedTabTitle;
 
   /// No description provided for @feedEmpty.
@@ -154,14 +154,14 @@ abstract class AppLocalizations {
 
   /// No description provided for @mapTitle.
   ///
-  /// In he, this message translates to:
-  /// **'Hushhh בסביבה'**
+  /// In en, this message translates to:
+  /// **'Echo Map'**
   String get mapTitle;
 
   /// No description provided for @mapTabTitle.
   ///
-  /// In he, this message translates to:
-  /// **'בסביבה'**
+  /// In en, this message translates to:
+  /// **'Map'**
   String get mapTabTitle;
 
   /// No description provided for @createTitle.
@@ -1111,6 +1111,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app'**
   String get shareAppText;
+
+  /// No description provided for @copyComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyComment;
+
+  /// No description provided for @editComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editComment;
+
+  /// No description provided for @replyComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get replyComment;
+
+  /// No description provided for @editingComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing comment...'**
+  String get editingComment;
+
+  /// No description provided for @replyingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to @{name}'**
+  String replyingTo(String name);
+
+  /// No description provided for @commentEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'(edited)'**
+  String get commentEdited;
 }
 
 class _AppLocalizationsDelegate
