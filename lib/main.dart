@@ -21,7 +21,7 @@ import 'screens/app_shell.dart';
 const String _adminUid = String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2');
 
 /// MethodChannel for screenshot prevention (Android native FLAG_SECURE)
-const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
+const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

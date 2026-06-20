@@ -210,7 +210,7 @@ class _MapScreenState extends State<MapScreen> {
             TileLayer(
               urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
               subdomains: const ['a', 'b', 'c', 'd'],
-              userAgentPackageName: 'com.hush.app',
+              userAgentPackageName: 'com.chiprut.hushhh',
               retinaMode: MediaQuery.of(context).devicePixelRatio > 1.0,
               tileBuilder: (context, tileWidget, tile) {
                 return ColorFiltered(

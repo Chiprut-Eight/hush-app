@@ -32,7 +32,7 @@ class DefaultFirebaseOptions {
   /// Android configuration
   /// NOTE: The appId below is a PLACEHOLDER.
   /// You must register an Android app in Firebase Console with package name
-  /// 'com.hush.hush_app' and replace the appId with the real value.
+  /// 'com.chiprut.hushhh' and replace the appId with the real value.
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyAAn2gawmN1RUBXkaL61-hKNHznzdXh8as',
     appId: '1:187237532355:android:beae06757656abd0a2d876',
@@ -48,6 +48,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '187237532355',
     projectId: 'hush-7bab0',
     storageBucket: 'hush-7bab0.firebasestorage.app',
-    iosBundleId: 'com.hush.hushApp',
+    iosBundleId: 'com.chiprut.hushhh',
   );
 }

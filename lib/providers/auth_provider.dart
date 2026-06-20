@@ -23,7 +23,7 @@ class AuthProvider extends ChangeNotifier {
   bool get loading => _loading;
   bool get isAuthenticated => _firebaseUser != null;
 
-  static const _screenshotChannel = MethodChannel('com.hush.app/screenshot');
+  static const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
   AuthProvider() {
     _authService.authStateChanges.listen(_onAuthStateChanged);

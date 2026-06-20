@@ -1,4 +1,4 @@
-package com.hush.hush_app
+package com.chiprut.hushhh
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -8,7 +8,7 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 
 class MainActivity : FlutterActivity() {
-    private val CHANNEL = "com.hush.app/screenshot"
+    private val CHANNEL = "com.chiprut.hushhh/screenshot"
 
     override fun getBackgroundMode(): FlutterActivityLaunchConfigs.BackgroundMode {
         // Forces Flutter to use TextureView instead of SurfaceView.

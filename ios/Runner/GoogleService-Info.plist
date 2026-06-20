@@ -3,11 +3,11 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>187237532355-5bcgc4nd6g3h88adk8i5dlaoj8ch74t2.apps.googleusercontent.com</string>
+	<string>187237532355-kkfh74c6ja7fr32bqjgi1drkac6teqdl.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.187237532355-5bcgc4nd6g3h88adk8i5dlaoj8ch74t2</string>
+	<string>com.googleusercontent.apps.187237532355-kkfh74c6ja7fr32bqjgi1drkac6teqdl</string>
 	<key>ANDROID_CLIENT_ID</key>
-	<string>187237532355-rqikbss7r7dcs618f50j8bveebs0tmp4.apps.googleusercontent.com</string>
+	<string>187237532355-7jmse5fsofhnd2n9iu5ivss7kkmk15u4.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
 	<string>AIzaSyBHQ-4iO9ZCcOp7WSN9Lg5lejyoqMJlvv8</string>
 	<key>GCM_SENDER_ID</key>
@@ -15,7 +15,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.hush.hushApp</string>
+	<string>com.chiprut.hushhh</string>
 	<key>PROJECT_ID</key>
 	<string>hush-7bab0</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,6 +31,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:187237532355:ios:d96ce62e72f650cfa2d876</string>
+	<string>1:187237532355:ios:a942493be64bdf25a2d876</string>
 </dict>
 </plist>

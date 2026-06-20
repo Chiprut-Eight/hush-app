@@ -33,8 +33,9 @@ class _AppShellState extends State<AppShell> {
   int? _lastTier; // Tracks the user's tier to detect level-up events
   bool _tutorialShownThisSession = false; // Prevents tutorial from popping up repeatedly
 
-  /// Shared scaffold key so we can check if the drawer is open from PopScope
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  /// Separate scaffold keys because IndexedStack builds both screens simultaneously
+  final GlobalKey<ScaffoldState> _feedScaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<ScaffoldState> _mapScaffoldKey = GlobalKey<ScaffoldState>();
 
   late final List<Widget> _screens;
 
@@ -42,8 +43,8 @@ class _AppShellState extends State<AppShell> {
   void initState() {
     super.initState();
     _screens = [
-      FeedScreen(scaffoldKey: _scaffoldKey),
-      MapScreen(scaffoldKey: _scaffoldKey),
+      FeedScreen(scaffoldKey: _feedScaffoldKey),
+      MapScreen(scaffoldKey: _mapScaffoldKey),
       const CreateScreen(),
       const FollowingScreen(),
       const ProfileScreen(),
@@ -156,9 +157,13 @@ class _AppShellState extends State<AppShell> {
           canPop: false,
           onPopInvokedWithResult: (didPop, result) {
             if (didPop) return;
-            // 1. If drawer is open, close it
-            if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
-              _scaffoldKey.currentState?.closeDrawer();
+            // 1. If drawer is open on the current tab, close it
+            if (_currentIndex == 0 && (_feedScaffoldKey.currentState?.isDrawerOpen ?? false)) {
+              _feedScaffoldKey.currentState?.closeDrawer();
+              return;
+            }
+            if (_currentIndex == 1 && (_mapScaffoldKey.currentState?.isDrawerOpen ?? false)) {
+              _mapScaffoldKey.currentState?.closeDrawer();
               return;
             }
             // 2. If not on the first tab, go back to it
