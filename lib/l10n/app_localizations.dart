@@ -896,6 +896,42 @@ abstract class AppLocalizations {
   /// **'Write a comment...'**
   String get commentPlaceholder;
 
+  /// No description provided for @commentEdited.
+  ///
+  /// In en, this message translates to:
+  /// **'(Edited)'**
+  String get commentEdited;
+
+  /// No description provided for @replyingTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Replying to {replyToUserName}'**
+  String replyingTo(String replyToUserName);
+
+  /// No description provided for @replyComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Reply'**
+  String get replyComment;
+
+  /// No description provided for @copyComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyComment;
+
+  /// No description provided for @editComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editComment;
+
+  /// No description provided for @editingComment.
+  ///
+  /// In en, this message translates to:
+  /// **'Editing comment...'**
+  String get editingComment;
+
   /// No description provided for @directionToSecret.
   ///
   /// In en, this message translates to:
@@ -1111,42 +1147,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app'**
   String get shareAppText;
-
-  /// No description provided for @copyComment.
-  ///
-  /// In en, this message translates to:
-  /// **'Copy'**
-  String get copyComment;
-
-  /// No description provided for @editComment.
-  ///
-  /// In en, this message translates to:
-  /// **'Edit'**
-  String get editComment;
-
-  /// No description provided for @replyComment.
-  ///
-  /// In en, this message translates to:
-  /// **'Reply'**
-  String get replyComment;
-
-  /// No description provided for @editingComment.
-  ///
-  /// In en, this message translates to:
-  /// **'Editing comment...'**
-  String get editingComment;
-
-  /// No description provided for @replyingTo.
-  ///
-  /// In en, this message translates to:
-  /// **'Replying to @{name}'**
-  String replyingTo(String name);
-
-  /// No description provided for @commentEdited.
-  ///
-  /// In en, this message translates to:
-  /// **'(edited)'**
-  String get commentEdited;
 }
 
 class _AppLocalizationsDelegate

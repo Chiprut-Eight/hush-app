@@ -98,10 +98,20 @@ class _HushAppState extends State<HushApp> {
                             alignment: Alignment.centerLeft, // Always physical left regardless of RTL
                             child: Directionality(
                               textDirection: TextDirection.ltr,
-                              child: Image.asset(
-                                'assets/images/top_banner2.png',
-                                width: MediaQuery.of(context).size.width * 0.38, // Shrunk from 0.45
-                                fit: BoxFit.contain,
+                              child: Builder(
+                                builder: (context) {
+                                  final screenWidth = MediaQuery.of(context).size.width;
+                                  final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+                                  // In landscape, cap the banner width to avoid it being too large
+                                  final bannerWidth = isLandscape
+                                      ? (screenWidth * 0.2).clamp(100.0, 180.0)
+                                      : screenWidth * 0.38;
+                                  return Image.asset(
+                                    'assets/images/top_banner2.png',
+                                    width: bannerWidth,
+                                    fit: BoxFit.contain,
+                                  );
+                                },
                               ),
                             ),
                           ),

@@ -175,6 +175,17 @@
   "noComments": "אין תגובות עדיין. היה הראשון!",
   "deleteComment": "מחק תגובה",
   "commentPlaceholder": "כתוב תגובה...",
+  "commentEdited": "(נערך)",
+  "replyingTo": "מגיב/ה ל-{replyToUserName}",
+  "@replyingTo": {
+    "placeholders": {
+      "replyToUserName": { "type": "String" }
+    }
+  },
+  "replyComment": "הגב",
+  "copyComment": "העתק",
+  "editComment": "ערוך",
+  "editingComment": "עורך תגובה...",
 
   "directionToSecret": "כיוון אל ה-Hushhh",
   "groupUnlockProgress": "רגע! דרושים עוד {count} אנשים כדי לחשוף את ה-Hushhh הזה.",

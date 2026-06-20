@@ -175,6 +175,17 @@
   "noComments": "No comments yet. Be the first!",
   "deleteComment": "Delete Comment",
   "commentPlaceholder": "Write a comment...",
+  "commentEdited": "(Edited)",
+  "replyingTo": "Replying to {replyToUserName}",
+  "@replyingTo": {
+    "placeholders": {
+      "replyToUserName": { "type": "String" }
+    }
+  },
+  "replyComment": "Reply",
+  "copyComment": "Copy",
+  "editComment": "Edit",
+  "editingComment": "Editing comment...",
 
   "directionToSecret": "Direction to Hushhh",
   "groupUnlockProgress": "Wait! {count} more people are needed to reveal this Hushhh.",

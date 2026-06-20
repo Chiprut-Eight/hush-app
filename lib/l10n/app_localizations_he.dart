@@ -438,6 +438,26 @@ class AppLocalizationsHe extends AppLocalizations {
   String get commentPlaceholder => 'כתוב תגובה...';
 
   @override
+  String get commentEdited => '(נערך)';
+
+  @override
+  String replyingTo(String replyToUserName) {
+    return 'מגיב/ה ל-$replyToUserName';
+  }
+
+  @override
+  String get replyComment => 'הגב';
+
+  @override
+  String get copyComment => 'העתק';
+
+  @override
+  String get editComment => 'ערוך';
+
+  @override
+  String get editingComment => 'עורך תגובה...';
+
+  @override
   String get directionToSecret => 'כיוון אל ה-Hushhh';
 
   @override
@@ -561,24 +581,4 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get shareAppText =>
       'הצטרפו אליי ל-HUSH! הרשת החברתית הגיאו-אקוסטית. הורידו עכשיו: https://hushhh.app';
-
-  @override
-  String get copyComment => 'העתקה';
-
-  @override
-  String get editComment => 'עריכה';
-
-  @override
-  String get replyComment => 'תגובה';
-
-  @override
-  String get editingComment => 'עורך תגובה...';
-
-  @override
-  String replyingTo(String name) {
-    return 'מגיב ל-@$name';
-  }
-
-  @override
-  String get commentEdited => '(נערך)';
 }

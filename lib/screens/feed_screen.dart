@@ -15,7 +15,9 @@ import '../widgets/notifications_button.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
-  const FeedScreen({super.key});
+  final GlobalKey<ScaffoldState>? scaffoldKey;
+
+  const FeedScreen({super.key, this.scaffoldKey});
 
   @override
   State<FeedScreen> createState() => _FeedScreenState();
@@ -123,6 +125,7 @@ class _FeedScreenState extends State<FeedScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      key: widget.scaffoldKey,
       drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -32,21 +33,27 @@ class _AppShellState extends State<AppShell> {
   int? _lastTier; // Tracks the user's tier to detect level-up events
   bool _tutorialShownThisSession = false; // Prevents tutorial from popping up repeatedly
 
-  final List<Widget> _screens = const [
-    FeedScreen(),
-    MapScreen(),
-    CreateScreen(),
-    FollowingScreen(),
-    ProfileScreen(),
-  ];
+  /// Shared scaffold key so we can check if the drawer is open from PopScope
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-  Timer? _inviteTimer;
+  late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
+    _screens = [
+      FeedScreen(scaffoldKey: _scaffoldKey),
+      MapScreen(scaffoldKey: _scaffoldKey),
+      const CreateScreen(),
+      const FollowingScreen(),
+      const ProfileScreen(),
+    ];
     _startInviteTimer();
   }
+
+  Timer? _inviteTimer;
+
+
 
   @override
   void dispose() {
@@ -146,12 +153,21 @@ class _AppShellState extends State<AppShell> {
         }
 
         return PopScope(
-          canPop: _currentIndex == 0,
+          canPop: false,
           onPopInvokedWithResult: (didPop, result) {
             if (didPop) return;
+            // 1. If drawer is open, close it
+            if (_scaffoldKey.currentState?.isDrawerOpen ?? false) {
+              _scaffoldKey.currentState?.closeDrawer();
+              return;
+            }
+            // 2. If not on the first tab, go back to it
             if (_currentIndex != 0) {
               setState(() => _currentIndex = 0);
+              return;
             }
+            // 3. On tab 0, drawer closed — exit the app
+            SystemNavigator.pop();
           },
           child: Scaffold(
             body: IndexedStack(

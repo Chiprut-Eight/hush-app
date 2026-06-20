@@ -18,11 +18,13 @@ import '../widgets/notifications_button.dart';
 class MapScreen extends StatefulWidget {
   final double? targetLat;
   final double? targetLng;
+  final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const MapScreen({
     super.key,
     this.targetLat,
     this.targetLng,
+    this.scaffoldKey,
   });
 
   @override
@@ -126,6 +128,7 @@ class _MapScreenState extends State<MapScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Scaffold(
+      key: widget.scaffoldKey,
       drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
