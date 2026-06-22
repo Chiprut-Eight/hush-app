@@ -51,7 +51,7 @@ dependencies:
   cupertino_icons: ^1.0.8
   google_fonts: ^6.2.1
   shimmer: ^3.0.0
-  phosphor_flutter: ^2.1.0
+  phosphoricons_flutter: ^1.0.0
   flutter_compass: ^0.8.1
   confetti: ^0.7.0
   flutter_local_notifications: ^18.0.1

@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:phosphoricons_flutter/phosphoricons_flutter.dart';
 
 /// Centralized icon constants for the HUSH app.
 /// Powered by Phosphor Icons (Light style unless filled).
