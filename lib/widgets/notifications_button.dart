@@ -6,6 +6,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../screens/secret_detail_screen.dart';
+import '../services/analytics_service.dart';
 
 class NotificationsButton extends StatelessWidget {
   const NotificationsButton({super.key});
@@ -13,6 +14,8 @@ class NotificationsButton extends StatelessWidget {
   void _showNotificationsMenu(BuildContext context) {
     final uid = context.read<AuthProvider>().firebaseUser?.uid;
     if (uid == null) return;
+
+    AnalyticsService().logNotificationsPanelOpened();
     
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final langCode = Localizations.localeOf(context).languageCode;
@@ -96,6 +99,7 @@ class NotificationsButton extends StatelessWidget {
                           return InkWell(
                             onTap: () {
                               Navigator.pop(context); // Close the bottom sheet
+                              AnalyticsService().logNotificationTapped(secretId: secretId);
                               if (secretId != null) {
                                 Navigator.push(
                                   context,

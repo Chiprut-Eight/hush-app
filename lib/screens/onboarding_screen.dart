@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../services/analytics_service.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -77,6 +78,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       
       // Refresh the auth provider so the root router kicks us to the AppShell
       await authParams.refreshProfile();
+
+      AnalyticsService().logOnboardingCompleted(gender: _gender, useGenericPhoto: _useGenericPhoto);
+      AnalyticsService().logSignUp('firebase');
 
     } catch (e) {
       if (mounted) {

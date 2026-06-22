@@ -16,6 +16,7 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
 import '../widgets/notifications_button.dart';
+import '../services/analytics_service.dart';
 
 /// Web-aligned Create Screen
 class CreateScreen extends StatefulWidget {
@@ -96,6 +97,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         _recordedFilePath = path;
       });
 
+      AnalyticsService().logRecordingStopped(durationSeconds: _recordingDurationSeconds);
+
       if (path != null) {
         await _audioPlayer.setFilePath(path);
       }
@@ -108,6 +111,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           _recordedFilePath = null;
           _recordingDurationSeconds = 0;
         });
+
+        AnalyticsService().logRecordingStarted();
         
         // Auto-stop at 60 seconds
         _recordTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
@@ -123,6 +128,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   }
 
   void _discardRecording() {
+    AnalyticsService().logRecordingDiscarded();
     setState(() {
       _recordedFilePath = null;
       _recordingDurationSeconds = 0;
@@ -133,6 +139,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     if (_isPlayingPreview) {
       await _audioPlayer.pause();
     } else {
+      AnalyticsService().logAudioPreviewPlayed();
       await _audioPlayer.play();
     }
   }
@@ -196,6 +203,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       }
 
       if (mounted) {
+        final contentType = _activeTab == 0 ? 'text' : 'voice';
+        AnalyticsService().logSecretCreated(contentType: contentType, secretType: _secretType);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.secretReady)));
         _discardRecording();
         _textController.clear();
@@ -285,7 +294,10 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                   0: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.textTab)),
                   1: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.voiceTab)),
                 },
-                onValueChanged: (int? value) => setState(() => _activeTab = value!),
+                onValueChanged: (int? value) {
+                  setState(() => _activeTab = value!);
+                  AnalyticsService().logCreateTabChanged(value == 0 ? 'text' : 'voice');
+                },
               ),
               
               const SizedBox(height: 32),
@@ -465,7 +477,10 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   Widget _buildTypeOption(String value, String title, String desc) {
     bool selected = _secretType == value;
     return GestureDetector(
-      onTap: () => setState(() => _secretType = value),
+      onTap: () {
+        setState(() => _secretType = value);
+        AnalyticsService().logSecretTypeChanged(value);
+      },
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(

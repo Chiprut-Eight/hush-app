@@ -12,6 +12,7 @@ import '../screens/admin_screen.dart';
 import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_service_screen.dart';
 import 'package:share_plus/share_plus.dart';
+import '../services/analytics_service.dart';
 
 class HushDrawer extends StatelessWidget {
   const HushDrawer({super.key});
@@ -92,7 +93,11 @@ class HushDrawer extends StatelessWidget {
                       localeProvider.isHebrew ? 'English' : 'Hebrew',
                       style: const TextStyle(color: HushColors.textAccent, fontWeight: FontWeight.bold),
                     ),
-                    onTap: () => localeProvider.toggleLocale(),
+                    onTap: () {
+                      localeProvider.toggleLocale();
+                      AnalyticsService().logLanguageChanged(localeProvider.isHebrew ? 'he' : 'en');
+                      AnalyticsService().logDrawerAction('language');
+                    },
                   ),
 
                   // Invite Friends
@@ -101,6 +106,8 @@ class HushDrawer extends StatelessWidget {
                     title: Text(l10n.inviteFriends, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Navigator.pop(context);
+                      AnalyticsService().logDrawerAction('invite');
+                      AnalyticsService().logShareApp('drawer');
                       Share.share(l10n.shareAppText);
                     },
                   ),
@@ -111,6 +118,7 @@ class HushDrawer extends StatelessWidget {
                     title: Text(l10n.settings, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Navigator.pop(context);
+                      AnalyticsService().logDrawerAction('settings');
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(content: Text(l10n.settings)),
                       );
@@ -125,6 +133,7 @@ class HushDrawer extends StatelessWidget {
                     title: Text(l10n.termsOfService, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Navigator.pop(context);
+                      AnalyticsService().logDrawerAction('terms');
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const TermsOfServiceScreen()));
                     },
                   ),
@@ -133,6 +142,7 @@ class HushDrawer extends StatelessWidget {
                     title: Text(l10n.privacyPolicy, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Navigator.pop(context);
+                      AnalyticsService().logDrawerAction('privacy');
                       Navigator.push(context, MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
                     },
                   ),
@@ -145,6 +155,7 @@ class HushDrawer extends StatelessWidget {
                       title: Text(l10n.adminTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                       onTap: () {
                         Navigator.pop(context);
+                        AnalyticsService().logDrawerAction('admin');
                         Navigator.push(context, MaterialPageRoute(builder: (_) => const AdminScreen()));
                       },
                     ),
@@ -158,6 +169,8 @@ class HushDrawer extends StatelessWidget {
                     title: Text(l10n.drawer_what_is_hush, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Navigator.pop(context); // Close drawer
+                      AnalyticsService().logDrawerAction('tutorial');
+                      AnalyticsService().logTutorialStarted(source: 'drawer');
                       showDialog(
                         context: context,
                         barrierDismissible: true,
@@ -187,6 +200,7 @@ class HushDrawer extends StatelessWidget {
                   OutlinedButton.icon(
                     onPressed: () {
                       Navigator.pop(context);
+                      AnalyticsService().logSignOut();
                       auth.signOut();
                     },
                     icon: const HushIcon(HushIcons.logout, size: 20, color: HushColors.tierRed),

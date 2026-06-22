@@ -11,6 +11,7 @@ import '../widgets/notifications_button.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../services/analytics_service.dart';
 
 class FollowingScreen extends StatefulWidget {
   const FollowingScreen({super.key});
@@ -32,6 +33,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView('following');
     _fetchFollowedFeed();
   }
 
@@ -59,6 +61,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     });
 
     final results = await _socialService.searchUsers(query);
+    AnalyticsService().logUserSearch(query);
     if (mounted) {
       setState(() {
         _searchResults = results;
@@ -79,8 +82,10 @@ class _FollowingScreenState extends State<FollowingScreen> {
     try {
       if (isFollowing) {
         await _socialService.unfollowUser(currentUserFirebase.uid, targetUser.uid);
+        AnalyticsService().logUnfollow(targetUser.uid);
       } else {
         await _socialService.followUser(currentUserFirebase.uid, targetUser.uid);
+        AnalyticsService().logFollow(targetUser.uid);
       }
       
       // Update local provider state to reflect UI changes instantly
@@ -203,6 +208,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
           margin: const EdgeInsets.only(bottom: 12),
           child: InkWell(
             onTap: () {
+              AnalyticsService().logFollowedUserTapped(user.uid);
               if (secret != null) {
                 // Navigate to MapScreen targeting the secret's coordinates
                 Navigator.push(context, MaterialPageRoute(builder: (_) => MapScreen(targetLat: secret.lat, targetLng: secret.lng)));

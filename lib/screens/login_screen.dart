@@ -4,6 +4,7 @@ import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
+import '../services/analytics_service.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -40,7 +41,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final error = await context.read<AuthProvider>().signInWithGoogle();
     if (mounted) {
       setState(() => _isLoading = false);
-      if (error != null && error != 'User cancelled sign in') {
+      if (error == null) {
+        AnalyticsService().logLogin('google');
+      } else if (error != 'User cancelled sign in') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
         );
@@ -53,7 +56,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
     final error = await context.read<AuthProvider>().signInWithApple();
     if (mounted) {
       setState(() => _isLoading = false);
-      if (error != null && error != 'User cancelled sign in') {
+      if (error == null) {
+        AnalyticsService().logLogin('apple');
+      } else if (error != 'User cancelled sign in') {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(error)),
         );
@@ -186,7 +191,9 @@ class _LoginScreenState extends State<LoginScreen> with SingleTickerProviderStat
                 child: IconButton(
                   icon: const Icon(Icons.language, color: Colors.white),
                   onPressed: () {
-                    context.read<LocaleProvider>().toggleLocale();
+                    final localeProvider = context.read<LocaleProvider>();
+                    localeProvider.toggleLocale();
+                    AnalyticsService().logLanguageChanged(localeProvider.isHebrew ? 'he' : 'en');
                   },
                 ),
               ),

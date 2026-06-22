@@ -8,12 +8,15 @@ import '../providers/ui_provider.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import '../services/analytics_service.dart';
 
 class AdminScreen extends StatelessWidget {
   const AdminScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    // We can't log simple screen view here easily without Stateful, but we can log tab views later if needed.
+    // For now, logging admin actions is the primary goal.
     final l10n = AppLocalizations.of(context)!;
     return DefaultTabController(
       length: 3,
@@ -60,6 +63,9 @@ class _AppealsList extends StatelessWidget {
         'ghostModeUntil': FieldValue.delete(),
         'reportsCount': 0 // Reset reports count optionally
       });
+      AnalyticsService().logAdminAppealDecision(appealId: appealRef.id, approved: true);
+    } else if (userId.isNotEmpty) {
+      AnalyticsService().logAdminAppealDecision(appealId: appealRef.id, approved: false);
     }
   }
 
@@ -173,6 +179,9 @@ class _ReportsList extends StatelessWidget {
     // If deemed harmful, physically delete the bad secret document across the network
     if (deleteSecret && secretId.isNotEmpty) {
       await FirebaseFirestore.instance.collection('secrets').doc(secretId).delete();
+      AnalyticsService().logAdminReportDecision(reportId: reportRef.id, secretId: secretId, deleted: true);
+    } else if (secretId.isNotEmpty) {
+      AnalyticsService().logAdminReportDecision(reportId: reportRef.id, secretId: secretId, deleted: false);
     }
   }
 
@@ -371,6 +380,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
       ),
     );
     if (context.mounted) {
+      AnalyticsService().logAdminMaintenanceAction('test_push_notification');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(l10n.testPushSuccess)),
       );
@@ -421,6 +431,8 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
       } else {
         await _performBatchUpdate(query.docs);
       }
+
+      AnalyticsService().logAdminMaintenanceAction('migrate_search_names', details: 'success');
 
       setState(() {
         _isMigrating = false;
@@ -493,7 +505,10 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
             Text(_getStatus(l10n), style: const TextStyle(color: Colors.white54)),
             const Divider(height: 64, color: Colors.white10),
             ElevatedButton.icon(
-              onPressed: () => context.read<UIProvider>().triggerConfetti(),
+              onPressed: () {
+                AnalyticsService().logAdminMaintenanceAction('test_confetti');
+                context.read<UIProvider>().triggerConfetti();
+              },
               icon: const Icon(Icons.celebration),
               label: Text(l10n.testConfetti),
               style: ElevatedButton.styleFrom(

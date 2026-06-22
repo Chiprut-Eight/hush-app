@@ -13,6 +13,7 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
 import '../widgets/notifications_button.dart';
+import '../services/analytics_service.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
@@ -44,6 +45,7 @@ class _MapScreenState extends State<MapScreen> {
   @override
   void initState() {
     super.initState();
+    AnalyticsService().logScreenView('map');
     _fetchMapData();
   }
 
@@ -107,6 +109,7 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   void _onMarkerTapped(Secret secret) {
+    AnalyticsService().logMapMarkerTapped(secret.id);
     setState(() {
       _selectedSecret = secret;
     });
@@ -141,6 +144,7 @@ class _MapScreenState extends State<MapScreen> {
           IconButton(
             icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: () {
+              AnalyticsService().logMapCenterOnUser();
               if (_currentPosition != null) {
                 _mapController.move(
                   LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 
@@ -153,7 +157,10 @@ class _MapScreenState extends State<MapScreen> {
           ),
           IconButton(
             icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-            onPressed: _fetchMapData,
+            onPressed: () {
+              AnalyticsService().logMapRefresh();
+              _fetchMapData();
+            },
           ),
         ],
       ),

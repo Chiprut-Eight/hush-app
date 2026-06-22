@@ -14,6 +14,7 @@ import '../widgets/hush_drawer.dart';
 import '../widgets/notifications_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
+import '../services/analytics_service.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -39,6 +40,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _fetchProfileData();
+    AnalyticsService().logScreenView(widget.targetUserId == null ? 'profile' : 'user_profile');
   }
 
   Future<void> _fetchProfileData() async {
@@ -112,8 +114,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     try {
       if (isFollowing) {
         await _socialService.unfollowUser(currentUser.uid, _targetUser!.uid);
+        AnalyticsService().logUnfollow(_targetUser!.uid);
       } else {
         await _socialService.followUser(currentUser.uid, _targetUser!.uid);
+        AnalyticsService().logFollow(_targetUser!.uid);
       }
       await auth.refreshProfile();
       await _fetchProfileData();
@@ -293,6 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   onValueChanged: (int? value) {
                     if (value != null) {
                       setState(() => _activeTabIndex = value);
+                      AnalyticsService().logProfileTabChanged(value == 0 ? 'my_secrets' : 'saved_secrets');
                     }
                   },
                 ),
@@ -426,6 +431,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               if (reason.isEmpty) return;
               final messenger = ScaffoldMessenger.of(context);
               await _secretService.submitAppeal(reason);
+              AnalyticsService().logAppealSubmitted();
               if (ctx.mounted) Navigator.pop(ctx);
               if (mounted) {
                 messenger.showSnackBar(

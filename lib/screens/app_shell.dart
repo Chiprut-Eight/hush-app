@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
+import '../services/analytics_service.dart';
 
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
@@ -100,6 +101,7 @@ class _AppShellState extends State<AppShell> {
             onPressed: () async {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setBool('hasSeenInvitePopup', true);
+              AnalyticsService().logInvitePopupDismissed();
               if (ctx.mounted) Navigator.pop(ctx);
             },
             child: Text(l10n.dontShowAgain, style: const TextStyle(color: HushColors.textMuted)),
@@ -107,6 +109,8 @@ class _AppShellState extends State<AppShell> {
           ElevatedButton(
             onPressed: () async {
               if (ctx.mounted) Navigator.pop(ctx);
+              AnalyticsService().logInvitePopupAccepted();
+              AnalyticsService().logShareApp('invite_popup');
               Share.share(l10n.shareAppText);
             },
             style: ElevatedButton.styleFrom(
@@ -136,6 +140,7 @@ class _AppShellState extends State<AppShell> {
             debugPrint('[TIER] Level Up detected: $_lastTier -> $currentTier');
             WidgetsBinding.instance.addPostFrameCallback((_) {
               context.read<UIProvider>().triggerConfetti();
+              AnalyticsService().logTierUp(oldTier: _lastTier!, newTier: currentTier);
             });
           }
           _lastTier = currentTier;
@@ -145,6 +150,7 @@ class _AppShellState extends State<AppShell> {
         if (hushUser != null && !hushUser.hasSeenTutorial && !_tutorialShownThisSession) {
           _tutorialShownThisSession = true;
           WidgetsBinding.instance.addPostFrameCallback((_) {
+            AnalyticsService().logTutorialStarted(source: 'auto');
             showDialog(
               context: context,
               barrierDismissible: true, // Allow dismissal via clicking outside if they want
@@ -187,7 +193,11 @@ class _AppShellState extends State<AppShell> {
               ),
               child: BottomNavigationBar(
                 currentIndex: _currentIndex,
-                onTap: (index) => setState(() => _currentIndex = index),
+                onTap: (index) {
+                  setState(() => _currentIndex = index);
+                  const tabNames = ['feed', 'map', 'create', 'following', 'profile'];
+                  AnalyticsService().logTabChanged(tabNames[index]);
+                },
                 backgroundColor: HushColors.bgPrimary,
                 selectedItemColor: HushColors.textAccent,
                 unselectedItemColor: HushColors.textSecondary,

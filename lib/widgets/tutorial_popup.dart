@@ -5,6 +5,7 @@ import '../config/theme.dart';
 import '../providers/auth_provider.dart';
 import '../providers/locale_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import '../services/analytics_service.dart';
 
 class TutorialPopup extends StatefulWidget {
   const TutorialPopup({super.key});
@@ -24,6 +25,7 @@ class _TutorialPopupState extends State<TutorialPopup> {
   }
 
   Future<void> _markAsSeen(BuildContext context) async {
+    AnalyticsService().logTutorialCompleted();
     final auth = context.read<AuthProvider>();
     if (auth.firebaseUser != null) {
       // Update Firestore directly for persistence
@@ -105,7 +107,10 @@ class _TutorialPopupState extends State<TutorialPopup> {
                           Consumer<LocaleProvider>(
                             builder: (context, localeProv, _) {
                               return GestureDetector(
-                                onTap: () => localeProv.toggleLocale(),
+                                onTap: () {
+                                  localeProv.toggleLocale();
+                                  AnalyticsService().logLanguageChanged(localeProv.isHebrew ? 'he' : 'en');
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                   decoration: BoxDecoration(
@@ -144,7 +149,10 @@ class _TutorialPopupState extends State<TutorialPopup> {
                           const SizedBox(width: 8),
                           IconButton(
                             icon: const Icon(Icons.close, color: Colors.white54),
-                            onPressed: () => Navigator.of(context).pop(),
+                            onPressed: () {
+                              AnalyticsService().logTutorialSkipped(_currentPage);
+                              Navigator.of(context).pop();
+                            },
                           ),
                         ],
                       ),
@@ -154,7 +162,10 @@ class _TutorialPopupState extends State<TutorialPopup> {
                     Expanded(
                       child: PageView.builder(
                         controller: _pageController,
-                        onPageChanged: (index) => setState(() => _currentPage = index),
+                        onPageChanged: (index) {
+                          setState(() => _currentPage = index);
+                          AnalyticsService().logTutorialPageViewed(index);
+                        },
                         itemCount: pages.length,
                         itemBuilder: (context, index) {
                           return Padding(

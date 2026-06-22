@@ -14,6 +14,7 @@ import 'dart:async';
 import 'providers/ui_provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'services/notification_service.dart';
+import 'services/analytics_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
 
@@ -84,6 +85,7 @@ class _HushAppState extends State<HushApp> {
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
+            navigatorObservers: [AnalyticsService().observer],
             builder: (context, child) {
               return Stack(
                 children: [

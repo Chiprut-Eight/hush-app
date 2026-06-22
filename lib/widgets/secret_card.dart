@@ -19,6 +19,7 @@ import '../config/constants.dart';
 import '../config/tiers.dart';
 import '../screens/profile_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../services/analytics_service.dart';
 
 class SecretCard extends StatefulWidget {
   final Secret secret;
@@ -144,6 +145,11 @@ class _SecretCardState extends State<SecretCard> {
           _revealed = true;
           _isRevealLoading = false;
         });
+        AnalyticsService().logSecretRevealed(
+          secretId: _currentSecret.id,
+          type: _currentSecret.type,
+          isGroup: _currentSecret.isGroup,
+        );
         if (_currentSecret.type == 'voice' && _revealedAudioURL != null) {
           _initAudio();
         }
@@ -206,6 +212,7 @@ class _SecretCardState extends State<SecretCard> {
     if (_isPlaying) {
       _audioPlayer.pause();
     } else {
+      AnalyticsService().logAudioPlayback(_currentSecret.id);
       // Don't count creator's own view — prevents artificial decay prevention
       final currentUid = context.read<AuthProvider>().firebaseUser?.uid;
       if (currentUid != null && currentUid != _currentSecret.creatorId) {
@@ -276,10 +283,11 @@ class _SecretCardState extends State<SecretCard> {
           );
         }
         
-        if (widget.onReveal != null) widget.onReveal!();
+        AnalyticsService().logGroupUnlockAttempt(secretId: _currentSecret.id, success: true);
       } else {
         if (mounted) setState(() => _isRevealLoading = false);
         
+        AnalyticsService().logGroupUnlockAttempt(secretId: _currentSecret.id, success: false);
         // Show current progress localized
         if (mounted) {
           final requiredCount = (result['requiredCount'] as int?) ?? _currentSecret.requiredUsers ?? 3;
@@ -395,6 +403,7 @@ class _SecretCardState extends State<SecretCard> {
                     _currentSecret.id, 
                     selectedReason!,
                   );
+                  AnalyticsService().logSecretReported(secretId: _currentSecret.id, reason: selectedReason!);
                   if (ctx.mounted) Navigator.pop(ctx);
                   if (mounted) {
                     messenger.showSnackBar(
@@ -428,6 +437,7 @@ class _SecretCardState extends State<SecretCard> {
           ElevatedButton(
             onPressed: () async {
               await _secretService.deleteSecret(_currentSecret.id);
+              AnalyticsService().logSecretDeleted(_currentSecret.id);
               if (ctx.mounted) Navigator.pop(ctx);
               if (widget.onDelete != null) widget.onDelete!();
             },
@@ -536,6 +546,7 @@ class _SecretCardState extends State<SecretCard> {
                                                   title: Text(l10n.delete, style: const TextStyle(color: HushColors.tierRed)),
                                                   onTap: () async {
                                                     await _secretService.deleteComment(_currentSecret.id, c['id']);
+                                                    AnalyticsService().logCommentDeleted(_currentSecret.id);
                                                     if (menuCtx.mounted) Navigator.pop(menuCtx);
                                                   },
                                                 ),
@@ -683,6 +694,7 @@ class _SecretCardState extends State<SecretCard> {
                                     
                                     if (editingCommentId != null) {
                                       await _secretService.editComment(_currentSecret.id, editingCommentId!, text);
+                                      AnalyticsService().logCommentEdited(_currentSecret.id);
                                       if (ctx.mounted) {
                                         setSheetState(() {
                                           editingCommentId = null;
@@ -696,6 +708,11 @@ class _SecretCardState extends State<SecretCard> {
                                         replyToUserId: replyingToUserId,
                                         replyToUserName: replyingToUserName,
                                       );
+                                      if (replyingToUserId != null) {
+                                        AnalyticsService().logCommentReplied(_currentSecret.id);
+                                      } else {
+                                        AnalyticsService().logCommentAdded(_currentSecret.id);
+                                      }
                                       if (ctx.mounted) {
                                         setSheetState(() {
                                           replyingToUserId = null;
@@ -799,6 +816,7 @@ class _SecretCardState extends State<SecretCard> {
                           Expanded(
                             child: GestureDetector(
                               onTap: () {
+                                AnalyticsService().logCreatorProfileTapped(_currentSecret.creatorId);
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -933,8 +951,10 @@ class _SecretCardState extends State<SecretCard> {
                                     _userLiked = !_userLiked;
                                     if (_userLiked) {
                                       _secretService.likeSecret(_currentSecret.id);
+                                      AnalyticsService().logSecretLiked(_currentSecret.id);
                                     } else {
                                       _secretService.unlikeSecret(_currentSecret.id);
+                                      AnalyticsService().logSecretUnliked(_currentSecret.id);
                                     }
                                   });
                                 } : () {},
@@ -954,8 +974,10 @@ class _SecretCardState extends State<SecretCard> {
                                     _userDisliked = !_userDisliked;
                                     if (_userDisliked) {
                                       _secretService.dislikeSecret(_currentSecret.id);
+                                      AnalyticsService().logSecretDisliked(_currentSecret.id);
                                     } else {
                                       _secretService.undislikeSecret(_currentSecret.id);
+                                      AnalyticsService().logSecretUndisliked(_currentSecret.id);
                                     }
                                   });
                                 } : null,
@@ -967,6 +989,7 @@ class _SecretCardState extends State<SecretCard> {
                                 isActive: false,
                                 color: _revealed ? HushColors.textSecondary : HushColors.textSecondary.withValues(alpha: 0.3),
                                 onTap: _revealed ? () async {
+                                  AnalyticsService().logCommentsOpened(_currentSecret.id);
                                   if (widget.onInteractionStart != null) widget.onInteractionStart!();
                                   await _showCommentsSheet(context, l10n);
                                   if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
@@ -1004,6 +1027,11 @@ class _SecretCardState extends State<SecretCard> {
                                     return;
                                   }
                                   if (mounted) setState(() => _savingInProgress = true);
+                                  if (!userSaved) {
+                                    AnalyticsService().logSecretSaved(_currentSecret.id);
+                                  } else {
+                                    AnalyticsService().logSecretUnsaved(_currentSecret.id);
+                                  }
                                   await _secretService.toggleSaveSecret(_currentSecret.id);
                                   if (mounted) setState(() => _savingInProgress = false);
                                 } : null,
@@ -1049,7 +1077,10 @@ class _SecretCardState extends State<SecretCard> {
                                   child: Text(l10n.cancel, style: const TextStyle(color: HushColors.textSecondary)),
                                 ),
                                 ElevatedButton(
-                                  onPressed: () => setState(() => _showWarning = false),
+                                  onPressed: () {
+                                    AnalyticsService().logContentWarningDismissed(_currentSecret.id);
+                                    setState(() => _showWarning = false);
+                                  },
                                   style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
                                   child: Text(l10n.viewAnyway, style: const TextStyle(color: Colors.white)),
                                 ),
