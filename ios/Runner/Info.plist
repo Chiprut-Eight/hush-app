@@ -51,6 +51,8 @@
 		<string>HUSH requires access to your location to discover and plant secrets nearby.</string>
 		<key>NSLocationAlwaysUsageDescription</key>
 		<string>HUSH requires access to your location to alert you about nearby secrets.</string>
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>HUSH uses your location in the background to notify you when you are near a secret.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>HUSH needs microphone access for you to record voice secrets.</string>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
