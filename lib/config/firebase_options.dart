@@ -41,13 +41,14 @@ class DefaultFirebaseOptions {
     storageBucket: 'hush-7bab0.firebasestorage.app',
   );
 
-  /// iOS configuration (registered as HUSH iOS in Firebase Console)
+  /// iOS configuration (from GoogleService-Info.plist)
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyDjWq7tglRokKa6WpPlZgUSNB1KHuMyG00',
-    appId: '1:187237532355:ios:d96ce62e72f650cfa2d876',
+    apiKey: 'AIzaSyBHQ-4iO9ZCcOp7WSN9Lg5lejyoqMJlvv8',
+    appId: '1:187237532355:ios:a942493be64bdf25a2d876',
     messagingSenderId: '187237532355',
     projectId: 'hush-7bab0',
     storageBucket: 'hush-7bab0.firebasestorage.app',
     iosBundleId: 'com.chiprut.hushhh',
+    iosClientId: '187237532355-kkfh74c6ja7fr32bqjgi1drkac6teqdl.apps.googleusercontent.com',
   );
 }
