@@ -358,6 +358,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
     
     return list.map((secret) => SecretCard(
+      key: ValueKey(secret.id),
       secret: secret,
       userPosition: _userPosition,
       onDelete: isMe ? () {

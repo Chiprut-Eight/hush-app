@@ -445,8 +445,8 @@ class _SecretCardState extends State<SecretCard> {
               if (ctx.mounted) Navigator.pop(ctx);
               
               try {
-                if (_currentSecret.type == 'voice' && _isPlaying) {
-                  await _audioPlayer.pause(); // Await pause to prevent codec tear-down race conditions
+                if (_currentSecret.type == 'voice' && _revealedAudioURL != null) {
+                  await _audioPlayer.stop(); // Stop completely to release decoders cleanly before dispose
                 }
                 
                 await _secretService.deleteSecret(_currentSecret.id);

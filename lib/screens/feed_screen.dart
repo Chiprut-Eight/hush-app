@@ -219,6 +219,7 @@ class _FeedScreenState extends State<FeedScreen> {
         itemCount: _secrets.length,
         itemBuilder: (context, index) {
           return SecretCard(
+            key: ValueKey(_secrets[index].id),
             secret: _secrets[index],
             userPosition: _userPosition,
             onDelete: () {
