@@ -360,7 +360,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return list.map((secret) => SecretCard(
       secret: secret,
       userPosition: _userPosition,
-      onDelete: isMe ? _fetchProfileData : null,
+      onDelete: isMe ? () {
+        setState(() {
+          if (_activeTabIndex == 0) {
+            _plantedSecrets.removeWhere((s) => s.id == secret.id);
+          } else {
+            _savedSecrets.removeWhere((s) => s.id == secret.id);
+          }
+        });
+      } : null,
     )).toList();
   }
 

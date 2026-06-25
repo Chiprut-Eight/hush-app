@@ -58,6 +58,10 @@ class _SecretCardState extends State<SecretCard> {
   String? _revealedTextContent;
   String? _revealedAudioURL;
   
+  StreamSubscription? _durationSub;
+  StreamSubscription? _positionSub;
+  StreamSubscription? _playerStateSub;
+  
   bool _isPlaying = false;
   Duration _duration = Duration.zero;
   Duration _position = Duration.zero;
@@ -176,21 +180,20 @@ class _SecretCardState extends State<SecretCard> {
       // Use cached audio file for faster playback and lower data usage
       final file = await _audioService.getCachedAudioFile(audioUrl);
       await _audioPlayer.setFilePath(file.path);
-      
-      _audioPlayer.durationStream.listen((d) {
+
+      _durationSub = _audioPlayer.durationStream.listen((d) {
         if (mounted && d != null) setState(() => _duration = d);
       });
-      _audioPlayer.positionStream.listen((p) {
+      _positionSub = _audioPlayer.positionStream.listen((p) {
         if (mounted) setState(() => _position = p);
       });
-      _audioPlayer.playerStateStream.listen((state) {
-        if (mounted) {
-          setState(() {
-            _isPlaying = state.playing && state.processingState != ProcessingState.completed;
-          });
-          if (state.processingState == ProcessingState.completed) {
+      _playerStateSub = _audioPlayer.playerStateStream.listen((state) {
+        if (mounted) setState(() => _isPlaying = state.playing);
+        if (state.processingState == ProcessingState.completed) {
+          if (mounted) {
             _audioPlayer.seek(Duration.zero);
             _audioPlayer.pause();
+            setState(() => _isPlaying = false);
           }
         }
       });
@@ -204,6 +207,9 @@ class _SecretCardState extends State<SecretCard> {
     _compassSubscription?.cancel();
     _attemptsSubscription?.cancel();
     _secretDocSubscription?.cancel();
+    _durationSub?.cancel();
+    _positionSub?.cancel();
+    _playerStateSub?.cancel();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -440,7 +446,7 @@ class _SecretCardState extends State<SecretCard> {
               
               try {
                 if (_currentSecret.type == 'voice' && _isPlaying) {
-                  await _audioPlayer.stop();
+                  await _audioPlayer.pause(); // Await pause to prevent codec tear-down race conditions
                 }
                 
                 await _secretService.deleteSecret(_currentSecret.id);

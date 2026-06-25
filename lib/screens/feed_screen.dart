@@ -221,7 +221,11 @@ class _FeedScreenState extends State<FeedScreen> {
           return SecretCard(
             secret: _secrets[index],
             userPosition: _userPosition,
-            onDelete: _fetchSecrets,
+            onDelete: () {
+              setState(() {
+                _secrets.removeWhere((s) => s.id == _secrets[index].id);
+              });
+            },
             onInteractionStart: _pauseAutoRefresh,
             onInteractionEnd: _resumeAutoRefresh,
           );
