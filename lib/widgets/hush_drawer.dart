@@ -108,7 +108,9 @@ class HushDrawer extends StatelessWidget {
                       Navigator.pop(context);
                       AnalyticsService().logDrawerAction('invite');
                       AnalyticsService().logShareApp('drawer');
-                      Share.share(l10n.shareAppText);
+                      Future.delayed(const Duration(milliseconds: 300), () {
+                        Share.share(l10n.shareAppText);
+                      });
                     },
                   ),
 

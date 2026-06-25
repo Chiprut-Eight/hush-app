@@ -436,10 +436,20 @@ class _SecretCardState extends State<SecretCard> {
           ),
           ElevatedButton(
             onPressed: () async {
-              await _secretService.deleteSecret(_currentSecret.id);
-              AnalyticsService().logSecretDeleted(_currentSecret.id);
               if (ctx.mounted) Navigator.pop(ctx);
-              if (widget.onDelete != null) widget.onDelete!();
+              
+              try {
+                if (_currentSecret.type == 'voice' && _isPlaying) {
+                  await _audioPlayer.stop();
+                }
+                
+                await _secretService.deleteSecret(_currentSecret.id);
+                AnalyticsService().logSecretDeleted(_currentSecret.id);
+                
+                if (widget.onDelete != null) widget.onDelete!();
+              } catch (e) {
+                debugPrint('Error deleting secret: $e');
+              }
             },
             style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
             child: Text(l10n.delete, style: const TextStyle(color: Colors.white)),

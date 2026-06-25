@@ -111,7 +111,9 @@ class _AppShellState extends State<AppShell> {
               if (ctx.mounted) Navigator.pop(ctx);
               AnalyticsService().logInvitePopupAccepted();
               AnalyticsService().logShareApp('invite_popup');
-              Share.share(l10n.shareAppText);
+              Future.delayed(const Duration(milliseconds: 300), () {
+                Share.share(l10n.shareAppText);
+              });
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: HushColors.textAccent,
