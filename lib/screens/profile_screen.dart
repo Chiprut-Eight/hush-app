@@ -363,7 +363,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       onDelete: isMe ? () {
         setState(() {
           if (_activeTabIndex == 0) {
-            _plantedSecrets.removeWhere((s) => s.id == secret.id);
+            _mySecrets.removeWhere((s) => s.id == secret.id);
           } else {
             _savedSecrets.removeWhere((s) => s.id == secret.id);
           }
