@@ -106,6 +106,9 @@ class _SecretCardState extends State<SecretCard> {
           }
         });
       }
+    }, onError: (error) {
+      debugPrint('Secret stream error (likely deleted): $error');
+      // Ignore the error; the parent UI will remove the card from the list shortly.
     });
 
     // Start participants counter stream for group secrets
