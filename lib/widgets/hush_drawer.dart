@@ -105,11 +105,13 @@ class HushDrawer extends StatelessWidget {
                     leading: Icon(Icons.person_add_alt_1_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
                     title: Text(l10n.inviteFriends, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
+                      final box = context.findRenderObject() as RenderBox?;
+                      final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
                       Navigator.pop(context);
                       AnalyticsService().logDrawerAction('invite');
                       AnalyticsService().logShareApp('drawer');
                       Future.delayed(const Duration(milliseconds: 300), () {
-                        Share.share(l10n.shareAppText);
+                        Share.share(l10n.shareAppText, sharePositionOrigin: shareOrigin);
                       });
                     },
                   ),

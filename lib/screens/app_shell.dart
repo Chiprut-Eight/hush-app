@@ -46,7 +46,7 @@ class _AppShellState extends State<AppShell> {
     _screens = [
       FeedScreen(scaffoldKey: _feedScaffoldKey),
       MapScreen(scaffoldKey: _mapScaffoldKey),
-      const CreateScreen(),
+      CreateScreen(onPublished: () => setState(() => _currentIndex = 0)),
       const FollowingScreen(),
       const ProfileScreen(),
     ];
@@ -108,11 +108,13 @@ class _AppShellState extends State<AppShell> {
           ),
           ElevatedButton(
             onPressed: () async {
+              final box = ctx.findRenderObject() as RenderBox?;
+              final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
               if (ctx.mounted) Navigator.pop(ctx);
               AnalyticsService().logInvitePopupAccepted();
               AnalyticsService().logShareApp('invite_popup');
               Future.delayed(const Duration(milliseconds: 300), () {
-                Share.share(l10n.shareAppText);
+                Share.share(l10n.shareAppText, sharePositionOrigin: shareOrigin);
               });
             },
             style: ElevatedButton.styleFrom(

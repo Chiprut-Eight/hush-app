@@ -20,7 +20,9 @@ import '../services/analytics_service.dart';
 
 /// Web-aligned Create Screen
 class CreateScreen extends StatefulWidget {
-  const CreateScreen({super.key});
+  final VoidCallback? onPublished;
+
+  const CreateScreen({super.key, this.onPublished});
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -203,12 +205,16 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       }
 
       if (mounted) {
+        FocusScope.of(context).unfocus();
         final contentType = _activeTab == 0 ? 'text' : 'voice';
         AnalyticsService().logSecretCreated(contentType: contentType, secretType: _secretType);
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.secretReady)));
         _discardRecording();
         _textController.clear();
         setState(() => _secretType = 'regular');
+
+        // Navigate back to Feed tab
+        if (widget.onPublished != null) widget.onPublished!();
       }
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.cancel}: $e')));
