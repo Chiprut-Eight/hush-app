@@ -54,7 +54,17 @@ class AuthService {
 
     final result = await _auth.signInWithCredential(oauthCredential);
     if (result.user != null) {
-      await _ensureUserProfile(result.user!);
+      // Apple only provides name on first sign-in — capture it and update Firebase Auth profile
+      final givenName = appleCredential.givenName;
+      final familyName = appleCredential.familyName;
+      if (givenName != null || familyName != null) {
+        final fullName = [givenName, familyName].where((s) => s != null && s.isNotEmpty).join(' ');
+        if (fullName.isNotEmpty && (result.user!.displayName == null || result.user!.displayName!.isEmpty)) {
+          await result.user!.updateDisplayName(fullName);
+          await result.user!.reload();
+        }
+      }
+      await _ensureUserProfile(_auth.currentUser ?? result.user!);
     }
     return result.user;
   }
@@ -71,19 +81,44 @@ class AuthService {
   }
 
   /// Create user profile in Firestore if it doesn't exist
+  /// Also updates displayName for existing users if it's missing
   Future<void> _ensureUserProfile(User user) async {
     final userRef = _firestore.collection('users').doc(user.uid);
     final userSnap = await userRef.get();
 
+    // Build a sensible display name from what's available
+    final displayName = user.displayName
+        ?? user.email?.split('@').first
+        ?? 'User';
+
     if (!userSnap.exists) {
       final newUser = HushUser(
         uid: user.uid,
-        displayName: user.displayName,
+        displayName: displayName,
         email: user.email,
         photoURL: user.photoURL,
-        searchName: (user.displayName ?? '').toLowerCase(),
+        searchName: displayName.toLowerCase(),
       );
       await userRef.set(newUser.toFirestore());
+    } else {
+      // Update displayName if it's null/empty in Firestore but available now
+      final data = userSnap.data() as Map<String, dynamic>?;
+      if (data != null) {
+        final updates = <String, dynamic>{};
+        if ((data['displayName'] == null || (data['displayName'] as String).isEmpty) && displayName.isNotEmpty) {
+          updates['displayName'] = displayName;
+          updates['searchName'] = displayName.toLowerCase();
+        }
+        if (data['email'] == null && user.email != null) {
+          updates['email'] = user.email;
+        }
+        if (data['photoURL'] == null && user.photoURL != null) {
+          updates['photoURL'] = user.photoURL;
+        }
+        if (updates.isNotEmpty) {
+          await userRef.update(updates);
+        }
+      }
     }
   }
 

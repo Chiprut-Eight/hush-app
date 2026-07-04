@@ -36,16 +36,19 @@ class _FeedScreenState extends State<FeedScreen> {
   void initState() {
     super.initState();
     AnalyticsService().logScreenView('feed');
-    _fetchSecrets();
-    _startAutoRefresh();
+    // Use addPostFrameCallback to ensure context is fully ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchSecrets();
+      _startAutoRefresh();
+    });
   }
 
   void _startAutoRefresh() {
     _autoRefreshTimer?.cancel();
-    // Task 2: Auto-refresh every 45 seconds
+    // Auto-refresh every 45 seconds (silent — no loading spinner)
     _autoRefreshTimer = Timer.periodic(const Duration(seconds: 45), (_) {
       if (!_isLoading) {
-        _fetchSecrets();
+        _fetchSecrets(silent: true);
       }
     });
   }
@@ -65,16 +68,18 @@ class _FeedScreenState extends State<FeedScreen> {
     super.dispose();
   }
 
-  Future<void> _fetchSecrets() async {
+  Future<void> _fetchSecrets({bool silent = false}) async {
     // Get current user info before any async gaps
     final authProvider = context.read<AuthProvider>();
     final uid = authProvider.firebaseUser?.uid;
     final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
 
-    setState(() {
-      _isLoading = true;
-      _error = null;
-    });
+    if (!silent) {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+      });
+    }
 
     try {
       bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -142,6 +147,7 @@ class _FeedScreenState extends State<FeedScreen> {
             onPressed: () {
               AnalyticsService().logFeedRefresh();
               _fetchSecrets();
+              _startAutoRefresh(); // Reset 45s timer on manual refresh
             },
           ),
         ],
@@ -211,7 +217,10 @@ class _FeedScreenState extends State<FeedScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: _fetchSecrets,
+      onRefresh: () async {
+        await _fetchSecrets();
+        _startAutoRefresh(); // Reset 45s timer on manual refresh
+      },
       color: HushColors.textAccent,
       backgroundColor: Theme.of(context).colorScheme.surface,
       child: ListView.builder(

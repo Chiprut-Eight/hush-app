@@ -46,7 +46,10 @@ class _MapScreenState extends State<MapScreen> {
   void initState() {
     super.initState();
     AnalyticsService().logScreenView('map');
-    _fetchMapData();
+    // Use addPostFrameCallback to ensure context is fully ready
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _fetchMapData();
+    });
   }
 
   Future<void> _fetchMapData() async {

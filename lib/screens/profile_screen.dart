@@ -211,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    user.displayName ?? 'Anonymous',
+                    user.displayName ?? user.firstName ?? user.email?.split('@').first ?? 'Anonymous',
                     style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 8),
