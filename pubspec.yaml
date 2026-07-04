@@ -1,7 +1,7 @@
 name: hush_app
 description: "HUSH - Geo-acoustic social network"
 publish_to: 'none'
-version: 1.0.0+12
+version: 1.0.0+13
 
 environment:
   sdk: ^3.10.7
