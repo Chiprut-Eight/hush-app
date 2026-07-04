@@ -102,7 +102,7 @@ class AuthService {
       await userRef.set(newUser.toFirestore());
     } else {
       // Update displayName if it's null/empty in Firestore but available now
-      final data = userSnap.data() as Map<String, dynamic>?;
+      final data = userSnap.data();
       if (data != null) {
         final updates = <String, dynamic>{};
         if ((data['displayName'] == null || (data['displayName'] as String).isEmpty) && displayName.isNotEmpty) {
