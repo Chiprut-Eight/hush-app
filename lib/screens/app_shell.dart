@@ -89,7 +89,17 @@ class _AppShellState extends State<AppShell> {
           children: [
             const Icon(Icons.favorite, color: HushColors.tierRed),
             const SizedBox(width: 8),
-            Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            Expanded(
+              child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            ),
+            IconButton(
+              icon: const Icon(Icons.close, color: HushColors.textMuted),
+              onPressed: () {
+                if (ctx.mounted) Navigator.pop(ctx);
+              },
+              padding: EdgeInsets.zero,
+              constraints: const BoxConstraints(),
+            ),
           ],
         ),
         content: Text(
