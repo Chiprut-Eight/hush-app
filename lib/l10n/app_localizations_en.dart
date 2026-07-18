@@ -65,7 +65,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishSecret => 'Drop Hushhh';
 
   @override
-  String get hideSecretAction => 'Hide Hushhh';
+  String get hideSecretAction => 'TAP TO DROP';
+
+  @override
+  String get secretOnTheWay => 'The Hushhh is on its way...';
+
+  @override
+  String get gpsSearching => 'Finding your location...';
+
+  @override
+  String gpsHigh(int meters) => 'High accuracy (~${meters}m)';
+
+  @override
+  String gpsMedium(int meters) => 'Improving accuracy (~${meters}m)';
+
+  @override
+  String gpsLow(int meters) => 'Low accuracy (~${meters}m)';
 
   @override
   String get regularSecret => 'Regular Hushhh';

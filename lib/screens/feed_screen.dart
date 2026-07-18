@@ -31,16 +31,22 @@ class _FeedScreenState extends State<FeedScreen> {
   String? _error;
   Position? _userPosition;
   Timer? _autoRefreshTimer;
+  bool _didInit = false;
 
   @override
   void initState() {
     super.initState();
     AnalyticsService().logScreenView('feed');
-    // Use addPostFrameCallback to ensure context is fully ready
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _didInit = true;
       _fetchSecrets();
       _startAutoRefresh();
-    });
+    }
   }
 
   void _startAutoRefresh() {
@@ -146,7 +152,7 @@ class _FeedScreenState extends State<FeedScreen> {
             icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: () {
               AnalyticsService().logFeedRefresh();
-              _fetchSecrets();
+              _fetchSecrets(silent: _secrets.isNotEmpty);
               _startAutoRefresh(); // Reset 45s timer on manual refresh
             },
           ),
@@ -218,7 +224,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
     return RefreshIndicator(
       onRefresh: () async {
-        await _fetchSecrets();
+        await _fetchSecrets(silent: true);
         _startAutoRefresh(); // Reset 45s timer on manual refresh
       },
       color: HushColors.textAccent,

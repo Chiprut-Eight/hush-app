@@ -41,15 +41,21 @@ class _MapScreenState extends State<MapScreen> {
   String? _error;
   Position? _currentPosition;
   Secret? _selectedSecret;
+  bool _didInit = false;
 
   @override
   void initState() {
     super.initState();
     AnalyticsService().logScreenView('map');
-    // Use addPostFrameCallback to ensure context is fully ready
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInit) {
+      _didInit = true;
       _fetchMapData();
-    });
+    }
   }
 
   Future<void> _fetchMapData() async {

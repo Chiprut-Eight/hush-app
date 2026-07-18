@@ -209,8 +209,29 @@ abstract class AppLocalizations {
   /// No description provided for @hideSecretAction.
   ///
   /// In en, this message translates to:
-  /// **'Hide Hushhh'**
+  /// **'TAP TO DROP'**
   String get hideSecretAction;
+
+  /// No description provided for @secretOnTheWay.
+  ///
+  /// In en, this message translates to:
+  /// **'The Hushhh is on its way...'**
+  String get secretOnTheWay;
+
+  /// No description provided for @gpsSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location...'**
+  String get gpsSearching;
+
+  /// GPS accuracy high
+  String gpsHigh(int meters);
+
+  /// GPS accuracy medium
+  String gpsMedium(int meters);
+
+  /// GPS accuracy low
+  String gpsLow(int meters);
 
   /// No description provided for @regularSecret.
   ///

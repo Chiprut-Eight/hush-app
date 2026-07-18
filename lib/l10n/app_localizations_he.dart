@@ -64,7 +64,22 @@ class AppLocalizationsHe extends AppLocalizations {
   String get publishSecret => 'הטמן Hushhh';
 
   @override
-  String get hideSecretAction => 'הטמן Hushhh';
+  String get hideSecretAction => 'לחץ להטמנת Hushhh';
+
+  @override
+  String get secretOnTheWay => 'ה-Hushhh בדרך...';
+
+  @override
+  String get gpsSearching => 'מאתר את המיקום שלך...';
+
+  @override
+  String gpsHigh(int meters) => 'דיוק גבוה (~${meters}מ\')';
+
+  @override
+  String gpsMedium(int meters) => 'משפר דיוק (~${meters}מ\')';
+
+  @override
+  String gpsLow(int meters) => 'דיוק נמוך (~${meters}מ\')';
 
   @override
   String get regularSecret => 'Hushhh רגיל';

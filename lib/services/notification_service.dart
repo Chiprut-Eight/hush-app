@@ -41,16 +41,29 @@ class NotificationService {
 
     debugPrint('[FCM] Permission granted: ${settings.authorizationStatus}');
 
-    // 2. Get and save APNs token first on iOS
+    // 2. On iOS, wait for APNs token before requesting FCM token
+    // APNs token may not be ready immediately — retry with delay (same pattern as eightgame)
     if (Platform.isIOS) {
-      final apnsToken = await _messaging.getAPNSToken();
-      debugPrint('[FCM] APNs token: $apnsToken');
+      String? apnsToken = await _messaging.getAPNSToken();
+      if (apnsToken == null) {
+        // Wait and retry — APNs registration may not be complete yet
+        await Future.delayed(const Duration(seconds: 3));
+        apnsToken = await _messaging.getAPNSToken();
+        debugPrint('[FCM] APNs token (after retry): $apnsToken');
+      } else {
+        debugPrint('[FCM] APNs token: $apnsToken');
+      }
+      if (apnsToken == null) {
+        debugPrint('[FCM] WARNING: APNs token still null — push notifications will NOT work');
+      }
     }
 
     // 3. Get FCM token and save to Firestore
     final token = await _messaging.getToken();
     if (token != null) {
       await _saveToken(uid, token);
+    } else {
+      debugPrint('[FCM] WARNING: FCM token is null');
     }
 
     // 4. Listen for token refresh

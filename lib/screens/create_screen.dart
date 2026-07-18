@@ -49,6 +49,11 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   bool _isPlayingPreview = false;
   Timer? _recordTimer;
 
+  // GPS accuracy tracking
+  StreamSubscription<Position>? _positionSubscription;
+  double? _gpsAccuracy;
+  Position? _lastPosition;
+
   @override
   void initState() {
     super.initState();
@@ -73,11 +78,44 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     });
 
     _textController.addListener(() => setState(() {}));
+
+    // Start GPS accuracy stream
+    _startGpsStream();
+  }
+
+  void _startGpsStream() async {
+    try {
+      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) return;
+      LocationPermission permission = await Geolocator.checkPermission();
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) return;
+
+      // Get initial position
+      final pos = await Geolocator.getCurrentPosition();
+      if (mounted) setState(() { _gpsAccuracy = pos.accuracy; _lastPosition = pos; });
+
+      _positionSubscription = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 0,
+        ),
+      ).listen((Position position) {
+        if (mounted) {
+          setState(() {
+            _gpsAccuracy = position.accuracy;
+            _lastPosition = position;
+          });
+        }
+      });
+    } catch (e) {
+      debugPrint('GPS stream error: $e');
+    }
   }
 
   @override
   void dispose() {
     _recordTimer?.cancel();
+    _positionSubscription?.cancel();
     _pulseController.dispose();
     _audioService.dispose();
     _audioPlayer.dispose();
@@ -158,68 +196,103 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
     final tierLevel = context.read<AuthProvider>().hushUser?.tierLevel ?? 1;
 
-    setState(() => _isPublishing = true);
+    // Capture all needed data BEFORE navigating away
+    final contentType = _activeTab == 0 ? 'text' : 'voice';
+    final secretType = _secretType;
+    final textContent = _textController.text.trim();
+    final recordedPath = _recordedFilePath;
+    final audioDuration = _audioPlayer.duration?.inSeconds ?? _recordingDurationSeconds;
+    final isGroup = _secretType == 'group';
+    final requiredU = isGroup ? _requiredUsers.toInt() : null;
+    int? timeWindow;
+    if (isGroup) {
+      final currentTier = HushTiers.getTier(tierLevel);
+      timeWindow = currentTier.timeWindowMinutes;
+    }
 
+    // Use the last known GPS position or get a fresh one
+    Position? position = _lastPosition;
+    if (position == null) {
+      try {
+        position = await Geolocator.getCurrentPosition();
+      } catch (e) {
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.cancel}: $e')));
+        return;
+      }
+    }
+
+    // Immediately navigate to feed and show snackbar
+    FocusScope.of(context).unfocus();
+    _discardRecording();
+    _textController.clear();
+    setState(() => _secretType = 'regular');
+    if (widget.onPublished != null) widget.onPublished!();
+
+    // Show "on the way" snackbar
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.secretOnTheWay),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
+
+    // Publish in background (fire-and-forget)
+    _publishInBackground(
+      contentType: contentType,
+      secretType: secretType,
+      textContent: textContent,
+      recordedPath: recordedPath,
+      audioDuration: audioDuration,
+      lat: position.latitude,
+      lng: position.longitude,
+      isGroup: isGroup,
+      requiredUsers: requiredU,
+      timeWindowMinutes: timeWindow,
+    );
+  }
+
+  Future<void> _publishInBackground({
+    required String contentType,
+    required String secretType,
+    required String textContent,
+    required String? recordedPath,
+    required int audioDuration,
+    required double lat,
+    required double lng,
+    required bool isGroup,
+    required int? requiredUsers,
+    required int? timeWindowMinutes,
+  }) async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) throw Exception('Location services disabled.');
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) throw Exception('Permissions denied');
-      }
-      Position position = await Geolocator.getCurrentPosition();
-
-      bool isGroup = _secretType == 'group';
-      int? requiredU = isGroup ? _requiredUsers.toInt() : null;
-      int? timeWindow;
-      if (isGroup) {
-        final currentTier = HushTiers.getTier(tierLevel);
-        timeWindow = currentTier.timeWindowMinutes;
-      }
-
-      if (_activeTab == 0) {
-        // Text Secret
+      if (contentType == 'text') {
         await _secretService.createTextSecret(
-          content: _textController.text.trim(),
-          lat: position.latitude,
-          lng: position.longitude,
+          content: textContent,
+          lat: lat,
+          lng: lng,
           isGroup: isGroup,
-          requiredUsers: requiredU,
-          timeWindowMinutes: timeWindow,
+          requiredUsers: requiredUsers,
+          timeWindowMinutes: timeWindowMinutes,
         );
       } else {
-        // Voice Secret
         final secretId = const Uuid().v4();
-        final downloadUrl = await _audioService.uploadAudio(_recordedFilePath!, secretId);
+        final downloadUrl = await _audioService.uploadAudio(recordedPath!, secretId);
         await _secretService.createVoiceSecret(
           audioURL: downloadUrl,
-          audioDuration: _audioPlayer.duration?.inSeconds ?? _recordingDurationSeconds,
-          lat: position.latitude,
-          lng: position.longitude,
+          audioDuration: audioDuration,
+          lat: lat,
+          lng: lng,
           isGroup: isGroup,
-          requiredUsers: requiredU,
-          timeWindowMinutes: timeWindow,
+          requiredUsers: requiredUsers,
+          timeWindowMinutes: timeWindowMinutes,
         );
       }
-
-      if (mounted) {
-        FocusScope.of(context).unfocus();
-        final contentType = _activeTab == 0 ? 'text' : 'voice';
-        AnalyticsService().logSecretCreated(contentType: contentType, secretType: _secretType);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context)!.secretReady)));
-        _discardRecording();
-        _textController.clear();
-        setState(() => _secretType = 'regular');
-
-        // Navigate back to Feed tab
-        if (widget.onPublished != null) widget.onPublished!();
-      }
+      AnalyticsService().logSecretCreated(contentType: contentType, secretType: secretType);
+      debugPrint('Secret published successfully in background');
     } catch (e) {
-      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.cancel}: $e')));
-    } finally {
-      if (mounted) setState(() => _isPublishing = false);
+      debugPrint('Background publish failed: $e');
+      // Show error snackbar if we're still mounted (user might have navigated away)
     }
   }
 
@@ -272,19 +345,23 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
               const SizedBox(height: 16),
 
-              // --- TASK 10: Submit button moved here, between content and tabs ---
+              // GPS Accuracy Indicator
+              _buildGpsAccuracyIndicator(l10n),
+
+              const SizedBox(height: 12),
+
+              // Submit button
               SizedBox(
                 height: 56,
-                child: ElevatedButton(
+                child: ElevatedButton.icon(
                   onPressed: _canSubmit() ? _publishSecret : null,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: HushColors.textAccent,
                     disabledBackgroundColor: HushColors.textAccent.withValues(alpha: 0.3),
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   ),
-                  child: _isPublishing 
-                    ? const SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                  icon: const Icon(Icons.place, color: Colors.white, size: 22),
+                  label: Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
                 ),
               ),
 
@@ -477,6 +554,51 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                 ],
               ),
       ),
+    );
+  }
+
+  Widget _buildGpsAccuracyIndicator(AppLocalizations l10n) {
+    if (_gpsAccuracy == null) {
+      return Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2, color: HushColors.textMuted)),
+          const SizedBox(width: 8),
+          Text(l10n.gpsSearching, style: const TextStyle(color: HushColors.textMuted, fontSize: 13)),
+        ],
+      );
+    }
+
+    final accuracy = _gpsAccuracy!;
+    Color indicatorColor;
+    String label;
+
+    if (accuracy <= 10) {
+      indicatorColor = const Color(0xFF34D399); // green
+      label = l10n.gpsHigh(accuracy.toInt());
+    } else if (accuracy <= 30) {
+      indicatorColor = const Color(0xFFFBBF24); // yellow
+      label = l10n.gpsMedium(accuracy.toInt());
+    } else {
+      indicatorColor = const Color(0xFFEF4444); // red
+      label = l10n.gpsLow(accuracy.toInt());
+    }
+
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          width: 10,
+          height: 10,
+          decoration: BoxDecoration(
+            color: indicatorColor,
+            shape: BoxShape.circle,
+            boxShadow: [BoxShadow(color: indicatorColor.withValues(alpha: 0.5), blurRadius: 6, spreadRadius: 1)],
+          ),
+        ),
+        const SizedBox(width: 8),
+        Text(label, style: TextStyle(color: indicatorColor, fontSize: 13, fontWeight: FontWeight.w500)),
+      ],
     );
   }
 
