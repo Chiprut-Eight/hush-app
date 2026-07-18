@@ -209,7 +209,7 @@ abstract class AppLocalizations {
   /// No description provided for @hideSecretAction.
   ///
   /// In en, this message translates to:
-  /// **'Hide Hushhh'**
+  /// **'TAP TO DROP'**
   String get hideSecretAction;
 
   /// No description provided for @regularSecret.

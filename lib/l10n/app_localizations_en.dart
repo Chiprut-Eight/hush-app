@@ -65,7 +65,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishSecret => 'Drop Hushhh';
 
   @override
-  String get hideSecretAction => 'Hide Hushhh';
+  String get hideSecretAction => 'TAP TO DROP';
 
   @override
   String get regularSecret => 'Regular Hushhh';

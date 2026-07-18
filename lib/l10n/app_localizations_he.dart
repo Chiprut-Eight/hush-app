@@ -64,7 +64,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get publishSecret => 'הטמן Hushhh';
 
   @override
-  String get hideSecretAction => 'הטמן Hushhh';
+  String get hideSecretAction => 'לחץ להטמנת Hushhh';
 
   @override
   String get regularSecret => 'Hushhh רגיל';
