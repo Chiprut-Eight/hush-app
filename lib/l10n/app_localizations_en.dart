@@ -65,22 +65,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get publishSecret => 'Drop Hushhh';
 
   @override
-  String get hideSecretAction => 'TAP TO DROP';
-
-  @override
-  String get secretOnTheWay => 'The Hushhh is on its way...';
-
-  @override
-  String get gpsSearching => 'Finding your location...';
-
-  @override
-  String gpsHigh(int meters) => 'High accuracy (~${meters}m)';
-
-  @override
-  String gpsMedium(int meters) => 'Improving accuracy (~${meters}m)';
-
-  @override
-  String gpsLow(int meters) => 'Low accuracy (~${meters}m)';
+  String get hideSecretAction => 'Hide Hushhh';
 
   @override
   String get regularSecret => 'Regular Hushhh';
@@ -597,4 +582,25 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get shareAppText =>
       'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app';
+
+  @override
+  String get secretOnTheWay => 'The Hushhh is on its way...';
+
+  @override
+  String get gpsSearching => 'Finding your location...';
+
+  @override
+  String gpsHigh(int meters) {
+    return 'High accuracy (~${meters}m)';
+  }
+
+  @override
+  String gpsMedium(int meters) {
+    return 'Improving accuracy (~${meters}m)';
+  }
+
+  @override
+  String gpsLow(int meters) {
+    return 'Low accuracy (~${meters}m)';
+  }
 }

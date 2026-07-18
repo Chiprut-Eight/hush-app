@@ -242,5 +242,25 @@
   "inviteFriends": "Invite Friends",
   "inviteMessage": "Enjoying hushhh? Invite friends, create group hushhh and wait for them to open them",
   "dontShowAgain": "Don't show again",
-  "shareAppText": "Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app"
+  "shareAppText": "Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app",
+  "secretOnTheWay": "The Hushhh is on its way...",
+  "gpsSearching": "Finding your location...",
+  "gpsHigh": "High accuracy (~{meters}m)",
+  "@gpsHigh": {
+    "placeholders": {
+      "meters": { "type": "int" }
+    }
+  },
+  "gpsMedium": "Improving accuracy (~{meters}m)",
+  "@gpsMedium": {
+    "placeholders": {
+      "meters": { "type": "int" }
+    }
+  },
+  "gpsLow": "Low accuracy (~{meters}m)",
+  "@gpsLow": {
+    "placeholders": {
+      "meters": { "type": "int" }
+    }
+  }
 }

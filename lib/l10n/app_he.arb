@@ -242,5 +242,10 @@
   "inviteFriends": "הזמינו חברים",
   "inviteMessage": "נהנים ב-hushhh? הזמינו חברים, צרו hushhh קבוצתיים והמתינו שיפתחו אותם",
   "dontShowAgain": "אל תציג שוב",
-  "shareAppText": "הצטרפו אליי ל-HUSH! הרשת החברתית הגיאו-אקוסטית. הורידו עכשיו: https://hushhh.app"
+  "shareAppText": "הצטרפו אליי ל-HUSH! הרשת החברתית הגיאו-אקוסטית. הורידו עכשיו: https://hushhh.app",
+  "secretOnTheWay": "ה-Hushhh בדרך...",
+  "gpsSearching": "מאתר את המיקום שלך...",
+  "gpsHigh": "דיוק גבוה (~{meters}מ')",
+  "gpsMedium": "משפר דיוק (~{meters}מ')",
+  "gpsLow": "דיוק נמוך (~{meters}מ')"
 }

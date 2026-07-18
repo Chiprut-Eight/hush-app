@@ -209,29 +209,8 @@ abstract class AppLocalizations {
   /// No description provided for @hideSecretAction.
   ///
   /// In en, this message translates to:
-  /// **'TAP TO DROP'**
+  /// **'Hide Hushhh'**
   String get hideSecretAction;
-
-  /// No description provided for @secretOnTheWay.
-  ///
-  /// In en, this message translates to:
-  /// **'The Hushhh is on its way...'**
-  String get secretOnTheWay;
-
-  /// No description provided for @gpsSearching.
-  ///
-  /// In en, this message translates to:
-  /// **'Finding your location...'**
-  String get gpsSearching;
-
-  /// GPS accuracy high
-  String gpsHigh(int meters);
-
-  /// GPS accuracy medium
-  String gpsMedium(int meters);
-
-  /// GPS accuracy low
-  String gpsLow(int meters);
 
   /// No description provided for @regularSecret.
   ///
@@ -1168,6 +1147,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Join me on HUSH! The geo-acoustic social network. Download now: https://hushhh.app'**
   String get shareAppText;
+
+  /// No description provided for @secretOnTheWay.
+  ///
+  /// In en, this message translates to:
+  /// **'The Hushhh is on its way...'**
+  String get secretOnTheWay;
+
+  /// No description provided for @gpsSearching.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location...'**
+  String get gpsSearching;
+
+  /// No description provided for @gpsHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High accuracy (~{meters}m)'**
+  String gpsHigh(int meters);
+
+  /// No description provided for @gpsMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Improving accuracy (~{meters}m)'**
+  String gpsMedium(int meters);
+
+  /// No description provided for @gpsLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low accuracy (~{meters}m)'**
+  String gpsLow(int meters);
 }
 
 class _AppLocalizationsDelegate

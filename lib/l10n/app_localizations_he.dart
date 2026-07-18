@@ -64,22 +64,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get publishSecret => 'הטמן Hushhh';
 
   @override
-  String get hideSecretAction => 'לחץ להטמנת Hushhh';
-
-  @override
-  String get secretOnTheWay => 'ה-Hushhh בדרך...';
-
-  @override
-  String get gpsSearching => 'מאתר את המיקום שלך...';
-
-  @override
-  String gpsHigh(int meters) => 'דיוק גבוה (~${meters}מ\')';
-
-  @override
-  String gpsMedium(int meters) => 'משפר דיוק (~${meters}מ\')';
-
-  @override
-  String gpsLow(int meters) => 'דיוק נמוך (~${meters}מ\')';
+  String get hideSecretAction => 'הטמן Hushhh';
 
   @override
   String get regularSecret => 'Hushhh רגיל';
@@ -596,4 +581,25 @@ class AppLocalizationsHe extends AppLocalizations {
   @override
   String get shareAppText =>
       'הצטרפו אליי ל-HUSH! הרשת החברתית הגיאו-אקוסטית. הורידו עכשיו: https://hushhh.app';
+
+  @override
+  String get secretOnTheWay => 'ה-Hushhh בדרך...';
+
+  @override
+  String get gpsSearching => 'מאתר את המיקום שלך...';
+
+  @override
+  String gpsHigh(int meters) {
+    return 'דיוק גבוה (~$metersמ\')';
+  }
+
+  @override
+  String gpsMedium(int meters) {
+    return 'משפר דיוק (~$metersמ\')';
+  }
+
+  @override
+  String gpsLow(int meters) {
+    return 'דיוק נמוך (~$metersמ\')';
+  }
 }

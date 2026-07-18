@@ -43,7 +43,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   final TextEditingController _textController = TextEditingController();
 
   bool _isRecording = false;
-  bool _isPublishing = false;
   String? _recordedFilePath;
   int _recordingDurationSeconds = 0;
   bool _isPlayingPreview = false;
@@ -222,6 +221,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     }
 
     // Immediately navigate to feed and show snackbar
+    if (!mounted) return;
     FocusScope.of(context).unfocus();
     _discardRecording();
     _textController.clear();
