@@ -184,7 +184,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   }
 
   bool _canSubmit() {
-    if (_isPublishing) return false;
     if (_activeTab == 0) return _textController.text.trim().isNotEmpty && _textController.text.length <= 140;
     if (_activeTab == 1) return _recordedFilePath != null;
     return false;
