@@ -18,6 +18,9 @@ import 'services/analytics_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
 
+/// Global Navigator Key for top-level navigation and back handling
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 /// Admin UID — same constant used in profile_screen.dart
 const String _adminUid = String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2');
 
@@ -81,6 +84,7 @@ class _HushAppState extends State<HushApp> {
           return MaterialApp(
             title: 'HUSH',
             debugShowCheckedModeBanner: false,
+            navigatorKey: rootNavigatorKey,
             theme: currentTheme,
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,
@@ -96,25 +100,69 @@ class _HushAppState extends State<HushApp> {
                         SafeArea(
                           bottom: false,
                           child: Container(
-                            padding: const EdgeInsets.only(left: 20.0, top: 4.0, bottom: 4.0),
-                            alignment: Alignment.centerLeft, // Always physical left regardless of RTL
-                            child: Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: Builder(
-                                builder: (context) {
-                                  final screenWidth = MediaQuery.of(context).size.width;
-                                  final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-                                  // In landscape, cap the banner width to avoid it being too large
-                                  final bannerWidth = isLandscape
-                                      ? (screenWidth * 0.2).clamp(100.0, 180.0)
-                                      : screenWidth * 0.38;
-                                  return Image.asset(
-                                    'assets/images/top_banner2.png',
-                                    width: bannerWidth,
-                                    fit: BoxFit.contain,
-                                  );
-                                },
-                              ),
+                            padding: const EdgeInsets.only(left: 20.0, top: 4.0, bottom: 4.0, right: 16.0),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                // Always physical left regardless of RTL
+                                Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: Builder(
+                                    builder: (context) {
+                                      final screenWidth = MediaQuery.of(context).size.width;
+                                      final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+                                      // In landscape, cap the banner width to avoid it being too large
+                                      final bannerWidth = isLandscape
+                                          ? (screenWidth * 0.2).clamp(100.0, 180.0)
+                                          : screenWidth * 0.38;
+                                      return Image.asset(
+                                        'assets/images/top_banner2.png',
+                                        width: bannerWidth,
+                                        fit: BoxFit.contain,
+                                      );
+                                    },
+                                  ),
+                                ),
+                                // Small persistent Back button opposite the logo (closes keyboard / pops)
+                                Material(
+                                  color: Colors.transparent,
+                                  child: InkWell(
+                                    borderRadius: BorderRadius.circular(20),
+                                    onTap: () {
+                                      FocusManager.instance.primaryFocus?.unfocus();
+                                      rootNavigatorKey.currentState?.maybePop();
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                      decoration: BoxDecoration(
+                                        color: HushColors.bgCard.withValues(alpha: 0.8),
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(color: HushColors.borderSubtle, width: 0.8),
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.arrow_back_ios_new_rounded,
+                                            size: 12,
+                                            color: HushColors.textSecondary,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'Back',
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600,
+                                              color: HushColors.textSecondary,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -84,8 +84,10 @@ class AuthProvider extends ChangeNotifier {
       _hushUser = await _authService.getUserProfile(user.uid);
       _updateScreenshotPolicy();
       
-      // Initialize push notifications
-      await NotificationService().init(user.uid);
+      // Initialize push notifications in background without blocking UI
+      NotificationService().init(user.uid).catchError((e) {
+        debugPrint('[AuthProvider] Notification init error: $e');
+      });
     } else {
       _hushUser = null;
       _updateScreenshotPolicy();

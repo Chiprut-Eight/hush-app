@@ -1,4 +1,6 @@
 import 'dart:math';
+import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// Geographic utility functions — matches web geoService.ts
 class GeoService {
@@ -24,4 +26,63 @@ class GeoService {
   }
 
   static double _toRadians(double degrees) => degrees * pi / 180;
+
+  /// Safely obtain user position with permission handling, last-known fallback, and strict timeout.
+  /// Throws descriptive exception if location is disabled or permission denied.
+  static Future<Position> getCurrentPositionSafe() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled.');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permissions are denied');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied.');
+    }
+
+    // Try last known first as an immediate candidate
+    Position? lastKnown;
+    try {
+      lastKnown = await Geolocator.getLastKnownPosition();
+    } catch (_) {}
+
+    try {
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.medium,
+          timeLimit: Duration(seconds: 6),
+        ),
+      );
+    } catch (e) {
+      debugPrint('[GeoService] getCurrentPosition timed out or failed ($e), checking fallback');
+      if (lastKnown != null) {
+        return lastKnown;
+      }
+      // One more quick attempt with lowest accuracy
+      return await Geolocator.getCurrentPosition(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.low,
+          timeLimit: Duration(seconds: 4),
+        ),
+      );
+    }
+  }
+
+  /// Non-throwing position fetch — returns null on any error or denied permission.
+  static Future<Position?> tryGetPosition() async {
+    try {
+      return await getCurrentPositionSafe();
+    } catch (e) {
+      debugPrint('[GeoService] tryGetPosition failed: $e');
+      return null;
+    }
+  }
 }
+

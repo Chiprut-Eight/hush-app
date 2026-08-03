@@ -50,29 +50,46 @@ class NotificationService {
     );
 
     // 2. On iOS, wait for APNs token before requesting FCM token
-    // APNs token may not be ready immediately — retry with delay (same pattern as eightgame)
     if (Platform.isIOS) {
-      String? apnsToken = await _messaging.getAPNSToken();
-      if (apnsToken == null) {
-        // Wait and retry — APNs registration may not be complete yet
-        await Future.delayed(const Duration(seconds: 3));
+      String? apnsToken;
+      try {
         apnsToken = await _messaging.getAPNSToken();
-        debugPrint('[FCM] APNs token (after retry): $apnsToken');
-      } else {
-        debugPrint('[FCM] APNs token: $apnsToken');
+        int retries = 0;
+        while (apnsToken == null && retries < 4) {
+          await Future.delayed(const Duration(seconds: 2));
+          apnsToken = await _messaging.getAPNSToken();
+          retries++;
+          debugPrint('[FCM] APNs token retry #$retries: $apnsToken');
+        }
+      } catch (e) {
+        debugPrint('[FCM] Error checking APNs token: $e');
       }
-      if (apnsToken == null) {
-        debugPrint('[FCM] WARNING: APNs token still null — push notifications will NOT work');
-        // Don't return — still try to get FCM token (it may work on subsequent calls)
-      }
+      debugPrint('[FCM] Final APNs token: $apnsToken');
     }
 
     // 3. Get FCM token and save to Firestore
-    final token = await _messaging.getToken();
-    if (token != null) {
-      await _saveToken(uid, token);
-    } else {
-      debugPrint('[FCM] WARNING: FCM token is null');
+    try {
+      final token = await _messaging.getToken();
+      if (token != null) {
+        await _saveToken(uid, token);
+      } else {
+        debugPrint('[FCM] WARNING: FCM token is null');
+      }
+    } catch (e) {
+      debugPrint('[FCM] Error fetching FCM token: $e');
+      // If failed initially on iOS, schedule a retry
+      if (Platform.isIOS) {
+        Future.delayed(const Duration(seconds: 5), () async {
+          try {
+            final retryToken = await _messaging.getToken();
+            if (retryToken != null) {
+              await _saveToken(uid, retryToken);
+            }
+          } catch (retryErr) {
+            debugPrint('[FCM] Retry token fetch error: $retryErr');
+          }
+        });
+      }
     }
 
     // 4. Listen for token refresh
@@ -102,10 +119,10 @@ class NotificationService {
   /// Save FCM token to user's Firestore document
   Future<void> _saveToken(String uid, String token) async {
     try {
-      await _firestore.collection('users').doc(uid).update({
+      await _firestore.collection('users').doc(uid).set({
         'fcmToken': token,
-      });
-      debugPrint('[FCM] Token saved to Firestore');
+      }, SetOptions(merge: true));
+      debugPrint('[FCM] Token saved to Firestore for $uid');
     } catch (e) {
       debugPrint('[FCM] Failed to save token: $e');
     }

@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
+import '../services/geo_service.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/secret_card.dart';
 import '../config/theme.dart';
@@ -107,24 +108,7 @@ class _FeedScreenState extends State<FeedScreen> {
     }
 
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        throw Exception('Location services are disabled.');
-      }
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions are permanently denied, we cannot request permissions.');
-      }
-
-      Position position = await Geolocator.getCurrentPosition();
+      Position position = await GeoService.getCurrentPositionSafe();
 
       final secrets = await _secretService.getNearbySecrets(
         position.latitude,
@@ -141,6 +125,7 @@ class _FeedScreenState extends State<FeedScreen> {
         });
       }
     } catch (e) {
+      debugPrint('[FeedScreen] Error fetching secrets: $e');
       if (mounted) {
         setState(() {
           _error = e.toString();

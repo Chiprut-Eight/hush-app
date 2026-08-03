@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
+import '../services/geo_service.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/secret_card.dart';
 import '../config/theme.dart';
@@ -86,22 +87,7 @@ class _MapScreenState extends State<MapScreen> {
     });
 
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) throw Exception('Location services are disabled.');
-
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied) {
-        permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          throw Exception('Location permissions are denied');
-        }
-      }
-
-      if (permission == LocationPermission.deniedForever) {
-        throw Exception('Location permissions are permanently denied.');
-      }
-
-      _currentPosition = await Geolocator.getCurrentPosition();
+      _currentPosition = await GeoService.getCurrentPositionSafe();
 
       final secrets = await _secretService.getSecretsForMap(
         _currentPosition!.latitude, 
@@ -124,6 +110,7 @@ class _MapScreenState extends State<MapScreen> {
         }
       }
     } catch (e) {
+      debugPrint('[MapScreen] Error fetching map data: $e');
       if (mounted) {
         setState(() {
           _error = e.toString();
