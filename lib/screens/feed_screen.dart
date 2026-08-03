@@ -44,8 +44,27 @@ class _FeedScreenState extends State<FeedScreen> {
     super.didChangeDependencies();
     if (!_didInit) {
       _didInit = true;
+      _initWhenAuthReady();
+    }
+  }
+
+  /// Wait for AuthProvider to finish loading before fetching secrets
+  void _initWhenAuthReady() {
+    final auth = context.read<AuthProvider>();
+    if (!auth.loading) {
+      // Auth is ready — fetch immediately
       _fetchSecrets();
       _startAutoRefresh();
+    } else {
+      // Auth is still loading — wait for it to finish, then fetch
+      void listener() {
+        if (!auth.loading && mounted) {
+          auth.removeListener(listener);
+          _fetchSecrets();
+          _startAutoRefresh();
+        }
+      }
+      auth.addListener(listener);
     }
   }
 

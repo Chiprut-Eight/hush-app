@@ -41,6 +41,14 @@ class NotificationService {
 
     debugPrint('[FCM] Permission granted: ${settings.authorizationStatus}');
 
+    // 1.5 iOS Foreground Presentation: Tell iOS to show notifications even when app is open
+    // (This was missing — eightgame has it and it's critical for iOS)
+    await _messaging.setForegroundNotificationPresentationOptions(
+      alert: true,
+      badge: true,
+      sound: true,
+    );
+
     // 2. On iOS, wait for APNs token before requesting FCM token
     // APNs token may not be ready immediately — retry with delay (same pattern as eightgame)
     if (Platform.isIOS) {
@@ -55,6 +63,7 @@ class NotificationService {
       }
       if (apnsToken == null) {
         debugPrint('[FCM] WARNING: APNs token still null — push notifications will NOT work');
+        // Don't return — still try to get FCM token (it may work on subsequent calls)
       }
     }
 

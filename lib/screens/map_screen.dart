@@ -54,7 +54,23 @@ class _MapScreenState extends State<MapScreen> {
     super.didChangeDependencies();
     if (!_didInit) {
       _didInit = true;
+      _initWhenAuthReady();
+    }
+  }
+
+  /// Wait for AuthProvider to finish loading before fetching map data
+  void _initWhenAuthReady() {
+    final auth = context.read<AuthProvider>();
+    if (!auth.loading) {
       _fetchMapData();
+    } else {
+      void listener() {
+        if (!auth.loading && mounted) {
+          auth.removeListener(listener);
+          _fetchMapData();
+        }
+      }
+      auth.addListener(listener);
     }
   }
 
