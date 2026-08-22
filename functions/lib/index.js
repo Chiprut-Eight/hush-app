@@ -328,8 +328,8 @@ exports.onNewFollower = functions.firestore
             `${((_b = followerDoc.data()) === null || _b === void 0 ? void 0 : _b.firstName) || ""} ${((_c = followerDoc.data()) === null || _c === void 0 ? void 0 : _c.lastName) || ""}`.trim() ||
             "Someone";
         await sendPushToUser(targetUserId, {
-            en: `${followerName} followed you 👋`,
-            he: `${followerName} עוקב/ת אחריך 👋`,
+            en: `${followerName} has started following you 👋`,
+            he: `${followerName} התחיל/ה לעקוב אחריך 👋`,
         }, {
             en: "You have a new follower!",
             he: "יש לך עוקב/ת חדש/ה!",
