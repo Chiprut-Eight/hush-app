@@ -55,17 +55,6 @@ async function sendPushToUser(userId, title, body, data) {
                 headers: {
                     "apns-priority": "10",
                 },
-                payload: {
-                    aps: {
-                        alert: {
-                            title: t(title, lang),
-                            body: t(body, lang),
-                        },
-                        sound: "default",
-                        badge: 1,
-                        "content-available": 1,
-                    },
-                },
             },
         });
         console.log(`Notification sent to ${userId} [${lang}]: ${t(title, lang)}`);
@@ -131,17 +120,6 @@ exports.testPush = functions.https.onCall(async (data, context) => {
             apns: {
                 headers: {
                     "apns-priority": "10",
-                },
-                payload: {
-                    aps: {
-                        alert: {
-                            title: "🔔 Test Notification",
-                            body: "If you see this, push notifications are working!",
-                        },
-                        sound: "default",
-                        badge: 1,
-                        "content-available": 1,
-                    },
                 },
             },
         });
