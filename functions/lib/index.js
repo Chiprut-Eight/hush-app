@@ -55,6 +55,13 @@ async function sendPushToUser(userId, title, body, data) {
                 headers: {
                     "apns-priority": "10",
                 },
+                payload: {
+                    aps: {
+                        sound: "default",
+                        badge: 1,
+                        "content-available": 1,
+                    },
+                },
             },
         });
         console.log(`Notification sent to ${userId} [${lang}]: ${t(title, lang)}`);
@@ -120,6 +127,13 @@ exports.testPush = functions.https.onCall(async (data, context) => {
             apns: {
                 headers: {
                     "apns-priority": "10",
+                },
+                payload: {
+                    aps: {
+                        sound: "default",
+                        badge: 1,
+                        "content-available": 1,
+                    },
                 },
             },
         });

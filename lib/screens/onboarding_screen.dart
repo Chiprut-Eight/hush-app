@@ -64,16 +64,24 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     try {
       final authParams = context.read<AuthProvider>();
       final u = authParams.hushUser!;
+      final firebaseUser = authParams.firebaseUser;
+      
+      final fullName = '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}';
+      
+      if (firebaseUser != null) {
+        await firebaseUser.updateDisplayName(fullName);
+      }
       
       await FirebaseFirestore.instance.collection('users').doc(u.uid).update({
         'isOnboarded': true,
         'firstName': _firstNameController.text.trim(),
         'lastName': _lastNameController.text.trim(),
+        'displayName': fullName,
         'email': authParams.firebaseUser?.email,
         'dateOfBirth': Timestamp.fromDate(_dateOfBirth!),
         'gender': _gender,
         'useGenericPhoto': _useGenericPhoto,
-        'searchName': '${_firstNameController.text.trim()} ${_lastNameController.text.trim()}'.toLowerCase(),
+        'searchName': fullName.toLowerCase(),
       });
       
       // Refresh the auth provider so the root router kicks us to the AppShell

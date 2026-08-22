@@ -109,9 +109,30 @@ class AuthService {
       final data = userSnap.data();
       if (data != null) {
         final updates = <String, dynamic>{};
-        if ((data['displayName'] == null || (data['displayName'] as String).isEmpty) && displayName.isNotEmpty) {
-          updates['displayName'] = displayName;
-          updates['searchName'] = displayName.toLowerCase();
+        
+        // Recover displayName from firstName and lastName if available
+        final firstName = data['firstName'] as String?;
+        final lastName = data['lastName'] as String?;
+        String finalDisplayName = displayName;
+        
+        if (firstName != null && firstName.isNotEmpty && lastName != null && lastName.isNotEmpty) {
+          finalDisplayName = '$firstName $lastName';
+        }
+        
+        final currentDisplayName = data['displayName'] as String?;
+        // If current displayName is missing, empty, or doesn't match the actual first/last name when they are available, update it!
+        final shouldUpdateDisplayName = currentDisplayName == null || 
+                                        currentDisplayName.isEmpty || 
+                                        (firstName != null && currentDisplayName != finalDisplayName);
+        
+        if (shouldUpdateDisplayName && finalDisplayName.isNotEmpty) {
+          updates['displayName'] = finalDisplayName;
+          updates['searchName'] = finalDisplayName.toLowerCase();
+          
+          // Also sync with Firebase Auth
+          if (user.displayName == null || user.displayName!.isEmpty || user.displayName != finalDisplayName) {
+            await user.updateDisplayName(finalDisplayName);
+          }
         }
         if (data['email'] == null && user.email != null) {
           updates['email'] = user.email;
