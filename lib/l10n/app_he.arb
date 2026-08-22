@@ -126,6 +126,7 @@
   "notFollowingAnyone": "אינך עוקב אחרי אף אחד כרגע.",
   "followBtn": "עקוב",
   "unfollowBtn": "הסר עוקב",
+  "followBackBtn": "עקוב בחזרה",
   "publishedSecretAgo": "פורסם Hushhh לפני {hours} שעות",
   "@publishedSecretAgo": {
     "placeholders": {

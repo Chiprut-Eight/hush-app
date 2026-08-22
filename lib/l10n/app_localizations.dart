@@ -704,6 +704,12 @@ abstract class AppLocalizations {
   /// **'Unfollow'**
   String get unfollowBtn;
 
+  /// No description provided for @followBackBtn.
+  ///
+  /// In en, this message translates to:
+  /// **'Follow Back'**
+  String get followBackBtn;
+
   /// No description provided for @publishedSecretAgo.
   ///
   /// In en, this message translates to:

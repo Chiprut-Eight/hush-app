@@ -326,6 +326,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unfollowBtn => 'Unfollow';
 
   @override
+  String get followBackBtn => 'Follow Back';
+
+  @override
   String publishedSecretAgo(int hours) {
     return 'Published a Hushhh ${hours}h ago';
   }

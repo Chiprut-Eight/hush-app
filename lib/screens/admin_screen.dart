@@ -172,15 +172,118 @@ class _AppealsList extends StatelessWidget {
 class _ReportsList extends StatelessWidget {
   const _ReportsList();
 
-  Future<void> _handleReport(DocumentReference reportRef, String secretId, bool deleteSecret) async {
-    // Determine the report as reviewed
+  /// Show a dialog to pick Ghost Mode duration, then apply it
+  Future<void> _handleDeleteAndPunish(BuildContext context, DocumentReference reportRef, String secretId) async {
+    // First, get the secret to find the creator
+    final secretSnap = await FirebaseFirestore.instance.collection('secrets').doc(secretId).get();
+    final secretData = secretSnap.data();
+    final creatorId = secretData?['creatorId'] as String?;
+
+    if (!context.mounted) return;
+
+    // Show duration picker
+    final duration = await showDialog<int>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: HushColors.bgCard,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: const Text('Ghost Mode Duration', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Select how long the user will be in Ghost Mode:', style: TextStyle(color: Colors.white70)),
+            const SizedBox(height: 16),
+            ...[
+              {'label': '24 Hours', 'hours': 24},
+              {'label': '48 Hours', 'hours': 48},
+              {'label': '7 Days', 'hours': 168},
+              {'label': '14 Days', 'hours': 336},
+              {'label': '21 Days', 'hours': 504},
+              {'label': '30 Days', 'hours': 720},
+            ].map((opt) => Padding(
+              padding: const EdgeInsets.only(bottom: 8),
+              child: SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(ctx, opt['hours'] as int),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: HushColors.tierRed.withValues(alpha: 0.2),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  ),
+                  child: Text(opt['label'] as String),
+                ),
+              ),
+            )),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, null),
+            child: const Text('Cancel', style: TextStyle(color: HushColors.textMuted)),
+          ),
+        ],
+      ),
+    );
+
+    if (duration == null) return; // User cancelled
+
+    // 1. Mark the report as reviewed
     await reportRef.update({'status': 'reviewed'});
 
-    // If deemed harmful, physically delete the bad secret document across the network
-    if (deleteSecret && secretId.isNotEmpty) {
+    // 2. Delete the secret
+    if (secretId.isNotEmpty) {
+      try {
+        await FirebaseFirestore.instance.collection('secrets').doc(secretId).collection('content').doc('data').delete();
+      } catch (_) {}
       await FirebaseFirestore.instance.collection('secrets').doc(secretId).delete();
       AnalyticsService().logAdminReportDecision(reportId: reportRef.id, secretId: secretId, deleted: true);
-    } else if (secretId.isNotEmpty) {
+    }
+
+    // 3. Put the creator in Ghost Mode
+    if (creatorId != null && creatorId.isNotEmpty) {
+      final ghostUntil = DateTime.now().add(Duration(hours: duration));
+      await FirebaseFirestore.instance.collection('users').doc(creatorId).update({
+        'isGhostMode': true,
+        'ghostModeUntil': Timestamp.fromDate(ghostUntil),
+      });
+
+      // 4. Build duration label for notification
+      String durationLabelEn;
+      String durationLabelHe;
+      if (duration <= 48) {
+        durationLabelEn = '$duration hours';
+        durationLabelHe = '$duration שעות';
+      } else {
+        final days = duration ~/ 24;
+        durationLabelEn = '$days days';
+        durationLabelHe = '$days ימים';
+      }
+
+      // 5. Save notification to the punished user's history
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(creatorId)
+          .collection('notifications')
+          .add({
+        'title': {
+          'en': '⚠️ Ghost Mode Activated',
+          'he': '⚠️ מצב רפאים הופעל',
+        },
+        'body': {
+          'en': 'Your account has been placed in Ghost Mode for $durationLabelEn due to a content violation.',
+          'he': 'החשבון שלך הועבר למצב רפאים למשך $durationLabelHe עקב הפרת תוכן.',
+        },
+        'data': {'type': 'ghost_mode'},
+        'createdAt': FieldValue.serverTimestamp(),
+        'read': false,
+      });
+    }
+  }
+
+  Future<void> _handleDismiss(DocumentReference reportRef, String secretId) async {
+    await reportRef.update({'status': 'reviewed'});
+    if (secretId.isNotEmpty) {
       AnalyticsService().logAdminReportDecision(reportId: reportRef.id, secretId: secretId, deleted: false);
     }
   }
@@ -219,7 +322,7 @@ class _ReportsList extends StatelessWidget {
           final db = (b.data() as Map<String, dynamic>)['createdAt'] as Timestamp?;
           final ta = da?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
           final tb = db?.toDate() ?? DateTime.fromMillisecondsSinceEpoch(0);
-          return tb.compareTo(ta); // Descending (Newest first)
+          return tb.compareTo(ta);
         });
 
         return ListView(
@@ -313,18 +416,18 @@ class _ReportsList extends StatelessWidget {
                       children: [
                         Expanded(
                           child: ElevatedButton(
-                            onPressed: () => _handleReport(doc.reference, secretId, true),
+                            onPressed: () => _handleDeleteAndPunish(context, doc.reference, secretId),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: HushColors.tierRed,
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                             ),
-                            child: const Text('Delete Secret', style: TextStyle(color: Colors.white)),
+                            child: const Text('Delete & Ghost', style: TextStyle(color: Colors.white)),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
                           child: OutlinedButton(
-                            onPressed: () => _handleReport(doc.reference, secretId, false),
+                            onPressed: () => _handleDismiss(doc.reference, secretId),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.white54),
                               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),

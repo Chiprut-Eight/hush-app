@@ -126,6 +126,7 @@
   "notFollowingAnyone": "You are not following anyone yet.",
   "followBtn": "Follow",
   "unfollowBtn": "Unfollow",
+  "followBackBtn": "Follow Back",
   "publishedSecretAgo": "Published a Hushhh {hours}h ago",
   "@publishedSecretAgo": {
     "placeholders": {

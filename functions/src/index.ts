@@ -395,8 +395,8 @@ export const onNewFollower = functions.firestore
       await sendPushToUser(
         targetUserId,
         {
-          en: `${followerName} followed you 👋`,
-          he: `${followerName} עוקב/ת אחריך 👋`,
+          en: `${followerName} has started following you 👋`,
+          he: `${followerName} התחיל/ה לעקוב אחריך 👋`,
         },
         {
           en: "You have a new follower!",

@@ -143,6 +143,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     final bool isMe = widget.targetUserId == null || widget.targetUserId == currentUser?.uid;
     final isFollowing = currentUser?.followingIds.contains(user.uid) ?? false;
+    final theyFollowMe = user.followingIds.contains(currentUser?.uid);
 
     return Scaffold(
       drawer: const HushDrawer(),
@@ -251,7 +252,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         padding: const EdgeInsets.symmetric(horizontal: 32),
                       ),
                       child: Text(
-                        isFollowing ? l10n.unfollowBtn : l10n.followBtn,
+                        isFollowing 
+                            ? l10n.unfollowBtn 
+                            : (theyFollowMe ? l10n.followBackBtn : l10n.followBtn),
                         style: TextStyle(color: isFollowing ? HushColors.textAccent : Colors.white),
                       ),
                     ),
