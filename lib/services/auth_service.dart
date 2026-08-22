@@ -86,10 +86,14 @@ class AuthService {
     final userRef = _firestore.collection('users').doc(user.uid);
     final userSnap = await userRef.get();
 
-    // Build a sensible display name from what's available
+    String? emailPrefix;
+    if (user.email != null && !user.email!.endsWith('@privaterelay.appleid.com')) {
+      emailPrefix = user.email!.split('@').first;
+    }
+    
     final displayName = user.displayName
-        ?? user.email?.split('@').first
-        ?? 'User';
+        ?? emailPrefix
+        ?? 'HushUser${Random().nextInt(9000) + 1000}';
 
     if (!userSnap.exists) {
       final newUser = HushUser(
