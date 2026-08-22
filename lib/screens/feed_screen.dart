@@ -14,6 +14,7 @@ import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
 import '../widgets/notifications_button.dart';
 import '../services/analytics_service.dart';
+import '../services/notification_service.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
@@ -109,6 +110,14 @@ class _FeedScreenState extends State<FeedScreen> {
 
     try {
       Position position = await GeoService.getCurrentPositionSafe();
+
+      // Only initialize notifications AFTER location permission is resolved
+      // to avoid iOS permission prompt collisions (which caused the app to hang on loading)
+      if (uid != null) {
+        NotificationService().init(uid).catchError((e) {
+          debugPrint('[FeedScreen] Notification init error: $e');
+        });
+      }
 
       final secrets = await _secretService.getNearbySecrets(
         position.latitude,

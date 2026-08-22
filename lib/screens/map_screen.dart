@@ -15,6 +15,7 @@ import '../widgets/hush_icon_widget.dart';
 import '../widgets/hush_drawer.dart';
 import '../widgets/notifications_button.dart';
 import '../services/analytics_service.dart';
+import '../services/notification_service.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
@@ -88,6 +89,12 @@ class _MapScreenState extends State<MapScreen> {
 
     try {
       _currentPosition = await GeoService.getCurrentPositionSafe();
+
+      if (uid != null) {
+        NotificationService().init(uid).catchError((e) {
+          debugPrint('[MapScreen] Notification init error: $e');
+        });
+      }
 
       final secrets = await _secretService.getSecretsForMap(
         _currentPosition!.latitude, 

@@ -84,10 +84,9 @@ class AuthProvider extends ChangeNotifier {
       _hushUser = await _authService.getUserProfile(user.uid);
       _updateScreenshotPolicy();
       
-      // Initialize push notifications in background without blocking UI
-      NotificationService().init(user.uid).catchError((e) {
-        debugPrint('[AuthProvider] Notification init error: $e');
-      });
+      // We removed NotificationService().init() from here.
+      // It is now initialized in FeedScreen after location permission is resolved,
+      // to prevent iOS permission dialog collision which caused the app to hang.
     } else {
       _hushUser = null;
       _updateScreenshotPolicy();

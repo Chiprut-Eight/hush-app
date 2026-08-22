@@ -68,10 +68,18 @@ async function sendPushToUser(
         },
       },
       apns: {
+        headers: {
+          "apns-priority": "10",
+        },
         payload: {
           aps: {
+            alert: {
+              title: t(title, lang),
+              body: t(body, lang),
+            },
             sound: "default",
             badge: 1,
+            "content-available": 1,
           },
         },
       },
@@ -92,6 +100,86 @@ async function sendPushToUser(
     }
   }
 }
+
+// ============================================================
+// DIAGNOSTIC: Test push notification — callable from client or console
+// Usage: Call with { userId: "TARGET_UID" }
+// ============================================================
+export const testPush = functions.https.onCall(async (data, context) => {
+  const targetUserId = data.userId || context.auth?.uid;
+  if (!targetUserId) {
+    throw new functions.https.HttpsError(
+      "invalid-argument",
+      "Must provide userId or be authenticated"
+    );
+  }
+
+  // Read the user doc to check token status
+  const userDoc = await db.collection("users").doc(targetUserId).get();
+  const userData = userDoc.data();
+  const fcmToken = userData?.fcmToken;
+  const lang = userData?.language || "en";
+
+  const diagnostics: any = {
+    userId: targetUserId,
+    userExists: userDoc.exists,
+    hasFcmToken: !!fcmToken,
+    tokenPrefix: fcmToken ? fcmToken.substring(0, 20) + "..." : null,
+    language: lang,
+    timestamp: new Date().toISOString(),
+  };
+
+  if (!fcmToken) {
+    diagnostics.error = "No FCM token found — app may not have registered for push notifications";
+    console.log("testPush diagnostics:", JSON.stringify(diagnostics));
+    return diagnostics;
+  }
+
+  // Try to send a test notification
+  try {
+    const messageId = await admin.messaging().send({
+      token: fcmToken,
+      notification: {
+        title: "🔔 Test Notification",
+        body: "If you see this, push notifications are working!",
+      },
+      data: { type: "test" },
+      android: {
+        priority: "high",
+        notification: {
+          channelId: "hush_notifications",
+          sound: "default",
+        },
+      },
+      apns: {
+        headers: {
+          "apns-priority": "10",
+        },
+        payload: {
+          aps: {
+            alert: {
+              title: "🔔 Test Notification",
+              body: "If you see this, push notifications are working!",
+            },
+            sound: "default",
+            badge: 1,
+            "content-available": 1,
+          },
+        },
+      },
+    });
+    diagnostics.success = true;
+    diagnostics.messageId = messageId;
+    console.log("testPush SUCCESS:", JSON.stringify(diagnostics));
+  } catch (error: any) {
+    diagnostics.success = false;
+    diagnostics.errorCode = error.code;
+    diagnostics.errorMessage = error.message;
+    console.error("testPush FAILED:", JSON.stringify(diagnostics));
+  }
+
+  return diagnostics;
+});
 
 // ============================================================
 // 1. DECAY CRON JOB — Runs every night at 2:00 AM
