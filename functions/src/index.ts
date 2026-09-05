@@ -53,7 +53,7 @@ async function sendPushToUser(
   }
 
   try {
-    await admin.messaging().send({
+    const messageId = await admin.messaging().send({
       token: fcmToken,
       notification: {
         title: t(title, lang),
@@ -73,6 +73,10 @@ async function sendPushToUser(
         },
         payload: {
           aps: {
+            alert: {
+              title: t(title, lang),
+              body: t(body, lang),
+            },
             sound: "default",
             badge: 1,
           },
@@ -80,7 +84,19 @@ async function sendPushToUser(
       },
     });
     console.log(`Notification sent to ${userId} [${lang}]: ${t(title, lang)}`);
+    // Debug: log success to Firestore
+    await db.collection("users").doc(userId).update({
+      pushDebugLogs: admin.firestore.FieldValue.arrayUnion(
+        `${new Date().toISOString()} SUCCESS messageId=${messageId} title="${t(title, lang)}"`
+      ),
+    });
   } catch (error: any) {
+    // Debug: log error to Firestore
+    await db.collection("users").doc(userId).update({
+      pushDebugLogs: admin.firestore.FieldValue.arrayUnion(
+        `${new Date().toISOString()} ERROR code=${error.code} msg=${error.message}`
+      ),
+    }).catch(() => {});
     // If token is invalid, clean it up
     if (
       error.code === "messaging/invalid-registration-token" ||
