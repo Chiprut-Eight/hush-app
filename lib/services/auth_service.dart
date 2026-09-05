@@ -16,7 +16,12 @@ class AuthService {
 
   /// Sign in with Google (native SDK)
   Future<User?> signInWithGoogle() async {
-    final googleUser = await GoogleSignIn().signIn();
+    final googleSignIn = GoogleSignIn(
+      // The Web Client ID from google-services.json (client_type: 3)
+      // Required for Firebase Auth to reliably maintain the session token
+      serverClientId: '187237532355-r7q2cijbe14kmrehuj0k843aivbgesa5.apps.googleusercontent.com',
+    );
+    final googleUser = await googleSignIn.signIn();
     if (googleUser == null) return null; // user cancelled
 
     final googleAuth = await googleUser.authentication;
@@ -70,7 +75,10 @@ class AuthService {
   }
 
   Future<void> signOut() async {
-    await GoogleSignIn().signOut();
+    final googleSignIn = GoogleSignIn(
+      serverClientId: '187237532355-r7q2cijbe14kmrehuj0k843aivbgesa5.apps.googleusercontent.com',
+    );
+    await googleSignIn.signOut();
     await _auth.signOut();
   }
 
