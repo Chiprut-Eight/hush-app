@@ -6,6 +6,7 @@ import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
 import '../services/audio_service.dart';
 import '../services/secret_service.dart';
+import '../services/geo_service.dart';
 import '../config/theme.dart';
 import '../config/tiers.dart';
 import '../providers/auth_provider.dart';
@@ -84,14 +85,14 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
   void _startGpsStream() async {
     try {
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) return;
-      LocationPermission permission = await Geolocator.checkPermission();
-      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) return;
-
-      // Get initial position
-      final pos = await Geolocator.getCurrentPosition();
-      if (mounted) setState(() { _gpsAccuracy = pos.accuracy; _lastPosition = pos; });
+      // Use GeoService to safely handle permissions and initial position
+      final pos = await GeoService.getCurrentPositionSafe();
+      if (mounted) {
+        setState(() {
+          _gpsAccuracy = pos.accuracy;
+          _lastPosition = pos;
+        });
+      }
 
       _positionSubscription = Geolocator.getPositionStream(
         locationSettings: const LocationSettings(
@@ -107,7 +108,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         }
       });
     } catch (e) {
-      debugPrint('GPS stream error: $e');
+      debugPrint('GPS stream error in CreateScreen: $e');
     }
   }
 
