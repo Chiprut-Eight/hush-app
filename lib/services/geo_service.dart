@@ -27,6 +27,8 @@ class GeoService {
 
   static double _toRadians(double degrees) => degrees * pi / 180;
 
+  static Future<LocationPermission>? _permissionRequestFuture;
+
   /// Safely obtain user position with permission handling, last-known fallback, and strict timeout.
   /// Throws descriptive exception if location is disabled or permission denied.
   static Future<Position> getCurrentPositionSafe() async {
@@ -37,7 +39,14 @@ class GeoService {
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
+      if (_permissionRequestFuture == null) {
+        _permissionRequestFuture = Geolocator.requestPermission();
+      }
+      try {
+        permission = await _permissionRequestFuture!;
+      } finally {
+        _permissionRequestFuture = null;
+      }
       if (permission == LocationPermission.denied) {
         throw Exception('Location permissions are denied');
       }
