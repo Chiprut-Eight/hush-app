@@ -22,6 +22,15 @@ class NotificationService {
 
   bool _initialized = false;
 
+  Future<void> _log(String uid, String message) async {
+    debugPrint('[FCM] $message');
+    try {
+      await FirebaseFirestore.instance.collection('users').doc(uid).update({
+        'fcmDebugLogs': FieldValue.arrayUnion(['${DateTime.now().toIso8601String()}: $message'])
+      });
+    } catch (_) {}
+  }
+
   /// Initialize FCM, request permissions, save token, and set up listeners
   Future<void> init(String uid) async {
     if (_initialized) return;
@@ -49,34 +58,36 @@ class NotificationService {
       sound: true,
     );
 
-    // 2. On iOS, wait for APNs token before requesting FCM token
     if (Platform.isIOS) {
       String? apnsToken;
       try {
+        await _log(uid, 'Checking APNs token...');
         apnsToken = await _messaging.getAPNSToken();
         int retries = 0;
         while (apnsToken == null && retries < 4) {
+          await _log(uid, 'APNs token null, retrying ($retries/4)...');
           await Future.delayed(const Duration(seconds: 2));
           apnsToken = await _messaging.getAPNSToken();
           retries++;
-          debugPrint('[FCM] APNs token retry #$retries: $apnsToken');
         }
       } catch (e) {
-        debugPrint('[FCM] Error checking APNs token: $e');
+        await _log(uid, 'Error checking APNs token: $e');
       }
-      debugPrint('[FCM] Final APNs token: $apnsToken');
+      await _log(uid, 'Final APNs token: $apnsToken');
     }
 
     // 3. Get FCM token and save to Firestore
     try {
+      await _log(uid, 'Calling getToken()...');
       final token = await _messaging.getToken();
       if (token != null) {
+        await _log(uid, 'Success! Saving FCM token');
         await _saveToken(uid, token);
       } else {
-        debugPrint('[FCM] WARNING: FCM token is null');
+        await _log(uid, 'WARNING: FCM token is null');
       }
     } catch (e) {
-      debugPrint('[FCM] Error fetching FCM token: $e');
+      await _log(uid, 'Error fetching FCM token: $e');
       // If failed initially on iOS, schedule a retry
       if (Platform.isIOS) {
         Future.delayed(const Duration(seconds: 5), () async {

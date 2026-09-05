@@ -27,7 +27,7 @@ class AuthService {
 
     final result = await _auth.signInWithCredential(credential);
     if (result.user != null) {
-      await _ensureUserProfile(result.user!);
+      await ensureUserProfile(result.user!);
     }
     return result.user;
   }
@@ -64,7 +64,7 @@ class AuthService {
           await result.user!.reload();
         }
       }
-      await _ensureUserProfile(_auth.currentUser ?? result.user!);
+      await ensureUserProfile(_auth.currentUser ?? result.user!);
     }
     return result.user;
   }
@@ -82,7 +82,7 @@ class AuthService {
 
   /// Create user profile in Firestore if it doesn't exist
   /// Also updates displayName for existing users if it's missing
-  Future<void> _ensureUserProfile(User user) async {
+  Future<void> ensureUserProfile(User user) async {
     final userRef = _firestore.collection('users').doc(user.uid);
     final userSnap = await userRef.get();
 

@@ -62,6 +62,7 @@ class AuthProvider extends ChangeNotifier {
     _userSubscription?.cancel();
     
     if (user != null) {
+      await _authService.ensureUserProfile(user);
       // Start real-time listener for user profile
       _userSubscription = FirebaseFirestore.instance
           .collection('users')
