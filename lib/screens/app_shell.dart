@@ -12,6 +12,7 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../providers/auth_provider.dart';
 import '../providers/ui_provider.dart';
+import '../services/notification_service.dart';
 
 import '../widgets/tutorial_popup.dart';
 
@@ -54,8 +55,24 @@ class _AppShellState extends State<AppShell> {
   }
 
   Timer? _inviteTimer;
+  bool _didInitNotifications = false;
 
-
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_didInitNotifications) {
+      final auth = context.read<AuthProvider>();
+      if (auth.firebaseUser != null) {
+        _didInitNotifications = true;
+        // Small delay to let the app finish rendering before asking for notification permissions
+        Future.delayed(const Duration(seconds: 2), () {
+          NotificationService().init(auth.firebaseUser!.uid).catchError((e) {
+            debugPrint('[AppShell] Notification init error: $e');
+          });
+        });
+      }
+    }
+  }
 
   @override
   void dispose() {

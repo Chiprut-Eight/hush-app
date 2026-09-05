@@ -115,8 +115,12 @@ class AuthService {
         final lastName = data['lastName'] as String?;
         String finalDisplayName = displayName;
         
-        if (firstName != null && firstName.isNotEmpty && lastName != null && lastName.isNotEmpty) {
-          finalDisplayName = '$firstName $lastName';
+        if (firstName != null && firstName.isNotEmpty) {
+          if (lastName != null && lastName.isNotEmpty) {
+            finalDisplayName = '$firstName $lastName';
+          } else {
+            finalDisplayName = firstName;
+          }
         }
         
         final currentDisplayName = data['displayName'] as String?;
