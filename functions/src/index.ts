@@ -75,7 +75,6 @@ async function sendPushToUser(
           aps: {
             sound: "default",
             badge: 1,
-            "content-available": 1,
           },
         },
       },
@@ -155,7 +154,6 @@ export const testPush = functions.https.onCall(async (data, context) => {
           aps: {
             sound: "default",
             badge: 1,
-            "content-available": 1,
           },
         },
       },
