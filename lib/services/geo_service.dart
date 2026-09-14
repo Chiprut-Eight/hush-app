@@ -39,9 +39,7 @@ class GeoService {
 
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
-      if (_permissionRequestFuture == null) {
-        _permissionRequestFuture = Geolocator.requestPermission();
-      }
+      _permissionRequestFuture ??= Geolocator.requestPermission();
       try {
         permission = await _permissionRequestFuture!;
       } finally {
