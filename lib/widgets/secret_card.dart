@@ -278,6 +278,13 @@ class _SecretCardState extends State<SecretCard> {
       if (result['success'] == true) {
         if (mounted) ScaffoldMessenger.of(context).hideCurrentSnackBar();
         
+        // Reset loading state so _fetchContentFromServer's guard won't block.
+        // Without this, the device that triggers the final unlock gets stuck:
+        // _isRevealLoading was set true at the start of _handleReveal, and
+        // _fetchContentFromServer checks `if (_isRevealLoading || _revealed) return;`
+        // — causing an infinite loading spinner on the triggering device only.
+        if (mounted) setState(() => _isRevealLoading = false);
+        
         // Fetch content from server after successful group unlock
         await _fetchContentFromServer();
         

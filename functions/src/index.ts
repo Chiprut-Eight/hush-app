@@ -572,6 +572,39 @@ function getRevealRadius(tierLevel: number, isGroup: boolean): number {
 }
 
 // ============================================================
+// UTILITY: Tier required successes mapping (mirrors client tiers.dart)
+// ============================================================
+const TIER_REQUIRED_SUCCESSES: Record<number, number> = {
+  1: 0, 2: 5, 3: 10, 4: 15, 5: 20,
+  6: 25, 7: 30, 8: 35, 9: 40, 10: 50,
+};
+
+const TIER_NAMES: Record<number, {en: string; he: string}> = {
+  1: {en: "Default", he: "ברירת מחדל"},
+  2: {en: "Novice", he: "טירון"},
+  3: {en: "Apprentice", he: "חניך"},
+  4: {en: "Adept", he: "מיומן"},
+  5: {en: "Expert", he: "מומחה"},
+  6: {en: "Master", he: "אמן"},
+  7: {en: "Grandmaster", he: "גרנדמאסטר"},
+  8: {en: "Legend", he: "אגדה"},
+  9: {en: "Mythic", he: "מיתי"},
+  10: {en: "God Tier", he: "דרגת אל"},
+};
+
+function calculateTierLevel(totalSuccesses: number): number {
+  let level = 1;
+  for (let tier = 1; tier <= 10; tier++) {
+    if (totalSuccesses >= TIER_REQUIRED_SUCCESSES[tier]) {
+      level = tier;
+    } else {
+      break;
+    }
+  }
+  return level;
+}
+
+// ============================================================
 // UTILITY: Simple in-memory rate limiter
 // ============================================================
 const rateLimitMap: Record<string, { count: number; resetAt: number }> = {};
@@ -718,10 +751,42 @@ export const verifyGroupUnlock = functions.https.onCall(
         unlockedBy: admin.firestore.FieldValue.arrayUnion(...unlockedUids),
       });
 
+      // Update creator's groupSuccesses and recalculate tierLevel atomically
       if (secret.creatorId) {
-        await db.collection("users").doc(secret.creatorId).update({
-          groupSuccesses: admin.firestore.FieldValue.increment(1),
+        const creatorRef = db.collection("users").doc(secret.creatorId);
+        const tierResult = await db.runTransaction(async (tx) => {
+          const creatorSnap = await tx.get(creatorRef);
+          const oldTierLevel = creatorSnap.data()?.tierLevel || 1;
+          const newSuccesses = (creatorSnap.data()?.groupSuccesses || 0) + 1;
+          const newTierLevel = calculateTierLevel(newSuccesses);
+
+          tx.update(creatorRef, {
+            groupSuccesses: newSuccesses,
+            tierLevel: newTierLevel,
+          });
+
+          return {oldTier: oldTierLevel, newTier: newTierLevel};
         });
+
+        // Send tier-up notification if level changed
+        if (tierResult.newTier > tierResult.oldTier) {
+          const tierName = TIER_NAMES[tierResult.newTier] || {
+            en: `Tier ${tierResult.newTier}`,
+            he: `דרגה ${tierResult.newTier}`,
+          };
+          await sendPushToUser(
+            secret.creatorId,
+            {
+              en: `🎉 You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
+              he: `🎉 הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
+            },
+            {
+              en: "Your Group Hushhh successes earned you a promotion!",
+              he: "הצלחות ה-Hushhh הקבוצתי שלך הזכו אותך בעלייה!",
+            },
+            {type: "tier_up", newTier: String(tierResult.newTier)}
+          );
+        }
       }
 
       return { success: true, message: "Group secret unlocked!" };

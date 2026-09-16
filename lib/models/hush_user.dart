@@ -10,6 +10,7 @@ class HushUser {
   final List<int> tierSuccesses;
   final int totalPublished;
   final int distinguishedCount;
+  final int groupSuccesses;
   final List<String> savedSecretIds;
   final bool isGhostMode;
   final DateTime? ghostModeUntil;
@@ -46,6 +47,7 @@ class HushUser {
     this.tierSuccesses = const [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     this.totalPublished = 0,
     this.distinguishedCount = 0,
+    this.groupSuccesses = 0,
     this.savedSecretIds = const [],
     this.isGhostMode = false,
     this.ghostModeUntil,
@@ -75,6 +77,7 @@ class HushUser {
       tierSuccesses: List<int>.from(data['tierSuccesses'] ?? [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
       totalPublished: data['totalPublished'] ?? 0,
       distinguishedCount: data['distinguishedCount'] ?? 0,
+      groupSuccesses: data['groupSuccesses'] ?? 0,
       savedSecretIds: List<String>.from(data['savedSecretIds'] ?? []),
       isGhostMode: data['isGhostMode'] ?? false,
       ghostModeUntil: (data['ghostModeUntil'] as Timestamp?)?.toDate(),
@@ -103,6 +106,7 @@ class HushUser {
     'tierSuccesses': tierSuccesses,
     'totalPublished': totalPublished,
     'distinguishedCount': distinguishedCount,
+    'groupSuccesses': groupSuccesses,
     'savedSecretIds': savedSecretIds,
     'isGhostMode': isGhostMode,
     'ghostModeUntil': ghostModeUntil != null ? Timestamp.fromDate(ghostModeUntil!) : null,
