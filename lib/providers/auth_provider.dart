@@ -58,11 +58,21 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _onAuthStateChanged(User? user) async {
     _firebaseUser = user;
     
+    // Notify immediately so the UI can show a spinner if user is non-null
+    // rather than getting stuck on the LoginScreen if Firestore hangs
+    notifyListeners();
+    
     // Cancel existing subscription
     _userSubscription?.cancel();
     
     if (user != null) {
-      await _authService.ensureUserProfile(user);
+      try {
+        await _authService.ensureUserProfile(user).timeout(const Duration(seconds: 10));
+      } catch (e) {
+        debugPrint('Failed to ensure user profile on auth change: $e');
+        // We continue so the listener can at least try to attach
+      }
+
       // Start real-time listener for user profile
       _userSubscription = FirebaseFirestore.instance
           .collection('users')
@@ -79,10 +89,17 @@ class AuthProvider extends ChangeNotifier {
           }
           notifyListeners();
         }
+      }, onError: (e) {
+        debugPrint('Error listening to user profile: $e');
       });
       
-      // Initial fetch to ensure loading finishes quickly
-      _hushUser = await _authService.getUserProfile(user.uid);
+      try {
+        // Initial fetch to ensure loading finishes quickly
+        _hushUser = await _authService.getUserProfile(user.uid).timeout(const Duration(seconds: 10));
+      } catch (e) {
+        debugPrint('Failed to fetch user profile: $e');
+      }
+      
       _updateScreenshotPolicy();
       
       // We removed NotificationService().init() from here.
