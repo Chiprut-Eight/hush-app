@@ -752,13 +752,20 @@ export const verifyGroupUnlock = functions.https.onCall(
       });
 
       // Update creator's groupSuccesses and recalculate tierLevel atomically
-      if (secret.creatorId) {
+      // Guard: only count once per secret (prevents duplicate calls from inflating tier)
+      if (secret.creatorId && !secret.successCounted) {
+        // Mark this secret as already counted BEFORE updating the user
+        await secretRef.update({ successCounted: true });
+
         const creatorRef = db.collection("users").doc(secret.creatorId);
         const tierResult = await db.runTransaction(async (tx) => {
           const creatorSnap = await tx.get(creatorRef);
           const oldTierLevel = creatorSnap.data()?.tierLevel || 1;
-          const newSuccesses = (creatorSnap.data()?.groupSuccesses || 0) + 1;
+          const oldSuccesses = creatorSnap.data()?.groupSuccesses || 0;
+          const newSuccesses = oldSuccesses + 1;
           const newTierLevel = calculateTierLevel(newSuccesses);
+
+          console.log(`[TIER] Creator ${secret.creatorId}: groupSuccesses ${oldSuccesses} -> ${newSuccesses}, tier ${oldTierLevel} -> ${newTierLevel}`);
 
           tx.update(creatorRef, {
             groupSuccesses: newSuccesses,
@@ -787,6 +794,8 @@ export const verifyGroupUnlock = functions.https.onCall(
             {type: "tier_up", newTier: String(tierResult.newTier)}
           );
         }
+      } else if (secret.successCounted) {
+        console.log(`[TIER] Secret ${secretId} already counted — skipping groupSuccesses increment for creator ${secret.creatorId}`);
       }
 
       return { success: true, message: "Group secret unlocked!" };
@@ -1237,3 +1246,64 @@ export const migrateSecretContent = functions.https.onCall(
   }
 );
 
+// ============================================================
+// ADMIN: Reset user tier data — temporary utility function
+// ============================================================
+export const resetUserTier = functions.https.onCall(
+  async (data: any, context: functions.https.CallableContext) => {
+    if (!context.auth)
+      throw new functions.https.HttpsError("unauthenticated", "Login required");
+
+    // Admin only
+    const callerDoc = await db.collection("users").doc(context.auth.uid).get();
+    if (callerDoc.data()?.isAdmin !== true) {
+      throw new functions.https.HttpsError("permission-denied", "Admin only");
+    }
+
+    const targetUid = data.userId;
+    if (!targetUid) {
+      throw new functions.https.HttpsError("invalid-argument", "Missing userId");
+    }
+
+    const userRef = db.collection("users").doc(targetUid);
+    const userSnap = await userRef.get();
+
+    if (!userSnap.exists) {
+      throw new functions.https.HttpsError("not-found", "User not found");
+    }
+
+    const oldData = userSnap.data();
+    const oldSuccesses = oldData?.groupSuccesses || 0;
+    const oldTier = oldData?.tierLevel || 1;
+
+    // Reset tier data
+    await userRef.update({
+      groupSuccesses: 0,
+      tierLevel: 1,
+      tierSuccesses: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    });
+
+    // Reset successCounted flags on all group secrets by this user
+    const secretsSnap = await db.collection("secrets")
+      .where("creatorId", "==", targetUid)
+      .where("isGroup", "==", true)
+      .get();
+
+    let resetSecrets = 0;
+    for (const doc of secretsSnap.docs) {
+      if (doc.data().successCounted) {
+        await doc.ref.update({ successCounted: false });
+        resetSecrets++;
+      }
+    }
+
+    console.log(`[ADMIN] Reset tier for ${targetUid}: groupSuccesses ${oldSuccesses}->0, tier ${oldTier}->1, secrets reset: ${resetSecrets}`);
+
+    return {
+      success: true,
+      oldGroupSuccesses: oldSuccesses,
+      oldTierLevel: oldTier,
+      secretsReset: resetSecrets,
+    };
+  }
+);

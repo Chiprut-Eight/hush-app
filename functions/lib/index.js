@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
+exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
@@ -606,14 +606,19 @@ exports.verifyGroupUnlock = functions.https.onCall(async (data, context) => {
             unlockedBy: admin.firestore.FieldValue.arrayUnion(...unlockedUids),
         });
         // Update creator's groupSuccesses and recalculate tierLevel atomically
-        if (secret.creatorId) {
+        // Guard: only count once per secret (prevents duplicate calls from inflating tier)
+        if (secret.creatorId && !secret.successCounted) {
+            // Mark this secret as already counted BEFORE updating the user
+            await secretRef.update({ successCounted: true });
             const creatorRef = db.collection("users").doc(secret.creatorId);
             const tierResult = await db.runTransaction(async (tx) => {
                 var _a, _b;
                 const creatorSnap = await tx.get(creatorRef);
                 const oldTierLevel = ((_a = creatorSnap.data()) === null || _a === void 0 ? void 0 : _a.tierLevel) || 1;
-                const newSuccesses = (((_b = creatorSnap.data()) === null || _b === void 0 ? void 0 : _b.groupSuccesses) || 0) + 1;
+                const oldSuccesses = ((_b = creatorSnap.data()) === null || _b === void 0 ? void 0 : _b.groupSuccesses) || 0;
+                const newSuccesses = oldSuccesses + 1;
                 const newTierLevel = calculateTierLevel(newSuccesses);
+                console.log(`[TIER] Creator ${secret.creatorId}: groupSuccesses ${oldSuccesses} -> ${newSuccesses}, tier ${oldTierLevel} -> ${newTierLevel}`);
                 tx.update(creatorRef, {
                     groupSuccesses: newSuccesses,
                     tierLevel: newTierLevel,
@@ -634,6 +639,9 @@ exports.verifyGroupUnlock = functions.https.onCall(async (data, context) => {
                     he: "הצלחות ה-Hushhh הקבוצתי שלך הזכו אותך בעלייה!",
                 }, { type: "tier_up", newTier: String(tierResult.newTier) });
             }
+        }
+        else if (secret.successCounted) {
+            console.log(`[TIER] Secret ${secretId} already counted — skipping groupSuccesses increment for creator ${secret.creatorId}`);
         }
         return { success: true, message: "Group secret unlocked!" };
     }
@@ -1002,5 +1010,55 @@ exports.migrateSecretContent = functions.https.onCall(async (_data, context) => 
         }
     }
     return { success: true, migrated, total: allSecrets.size };
+});
+// ============================================================
+// ADMIN: Reset user tier data — temporary utility function
+// ============================================================
+exports.resetUserTier = functions.https.onCall(async (data, context) => {
+    var _a;
+    if (!context.auth)
+        throw new functions.https.HttpsError("unauthenticated", "Login required");
+    // Admin only
+    const callerDoc = await db.collection("users").doc(context.auth.uid).get();
+    if (((_a = callerDoc.data()) === null || _a === void 0 ? void 0 : _a.isAdmin) !== true) {
+        throw new functions.https.HttpsError("permission-denied", "Admin only");
+    }
+    const targetUid = data.userId;
+    if (!targetUid) {
+        throw new functions.https.HttpsError("invalid-argument", "Missing userId");
+    }
+    const userRef = db.collection("users").doc(targetUid);
+    const userSnap = await userRef.get();
+    if (!userSnap.exists) {
+        throw new functions.https.HttpsError("not-found", "User not found");
+    }
+    const oldData = userSnap.data();
+    const oldSuccesses = (oldData === null || oldData === void 0 ? void 0 : oldData.groupSuccesses) || 0;
+    const oldTier = (oldData === null || oldData === void 0 ? void 0 : oldData.tierLevel) || 1;
+    // Reset tier data
+    await userRef.update({
+        groupSuccesses: 0,
+        tierLevel: 1,
+        tierSuccesses: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    });
+    // Reset successCounted flags on all group secrets by this user
+    const secretsSnap = await db.collection("secrets")
+        .where("creatorId", "==", targetUid)
+        .where("isGroup", "==", true)
+        .get();
+    let resetSecrets = 0;
+    for (const doc of secretsSnap.docs) {
+        if (doc.data().successCounted) {
+            await doc.ref.update({ successCounted: false });
+            resetSecrets++;
+        }
+    }
+    console.log(`[ADMIN] Reset tier for ${targetUid}: groupSuccesses ${oldSuccesses}->0, tier ${oldTier}->1, secrets reset: ${resetSecrets}`);
+    return {
+        success: true,
+        oldGroupSuccesses: oldSuccesses,
+        oldTierLevel: oldTier,
+        secretsReset: resetSecrets,
+    };
 });
 //# sourceMappingURL=index.js.map
