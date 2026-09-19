@@ -13,6 +13,7 @@ import '../screens/privacy_policy_screen.dart';
 import '../screens/terms_of_service_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/analytics_service.dart';
+import '../screens/settings_screen.dart';
 
 class HushDrawer extends StatelessWidget {
   const HushDrawer({super.key});
@@ -123,9 +124,7 @@ class HushDrawer extends StatelessWidget {
                     onTap: () {
                       Navigator.pop(context);
                       AnalyticsService().logDrawerAction('settings');
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text(l10n.settings)),
-                      );
+                      Navigator.push(context, MaterialPageRoute(builder: (_) => const SettingsScreen()));
                     },
                   ),
 

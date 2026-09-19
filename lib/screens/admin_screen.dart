@@ -610,7 +610,8 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
             ElevatedButton.icon(
               onPressed: () {
                 AnalyticsService().logAdminMaintenanceAction('test_confetti');
-                context.read<UIProvider>().triggerConfetti();
+              final isMuted = context.read<AuthProvider>().hushUser?.appSoundsMuted ?? false;
+              context.read<UIProvider>().triggerConfetti(muteSound: isMuted);
               },
               icon: const Icon(Icons.celebration),
               label: Text(l10n.testConfetti),

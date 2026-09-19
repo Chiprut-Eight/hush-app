@@ -36,6 +36,20 @@ async function sendPushToUser(userId, title, body, data) {
         console.log(`No FCM token for user ${userId}, skipping push delivery.`);
         return;
     }
+    // --- Check Notification Preferences ---
+    if ((userData === null || userData === void 0 ? void 0 : userData.notificationsEnabled) === false) {
+        console.log(`User ${userId} has notifications disabled. Skipping push.`);
+        return;
+    }
+    const type = data === null || data === void 0 ? void 0 : data.type;
+    if (type === "follower" && (userData === null || userData === void 0 ? void 0 : userData.notifyNewFollower) === false)
+        return;
+    if (type === "new_secret" && (userData === null || userData === void 0 ? void 0 : userData.notifyNewFollowerSecrets) === false)
+        return;
+    if ((type === "like" || type === "comment") && (userData === null || userData === void 0 ? void 0 : userData.notifyInteractions) === false)
+        return;
+    if (type === "tier_up" && (userData === null || userData === void 0 ? void 0 : userData.notifyGroupUnlocks) === false)
+        return;
     try {
         const messageId = await admin.messaging().send({
             token: fcmToken,

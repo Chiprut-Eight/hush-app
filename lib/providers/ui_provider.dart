@@ -50,8 +50,14 @@ class UIProvider with ChangeNotifier {
   Stream<void> get confettiStream => _confettiTrigger.stream;
 
   /// Trigger the confetti animation globally with sound
-  void triggerConfetti() async {
+  void triggerConfetti({bool muteSound = false}) async {
     _confettiTrigger.add(null);
+    
+    if (muteSound) {
+      debugPrint('[AUDIO] Confetti sound muted by user settings');
+      return;
+    }
+    
     debugPrint('[AUDIO] Triggering confetti sound... (Ready: $_isAudioReady)');
     
     if (!_isAudioReady) {

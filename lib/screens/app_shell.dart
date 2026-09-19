@@ -170,7 +170,8 @@ class _AppShellState extends State<AppShell> {
             // Level up detected! Trigger confetti and sound
             debugPrint('[TIER] Level Up detected: $_lastTier -> $currentTier');
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              context.read<UIProvider>().triggerConfetti();
+              final isMuted = context.read<AuthProvider>().hushUser?.appSoundsMuted ?? false;
+              context.read<UIProvider>().triggerConfetti(muteSound: isMuted);
               AnalyticsService().logTierUp(oldTier: _lastTier!, newTier: currentTier);
             });
           }

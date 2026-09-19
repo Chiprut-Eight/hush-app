@@ -52,6 +52,17 @@ async function sendPushToUser(
     return;
   }
 
+  // --- Check Notification Preferences ---
+  if (userData?.notificationsEnabled === false) {
+    console.log(`User ${userId} has notifications disabled. Skipping push.`);
+    return;
+  }
+  const type = data?.type;
+  if (type === "follower" && userData?.notifyNewFollower === false) return;
+  if (type === "new_secret" && userData?.notifyNewFollowerSecrets === false) return;
+  if ((type === "like" || type === "comment") && userData?.notifyInteractions === false) return;
+  if (type === "tier_up" && userData?.notifyGroupUnlocks === false) return;
+
   try {
     const messageId = await admin.messaging().send({
       token: fcmToken,

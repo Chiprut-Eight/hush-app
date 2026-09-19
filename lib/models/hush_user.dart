@@ -37,6 +37,16 @@ class HushUser {
   
   // Admin System
   final bool isAdmin;
+  // Settings - Audio & Notifications
+  final bool appSoundsMuted;
+  final bool notificationsEnabled;
+  final bool notifyNewFollowerSecrets;
+  final bool notifyGroupUnlocks;
+  final bool notifyNewFollower;
+  final bool notifyInteractions;
+  
+  // Settings - Profile
+  final DateTime? lastUsernameChange;
 
   HushUser({
     required this.uid,
@@ -63,6 +73,13 @@ class HushUser {
     this.followerIds = const [],
     this.fcmToken,
     this.isAdmin = false,
+    this.appSoundsMuted = false,
+    this.notificationsEnabled = true,
+    this.notifyNewFollowerSecrets = true,
+    this.notifyGroupUnlocks = true,
+    this.notifyNewFollower = true,
+    this.notifyInteractions = true,
+    this.lastUsernameChange,
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -94,6 +111,13 @@ class HushUser {
       searchName: data['searchName'] ?? '',
       fcmToken: data['fcmToken'],
       isAdmin: data['isAdmin'] == true || data['isAdmin'] == 'true',
+      appSoundsMuted: data['appSoundsMuted'] ?? false,
+      notificationsEnabled: data['notificationsEnabled'] ?? true,
+      notifyNewFollowerSecrets: data['notifyNewFollowerSecrets'] ?? true,
+      notifyGroupUnlocks: data['notifyGroupUnlocks'] ?? true,
+      notifyNewFollower: data['notifyNewFollower'] ?? true,
+      notifyInteractions: data['notifyInteractions'] ?? true,
+      lastUsernameChange: (data['lastUsernameChange'] as Timestamp?)?.toDate(),
     );
   }
 
@@ -123,5 +147,12 @@ class HushUser {
     'searchName': searchName,
     'fcmToken': fcmToken,
     'isAdmin': isAdmin,
+    'appSoundsMuted': appSoundsMuted,
+    'notificationsEnabled': notificationsEnabled,
+    'notifyNewFollowerSecrets': notifyNewFollowerSecrets,
+    'notifyGroupUnlocks': notifyGroupUnlocks,
+    'notifyNewFollower': notifyNewFollower,
+    'notifyInteractions': notifyInteractions,
+    'lastUsernameChange': lastUsernameChange != null ? Timestamp.fromDate(lastUsernameChange!) : null,
   };
 }
