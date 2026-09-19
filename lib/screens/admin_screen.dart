@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hush_app/config/theme.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import 'package:provider/provider.dart';
+import '../providers/auth_provider.dart';
 import '../providers/ui_provider.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';

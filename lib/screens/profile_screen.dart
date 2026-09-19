@@ -126,6 +126,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  String _getTierName(BuildContext context, int level) {
+    final l10n = AppLocalizations.of(context)!;
+    switch (level) {
+      case 1: return "${l10n.tier(1)} (${l10n.tier1Name})";
+      case 2: return "${l10n.tier(2)} (${l10n.tier2Name})";
+      case 3: return "${l10n.tier(3)} (${l10n.tier3Name})";
+      case 4: return "${l10n.tier(4)} (${l10n.tier4Name})";
+      case 5: return "${l10n.tier(5)} (${l10n.tier5Name})";
+      case 6: return "${l10n.tier(6)} (${l10n.tier6Name})";
+      case 7: return "${l10n.tier(7)} (${l10n.tier7Name})";
+      case 8: return "${l10n.tier(8)} (${l10n.tier8Name})";
+      case 9: return "${l10n.tier(9)} (${l10n.tier9Name})";
+      case 10: return "${l10n.tier(10)} (${l10n.tier10Name})";
+      default: return "${l10n.tier(1)} (${l10n.tier1Name})";
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -231,7 +248,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                         ),
                         child: Text(
-                          l10n.tier(user.tierLevel),
+                          _getTierName(context, user.tierLevel),
                           style: TextStyle(
                             color: HushColors.tierColor(user.tierLevel),
                             fontWeight: FontWeight.w600,

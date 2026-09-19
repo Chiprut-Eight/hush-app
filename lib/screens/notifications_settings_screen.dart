@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../config/theme.dart';
@@ -17,7 +18,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("התראות (Push)", style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+        title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
@@ -29,9 +30,9 @@ class NotificationsSettingsScreen extends StatelessWidget {
               children: [
                 // Master Switch
                 SwitchListTile(
-                  title: const Text("אפשר התראות", style: TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: const Text("כיבוי יבטל את כל ההתראות מהאפליקציה"),
-                  activeColor: HushColors.textAccent,
+                  title: Text(AppLocalizations.of(context)!.enableNotificationsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
+                  subtitle: Text(AppLocalizations.of(context)!.enableNotificationsSub),
+                  activeThumbColor: HushColors.textAccent,
                   value: user.notificationsEnabled,
                   onChanged: (value) {
                     FirebaseFirestore.instance
@@ -40,9 +41,10 @@ class NotificationsSettingsScreen extends StatelessWidget {
                         .update({'notificationsEnabled': value});
                   },
                 ),
-                const Divider(),
                 
-                // Specific Notifications (only active if master is true)
+                const Divider(height: 32),
+                
+                // Fine-grained Controls (disabled if master switch is off)
                 Opacity(
                   opacity: user.notificationsEnabled ? 1.0 : 0.5,
                   child: IgnorePointer(
@@ -50,12 +52,10 @@ class NotificationsSettingsScreen extends StatelessWidget {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildSectionHeader(context, "סוגי התראות"),
-                        
                         SwitchListTile(
-                          title: const Text("האשש חדש מנעקבים"),
-                          subtitle: const Text("כאשר משתמש שאתה עוקב אחריו מפרסם"),
-                          activeColor: HushColors.textAccent,
+                          title: Text(AppLocalizations.of(context)!.notifyNewFollowerSecretsTitle),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyNewFollowerSecretsSub),
+                          activeThumbColor: HushColors.textAccent,
                           value: user.notifyNewFollowerSecrets,
                           onChanged: (value) {
                             FirebaseFirestore.instance
@@ -64,11 +64,10 @@ class NotificationsSettingsScreen extends StatelessWidget {
                                 .update({'notifyNewFollowerSecrets': value});
                           },
                         ),
-                        
                         SwitchListTile(
-                          title: const Text("עליית דרגה / האשש קבוצתי"),
-                          subtitle: const Text("כאשר נפתחת אפשרות להאשש קבוצתי"),
-                          activeColor: HushColors.textAccent,
+                          title: Text(AppLocalizations.of(context)!.notifyGroupUnlocksTitle),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyGroupUnlocksSub),
+                          activeThumbColor: HushColors.textAccent,
                           value: user.notifyGroupUnlocks,
                           onChanged: (value) {
                             FirebaseFirestore.instance
@@ -77,11 +76,10 @@ class NotificationsSettingsScreen extends StatelessWidget {
                                 .update({'notifyGroupUnlocks': value});
                           },
                         ),
-                        
                         SwitchListTile(
-                          title: const Text("עוקבים חדשים"),
-                          subtitle: const Text("כאשר מישהו מתחיל לעקוב אחריך"),
-                          activeColor: HushColors.textAccent,
+                          title: Text(AppLocalizations.of(context)!.notifyNewFollowerTitle),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyNewFollowerSub),
+                          activeThumbColor: HushColors.textAccent,
                           value: user.notifyNewFollower,
                           onChanged: (value) {
                             FirebaseFirestore.instance
@@ -90,11 +88,10 @@ class NotificationsSettingsScreen extends StatelessWidget {
                                 .update({'notifyNewFollower': value});
                           },
                         ),
-                        
                         SwitchListTile(
-                          title: const Text("תגובות ולייקים"),
-                          subtitle: const Text("כאשר יש אינטראקציה עם האשש שלך"),
-                          activeColor: HushColors.textAccent,
+                          title: Text(AppLocalizations.of(context)!.notifyInteractionsTitle),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyInteractionsSub),
+                          activeThumbColor: HushColors.textAccent,
                           value: user.notifyInteractions,
                           onChanged: (value) {
                             FirebaseFirestore.instance
@@ -109,21 +106,6 @@ class NotificationsSettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
-    );
-  }
-
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8, left: 16, right: 16),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: isDark ? Colors.white54 : Colors.black54,
-        ),
-      ),
     );
   }
 }

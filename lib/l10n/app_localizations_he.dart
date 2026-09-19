@@ -605,4 +605,115 @@ class AppLocalizationsHe extends AppLocalizations {
   String gpsLow(int meters) {
     return 'דיוק נמוך (~$metersמ\')';
   }
+
+  @override
+  String get settingsMainTitle => 'הגדרות';
+
+  @override
+  String get changeUsernameTitle => 'שינוי שם משתמש';
+
+  @override
+  String get muteAppSoundsTitle => 'השתק צלילי אפליקציה';
+
+  @override
+  String get muteAppSoundsSub => 'ההשתקה חלה על צלילי ממשק, לא על האששים';
+
+  @override
+  String get notificationsSettingsTitle => 'הגדרות התראות';
+
+  @override
+  String get notificationsSettingsSub => 'ניהול התראות Push';
+
+  @override
+  String get enableNotificationsTitle => 'אפשר התראות';
+
+  @override
+  String get enableNotificationsSub => 'כיבוי יבטל את כל ההתראות מהאפליקציה';
+
+  @override
+  String get notifyNewFollowerSecretsTitle => 'האשש חדש מנעקבים';
+
+  @override
+  String get notifyNewFollowerSecretsSub => 'כאשר משתמש שאתה עוקב אחריו מפרסם';
+
+  @override
+  String get notifyGroupUnlocksTitle => 'עליית דרגה / האשש קבוצתי';
+
+  @override
+  String get notifyGroupUnlocksSub => 'כאשר נפתחת אפשרות להאשש קבוצתי';
+
+  @override
+  String get notifyNewFollowerTitle => 'עוקבים חדשים';
+
+  @override
+  String get notifyNewFollowerSub => 'כאשר מישהו מתחיל לעקוב אחריך';
+
+  @override
+  String get notifyInteractionsTitle => 'תגובות ולייקים';
+
+  @override
+  String get notifyInteractionsSub => 'כאשר יש אינטראקציה עם האשש שלך';
+
+  @override
+  String get newUsernameTitle => 'שם משתמש חדש';
+
+  @override
+  String get enterYourName => 'הכנס את שמך...';
+
+  @override
+  String get usernameEmptyError => 'שם המשתמש אינו יכול להיות ריק';
+
+  @override
+  String get usernameLengthError => 'שם המשתמש חייב להכיל לפחות 3 תווים';
+
+  @override
+  String get usernameUpdated => 'שם המשתמש עודכן בהצלחה!';
+
+  @override
+  String usernameUpdateError(String error) {
+    return 'שגיאה בעדכון השם: $error';
+  }
+
+  @override
+  String get saveNewName => 'שמור שם חדש';
+
+  @override
+  String usernameChangeWait(int days) {
+    return 'תוכל לשנות שוב בעוד $days ימים';
+  }
+
+  @override
+  String usernameChangeLimit(String waitText) {
+    return 'שינוי שם מתאפשר רק אחת לחצי שנה (180 ימים).\n$waitText';
+  }
+
+  @override
+  String get tier1Name => 'בסיסי';
+
+  @override
+  String get tier2Name => 'מתחיל';
+
+  @override
+  String get tier3Name => 'שוליה';
+
+  @override
+  String get tier4Name => 'מיומן';
+
+  @override
+  String get tier5Name => 'מומחה';
+
+  @override
+  String get tier6Name => 'מאסטר';
+
+  @override
+  String get tier7Name => 'רב-אמן עליון';
+
+  @override
+  String get tier8Name => 'אגדה';
+
+  @override
+  String get tier9Name => 'מיתולוגי';
+
+  @override
+  String get tier10Name => 'דרגת אל';
 }

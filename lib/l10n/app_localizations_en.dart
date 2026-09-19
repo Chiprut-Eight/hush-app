@@ -606,4 +606,117 @@ class AppLocalizationsEn extends AppLocalizations {
   String gpsLow(int meters) {
     return 'Low accuracy (~${meters}m)';
   }
+
+  @override
+  String get settingsMainTitle => 'Settings';
+
+  @override
+  String get changeUsernameTitle => 'Change Username';
+
+  @override
+  String get muteAppSoundsTitle => 'Mute App Sounds';
+
+  @override
+  String get muteAppSoundsSub => 'Mutes UI sounds, but not the secrets';
+
+  @override
+  String get notificationsSettingsTitle => 'Notifications Settings';
+
+  @override
+  String get notificationsSettingsSub => 'Manage push notifications';
+
+  @override
+  String get enableNotificationsTitle => 'Enable Notifications';
+
+  @override
+  String get enableNotificationsSub =>
+      'Turning this off disables all push notifications';
+
+  @override
+  String get notifyNewFollowerSecretsTitle => 'New Hushhh from Following';
+
+  @override
+  String get notifyNewFollowerSecretsSub => 'When a user you follow posts';
+
+  @override
+  String get notifyGroupUnlocksTitle => 'Level Up / Group Hushhh';
+
+  @override
+  String get notifyGroupUnlocksSub => 'When a group secret becomes available';
+
+  @override
+  String get notifyNewFollowerTitle => 'New Followers';
+
+  @override
+  String get notifyNewFollowerSub => 'When someone starts following you';
+
+  @override
+  String get notifyInteractionsTitle => 'Comments and Likes';
+
+  @override
+  String get notifyInteractionsSub =>
+      'When there is interaction on your Hushhh';
+
+  @override
+  String get newUsernameTitle => 'New Username';
+
+  @override
+  String get enterYourName => 'Enter your name...';
+
+  @override
+  String get usernameEmptyError => 'Username cannot be empty';
+
+  @override
+  String get usernameLengthError => 'Username must be at least 3 characters';
+
+  @override
+  String get usernameUpdated => 'Username updated successfully!';
+
+  @override
+  String usernameUpdateError(String error) {
+    return 'Error updating username: $error';
+  }
+
+  @override
+  String get saveNewName => 'Save New Name';
+
+  @override
+  String usernameChangeWait(int days) {
+    return 'You can change again in $days days';
+  }
+
+  @override
+  String usernameChangeLimit(String waitText) {
+    return 'Name changes are limited to once every half year (180 days).\n$waitText';
+  }
+
+  @override
+  String get tier1Name => 'Default';
+
+  @override
+  String get tier2Name => 'Novice';
+
+  @override
+  String get tier3Name => 'Apprentice';
+
+  @override
+  String get tier4Name => 'Adept';
+
+  @override
+  String get tier5Name => 'Expert';
+
+  @override
+  String get tier6Name => 'Master';
+
+  @override
+  String get tier7Name => 'Grandmaster';
+
+  @override
+  String get tier8Name => 'Legend';
+
+  @override
+  String get tier9Name => 'Mythic';
+
+  @override
+  String get tier10Name => 'God Tier';
 }

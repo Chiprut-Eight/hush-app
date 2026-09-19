@@ -1183,6 +1183,216 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Low accuracy (~{meters}m)'**
   String gpsLow(int meters);
+
+  /// No description provided for @settingsMainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get settingsMainTitle;
+
+  /// No description provided for @changeUsernameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Username'**
+  String get changeUsernameTitle;
+
+  /// No description provided for @muteAppSoundsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mute App Sounds'**
+  String get muteAppSoundsTitle;
+
+  /// No description provided for @muteAppSoundsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Mutes UI sounds, but not the secrets'**
+  String get muteAppSoundsSub;
+
+  /// No description provided for @notificationsSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications Settings'**
+  String get notificationsSettingsTitle;
+
+  /// No description provided for @notificationsSettingsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage push notifications'**
+  String get notificationsSettingsSub;
+
+  /// No description provided for @enableNotificationsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable Notifications'**
+  String get enableNotificationsTitle;
+
+  /// No description provided for @enableNotificationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Turning this off disables all push notifications'**
+  String get enableNotificationsSub;
+
+  /// No description provided for @notifyNewFollowerSecretsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Hushhh from Following'**
+  String get notifyNewFollowerSecretsTitle;
+
+  /// No description provided for @notifyNewFollowerSecretsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When a user you follow posts'**
+  String get notifyNewFollowerSecretsSub;
+
+  /// No description provided for @notifyGroupUnlocksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Level Up / Group Hushhh'**
+  String get notifyGroupUnlocksTitle;
+
+  /// No description provided for @notifyGroupUnlocksSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When a group secret becomes available'**
+  String get notifyGroupUnlocksSub;
+
+  /// No description provided for @notifyNewFollowerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Followers'**
+  String get notifyNewFollowerTitle;
+
+  /// No description provided for @notifyNewFollowerSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When someone starts following you'**
+  String get notifyNewFollowerSub;
+
+  /// No description provided for @notifyInteractionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Comments and Likes'**
+  String get notifyInteractionsTitle;
+
+  /// No description provided for @notifyInteractionsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'When there is interaction on your Hushhh'**
+  String get notifyInteractionsSub;
+
+  /// No description provided for @newUsernameTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New Username'**
+  String get newUsernameTitle;
+
+  /// No description provided for @enterYourName.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your name...'**
+  String get enterYourName;
+
+  /// No description provided for @usernameEmptyError.
+  ///
+  /// In en, this message translates to:
+  /// **'Username cannot be empty'**
+  String get usernameEmptyError;
+
+  /// No description provided for @usernameLengthError.
+  ///
+  /// In en, this message translates to:
+  /// **'Username must be at least 3 characters'**
+  String get usernameLengthError;
+
+  /// No description provided for @usernameUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Username updated successfully!'**
+  String get usernameUpdated;
+
+  /// No description provided for @usernameUpdateError.
+  ///
+  /// In en, this message translates to:
+  /// **'Error updating username: {error}'**
+  String usernameUpdateError(String error);
+
+  /// No description provided for @saveNewName.
+  ///
+  /// In en, this message translates to:
+  /// **'Save New Name'**
+  String get saveNewName;
+
+  /// No description provided for @usernameChangeWait.
+  ///
+  /// In en, this message translates to:
+  /// **'You can change again in {days} days'**
+  String usernameChangeWait(int days);
+
+  /// No description provided for @usernameChangeLimit.
+  ///
+  /// In en, this message translates to:
+  /// **'Name changes are limited to once every half year (180 days).\n{waitText}'**
+  String usernameChangeLimit(String waitText);
+
+  /// No description provided for @tier1Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get tier1Name;
+
+  /// No description provided for @tier2Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Novice'**
+  String get tier2Name;
+
+  /// No description provided for @tier3Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Apprentice'**
+  String get tier3Name;
+
+  /// No description provided for @tier4Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Adept'**
+  String get tier4Name;
+
+  /// No description provided for @tier5Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Expert'**
+  String get tier5Name;
+
+  /// No description provided for @tier6Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Master'**
+  String get tier6Name;
+
+  /// No description provided for @tier7Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Grandmaster'**
+  String get tier7Name;
+
+  /// No description provided for @tier8Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get tier8Name;
+
+  /// No description provided for @tier9Name.
+  ///
+  /// In en, this message translates to:
+  /// **'Mythic'**
+  String get tier9Name;
+
+  /// No description provided for @tier10Name.
+  ///
+  /// In en, this message translates to:
+  /// **'God Tier'**
+  String get tier10Name;
 }
 
 class _AppLocalizationsDelegate

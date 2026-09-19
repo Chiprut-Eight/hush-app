@@ -481,19 +481,19 @@ function getRevealRadius(tierLevel, isGroup) {
 // UTILITY: Tier required successes mapping (mirrors client tiers.dart)
 // ============================================================
 const TIER_REQUIRED_SUCCESSES = {
-    1: 0, 2: 5, 3: 10, 4: 15, 5: 20,
-    6: 25, 7: 30, 8: 35, 9: 40, 10: 50,
+    1: 0, 2: 5, 3: 15, 4: 30, 5: 50,
+    6: 75, 7: 105, 8: 140, 9: 180, 10: 230,
 };
 const TIER_NAMES = {
-    1: { en: "Default", he: "ברירת מחדל" },
-    2: { en: "Novice", he: "טירון" },
-    3: { en: "Apprentice", he: "חניך" },
+    1: { en: "Default", he: "בסיסי" },
+    2: { en: "Novice", he: "מתחיל" },
+    3: { en: "Apprentice", he: "שוליה" },
     4: { en: "Adept", he: "מיומן" },
     5: { en: "Expert", he: "מומחה" },
-    6: { en: "Master", he: "אמן" },
-    7: { en: "Grandmaster", he: "גרנדמאסטר" },
+    6: { en: "Master", he: "מאסטר" },
+    7: { en: "Grandmaster", he: "רב-אמן עליון" },
     8: { en: "Legend", he: "אגדה" },
-    9: { en: "Mythic", he: "מיתי" },
+    9: { en: "Mythic", he: "מיתולוגי" },
     10: { en: "God Tier", he: "דרגת אל" },
 };
 function calculateTierLevel(totalSuccesses) {

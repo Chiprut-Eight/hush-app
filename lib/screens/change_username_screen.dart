@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../config/theme.dart';
@@ -36,13 +36,14 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
     return daysSinceLastChange >= 180;
   }
 
-  String _getTimeRemaining() {
+  String _getTimeRemaining(BuildContext context) {
     final user = context.read<AuthProvider>().hushUser;
+    final l10n = AppLocalizations.of(context)!;
     if (user == null || user.lastUsernameChange == null) return "";
     
     final daysSinceLastChange = DateTime.now().difference(user.lastUsernameChange!).inDays;
     final daysLeft = 180 - daysSinceLastChange;
-    return "תוכל לשנות שוב בעוד $daysLeft ימים";
+    return l10n.usernameChangeWait(daysLeft);
   }
 
   Future<void> _saveUsername() async {
@@ -50,14 +51,15 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
     final user = authProvider.hushUser;
     final firebaseUser = authProvider.firebaseUser;
     if (user == null || firebaseUser == null) return;
-
+    
+    final l10n = AppLocalizations.of(context)!;
     final newName = _controller.text.trim();
     if (newName.isEmpty) {
-      setState(() => _error = "שם המשתמש אינו יכול להיות ריק");
+      setState(() => _error = l10n.usernameEmptyError);
       return;
     }
     if (newName.length < 3) {
-      setState(() => _error = "שם המשתמש חייב להכיל לפחות 3 תווים");
+      setState(() => _error = l10n.usernameLengthError);
       return;
     }
 
@@ -79,12 +81,12 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("שם המשתמש עודכן בהצלחה!")),
+          SnackBar(content: Text(l10n.usernameUpdated)),
         );
         Navigator.pop(context);
       }
     } catch (e) {
-      setState(() => _error = "שגיאה בעדכון השם: $e");
+      if (mounted) setState(() => _error = l10n.usernameUpdateError(e.toString()));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -95,10 +97,11 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
     final canChange = _canChangeUsername();
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text("שינוי שם משתמש", style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+        title: Text(l10n.changeUsernameTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
@@ -108,9 +111,9 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              "שם משתמש חדש",
-              style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            Text(
+              l10n.newUsernameTitle,
+              style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
             ),
             const SizedBox(height: 8),
             TextField(
@@ -124,7 +127,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                   borderRadius: BorderRadius.circular(12),
                   borderSide: const BorderSide(color: HushColors.textAccent, width: 2),
                 ),
-                hintText: "הכנס את שמך...",
+                hintText: l10n.enterYourName,
               ),
             ),
             const SizedBox(height: 16),
@@ -132,7 +135,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.1),
+                  color: Colors.red.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Row(
@@ -141,7 +144,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                     const SizedBox(width: 8),
                     Expanded(
                       child: Text(
-                        "שינוי שם מתאפשר רק אחת לחצי שנה (180 ימים).\n${_getTimeRemaining()}",
+                        l10n.usernameChangeLimit(_getTimeRemaining(context)),
                         style: const TextStyle(color: Colors.red),
                       ),
                     ),
@@ -167,7 +170,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                 ),
                 child: _isLoading
                     ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text("שמור שם חדש", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    : Text(l10n.saveNewName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
               ),
             ),
             const SizedBox(height: 32),

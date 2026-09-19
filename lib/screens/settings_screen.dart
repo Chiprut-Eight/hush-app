@@ -13,7 +13,6 @@ class SettingsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final themeProvider = context.watch<ThemeProvider>();
     final isDark = themeProvider.isDarkMode;
     final authProvider = context.watch<AuthProvider>();
@@ -21,7 +20,7 @@ class SettingsScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.settings, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+        title: Text(AppLocalizations.of(context)!.settingsMainTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
@@ -29,16 +28,12 @@ class SettingsScreen extends StatelessWidget {
       body: user == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(16),
               children: [
-                _buildSectionHeader(context, "כללי"),
-                
-                // Mute Sounds Toggle
                 SwitchListTile(
-                  title: const Text("השתק צלילי אפליקציה"),
-                  subtitle: const Text("ההשתקה חלה על צלילי ממשק, לא על האששים"),
+                  title: Text(AppLocalizations.of(context)!.muteAppSoundsTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.muteAppSoundsSub),
                   secondary: const Icon(Icons.volume_off_outlined, color: HushColors.textAccent),
-                  activeColor: HushColors.textAccent,
+                  activeThumbColor: HushColors.textAccent,
                   value: user.appSoundsMuted,
                   onChanged: (value) {
                     FirebaseFirestore.instance
@@ -47,52 +42,25 @@ class SettingsScreen extends StatelessWidget {
                         .update({'appSoundsMuted': value});
                   },
                 ),
-                
-                const Divider(),
-                _buildSectionHeader(context, "חשבון והתראות"),
-                
-                // Notifications
                 ListTile(
-                  leading: const Icon(Icons.notifications_outlined, color: HushColors.textAccent),
-                  title: const Text("התראות (Push)"),
-                  trailing: Icon(Icons.chevron_right, color: isDark ? Colors.white54 : Colors.black54),
+                  title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle),
+                  subtitle: Text(AppLocalizations.of(context)!.notificationsSettingsSub),
+                  leading: const Icon(Icons.notifications_active_outlined, color: HushColors.textAccent),
+                  trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const NotificationsSettingsScreen()),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const NotificationsSettingsScreen()));
                   },
                 ),
-                
-                // Change Username
                 ListTile(
+                  title: Text(AppLocalizations.of(context)!.changeUsernameTitle),
                   leading: const Icon(Icons.edit_outlined, color: HushColors.textAccent),
-                  title: const Text("שינוי שם משתמש"),
-                  trailing: Icon(Icons.chevron_right, color: isDark ? Colors.white54 : Colors.black54),
+                  trailing: const Icon(Icons.chevron_right),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (_) => const ChangeUsernameScreen()),
-                    );
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangeUsernameScreen()));
                   },
                 ),
               ],
             ),
-    );
-  }
-
-  Widget _buildSectionHeader(BuildContext context, String title) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Padding(
-      padding: const EdgeInsets.only(top: 16, bottom: 8, left: 16, right: 16),
-      child: Text(
-        title,
-        style: TextStyle(
-          fontSize: 14,
-          fontWeight: FontWeight.bold,
-          color: isDark ? Colors.white54 : Colors.black54,
-        ),
-      ),
     );
   }
 }
