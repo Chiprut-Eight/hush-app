@@ -60,6 +60,14 @@ class GeoService {
       lastKnown = await Geolocator.getLastKnownPosition();
     } catch (_) {}
 
+    if (lastKnown != null) {
+      final age = DateTime.now().difference(lastKnown.timestamp);
+      if (age.inMinutes < 5) {
+        debugPrint('[GeoService] Using recent lastKnown position (age: ${age.inSeconds}s)');
+        return lastKnown;
+      }
+    }
+
     try {
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
