@@ -64,7 +64,7 @@ class GeoService {
       return await Geolocator.getCurrentPosition(
         locationSettings: const LocationSettings(
           accuracy: LocationAccuracy.medium,
-          timeLimit: Duration(seconds: 6),
+          timeLimit: Duration(seconds: 10), // Increased from 6s
         ),
       );
     } catch (e) {
@@ -72,13 +72,19 @@ class GeoService {
       if (lastKnown != null) {
         return lastKnown;
       }
-      // One more quick attempt with lowest accuracy
-      return await Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(
-          accuracy: LocationAccuracy.low,
-          timeLimit: Duration(seconds: 4),
-        ),
-      );
+      
+      try {
+        // One more quick attempt with lowest accuracy
+        return await Geolocator.getCurrentPosition(
+          locationSettings: const LocationSettings(
+            accuracy: LocationAccuracy.low,
+            timeLimit: Duration(seconds: 7), // Increased from 4s
+          ),
+        );
+      } catch (fallbackError) {
+        debugPrint('[GeoService] Fallback position fetch also failed: $fallbackError');
+        throw Exception('Location fetch timed out. Please ensure your GPS/Location services are enabled and try again.');
+      }
     }
   }
 

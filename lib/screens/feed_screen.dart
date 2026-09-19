@@ -137,7 +137,7 @@ class _FeedScreenState extends State<FeedScreen> {
       debugPrint('[FeedScreen] Error fetching secrets: $e');
       if (mounted) {
         setState(() {
-          _error = e.toString();
+          _error = e.toString().replaceAll('Exception: ', '');
           _isLoading = false;
         });
       }
