@@ -281,7 +281,7 @@ class SecretService {
     try {
       final secretSnap = await _secretsRef.doc(secretId).get();
       if (secretSnap.exists) {
-        final sData = secretSnap.data() as Map<String, dynamic>?;
+        final sData = secretSnap.data();
         creatorId = sData?['creatorId'] as String?;
         creatorName = sData?['creatorName'] as String?;
         secretType = sData?['type'] as String?;
