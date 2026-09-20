@@ -78,6 +78,7 @@ class GeoService {
     } catch (e) {
       debugPrint('[GeoService] getCurrentPosition timed out or failed ($e), checking fallback');
       if (lastKnown != null) {
+        debugPrint('[GeoService] Using lastKnown position as fallback (may be stale)');
         return lastKnown;
       }
       
@@ -91,6 +92,14 @@ class GeoService {
         );
       } catch (fallbackError) {
         debugPrint('[GeoService] Fallback position fetch also failed: $fallbackError');
+        // Last resort: try getLastKnownPosition one more time (it may have updated)
+        try {
+          final lastResort = await Geolocator.getLastKnownPosition();
+          if (lastResort != null) {
+            debugPrint('[GeoService] Using last-resort lastKnown position');
+            return lastResort;
+          }
+        } catch (_) {}
         throw Exception('Location fetch timed out. Please ensure your GPS/Location services are enabled and try again.');
       }
     }

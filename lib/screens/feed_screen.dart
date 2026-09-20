@@ -26,7 +26,7 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => _FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> {
+class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   final SecretService _secretService = SecretService();
   List<Secret> _secrets = [];
   bool _isLoading = true;
@@ -38,6 +38,7 @@ class _FeedScreenState extends State<FeedScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     AnalyticsService().logScreenView('feed');
   }
 
@@ -70,6 +71,67 @@ class _FeedScreenState extends State<FeedScreen> {
     }
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      // App going to background — stop the timer so it doesn't fire GPS requests while backgrounded
+      _pauseAutoRefresh();
+      debugPrint('[FeedScreen] App backgrounded — auto-refresh paused');
+    } else if (state == AppLifecycleState.resumed) {
+      // App coming back to foreground — silently refresh (don't show error screen if GPS is slow)
+      debugPrint('[FeedScreen] App resumed — refreshing silently');
+      _fetchSecretsOnResume();
+      _startAutoRefresh();
+    }
+  }
+
+  /// Special resume fetch: retries up to 3 times with increasing delays
+  /// instead of immediately showing an error to the user.
+  Future<void> _fetchSecretsOnResume() async {
+    for (int attempt = 1; attempt <= 3; attempt++) {
+      try {
+        // Small delay to let GPS "wake up" after returning from background
+        await Future.delayed(Duration(milliseconds: attempt == 1 ? 500 : 1500));
+        if (!mounted) return;
+
+        Position position = await GeoService.getCurrentPositionSafe();
+
+        final authProvider = context.read<AuthProvider>();
+        final uid = authProvider.firebaseUser?.uid;
+        final savedIds = authProvider.hushUser?.savedSecretIds ?? [];
+
+        final secrets = await _secretService.getNearbySecrets(
+          position.latitude,
+          position.longitude,
+          userId: uid,
+          savedSecretIds: savedIds,
+        );
+
+        if (mounted) {
+          setState(() {
+            _secrets = secrets;
+            _userPosition = position;
+            _error = null; // Clear any previous error
+            _isLoading = false;
+          });
+        }
+        return; // Success — stop retrying
+      } catch (e) {
+        debugPrint('[FeedScreen] Resume attempt $attempt failed: $e');
+        if (attempt == 3) {
+          // After 3 failed attempts, only show error if we have no cached data
+          if (_secrets.isEmpty && mounted) {
+            setState(() {
+              _error = e.toString().replaceAll('Exception: ', '');
+              _isLoading = false;
+            });
+          }
+          // If we have cached secrets, just keep showing them — no error
+        }
+      }
+    }
+  }
+
   void _startAutoRefresh() {
     _autoRefreshTimer?.cancel();
     // Auto-refresh every 45 seconds (silent — no loading spinner)
@@ -91,6 +153,7 @@ class _FeedScreenState extends State<FeedScreen> {
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
     super.dispose();
   }
