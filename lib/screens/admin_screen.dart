@@ -49,12 +49,13 @@ class _AdminScreenState extends State<AdminScreen> {
           elevation: 0,
           bottom: TabBar(
             indicatorColor: HushColors.textAccent,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal),
+            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
+            labelPadding: const EdgeInsets.symmetric(horizontal: 6),
             tabs: [
-              Tab(text: l10n.appeals),
-              Tab(text: l10n.reports),
-              Tab(text: l10n.maintenanceTitle),
+              Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.appeals))),
+              Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.reports))),
+              Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.maintenanceTitle))),
             ],
           ),
         ),
@@ -329,26 +330,32 @@ class _AppealsList extends StatelessWidget {
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: HushColors.textAccent,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                                 ),
-                                child: Text(
-                                  isHe ? 'אשר ובטל עונש' : 'Approve & Unban',
-                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    isHe ? 'אשר ובטל עונש' : 'Approve & Unban',
+                                    style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 12),
+                            const SizedBox(width: 10),
                             Expanded(
                               child: OutlinedButton(
                                 onPressed: () => _handleDecision(context, doc.reference, userId, displayName, false),
                                 style: OutlinedButton.styleFrom(
                                   side: const BorderSide(color: HushColors.tierRed),
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                                  padding: const EdgeInsets.symmetric(vertical: 12),
+                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                                 ),
-                                child: Text(
-                                  isHe ? 'דחה ערעור' : 'Reject',
-                                  style: const TextStyle(color: HushColors.tierRed, fontWeight: FontWeight.bold),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    isHe ? 'דחה ערעור' : 'Reject',
+                                    style: const TextStyle(color: HushColors.tierRed, fontWeight: FontWeight.bold),
+                                  ),
                                 ),
                               ),
                             ),
@@ -1042,7 +1049,7 @@ class _ReportCardItem extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 6,
-                      child: ElevatedButton.icon(
+                      child: ElevatedButton(
                         onPressed: () => _handleDeleteAndPunish(
                           context,
                           secretId,
@@ -1051,18 +1058,24 @@ class _ReportCardItem extends StatelessWidget {
                           creatorEmail,
                           reporterDisplayName,
                         ),
-                        icon: const Icon(Icons.delete_forever, size: 18, color: Colors.white),
-                        label: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Text(
-                            isHe ? 'מחק והעבר למצב רפאים' : 'Delete & Ghost',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-                          ),
-                        ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: HushColors.tierRed,
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
+                        ),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.delete_forever, size: 16, color: Colors.white),
+                              const SizedBox(width: 4),
+                              Text(
+                                isHe ? 'מחק והעבר למצב רפאים' : 'Delete & Ghost',
+                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1074,7 +1087,7 @@ class _ReportCardItem extends StatelessWidget {
                         style: OutlinedButton.styleFrom(
                           side: const BorderSide(color: Colors.white24),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 6),
                         ),
                         child: FittedBox(
                           fit: BoxFit.scaleDown,
@@ -1352,33 +1365,51 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
         ),
         const SizedBox(height: 16),
         Center(
-          child: ElevatedButton.icon(
+          child: ElevatedButton(
             onPressed: () {
               AnalyticsService().logAdminMaintenanceAction('test_confetti');
               final isMuted = context.read<AuthProvider>().hushUser?.appSoundsMuted ?? false;
               context.read<UIProvider>().triggerConfetti(muteSound: isMuted);
             },
-            icon: const Icon(Icons.celebration),
-            label: Text(l10n.testConfetti),
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.amber.shade800,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.celebration),
+                  const SizedBox(width: 8),
+                  Text(l10n.testConfetti),
+                ],
+              ),
             ),
           ),
         ),
         const SizedBox(height: 12),
         Center(
-          child: ElevatedButton.icon(
+          child: ElevatedButton(
             onPressed: () => _sendTestNotification(context),
-            icon: const Icon(Icons.notifications_active),
-            label: Text(l10n.testPushNotification),
             style: ElevatedButton.styleFrom(
               backgroundColor: HushColors.gradientPurple,
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.notifications_active),
+                  const SizedBox(width: 8),
+                  Text(l10n.testPushNotification),
+                ],
+              ),
             ),
           ),
         ),
