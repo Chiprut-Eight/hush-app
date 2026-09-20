@@ -810,22 +810,19 @@ class _ReportCardItem extends StatelessWidget {
               children: [
                 // Top Header: Title + Date
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Row(
-                      children: [
-                        const Icon(Icons.report_problem, color: HushColors.tierRed, size: 20),
-                        const SizedBox(width: 8),
-                        Text(
-                          isHe ? 'דיווח על האשש' : 'Reported Secret',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
-                        ),
-                      ],
+                    const Icon(Icons.report_problem, color: HushColors.tierRed, size: 20),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        isHe ? 'דיווח על האשש' : 'Reported Secret',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                      ),
                     ),
                     if (date != null)
                       Text(
                         '${date.day}/${date.month}/${date.year} ${date.hour.toString().padLeft(2, '0')}:${date.minute.toString().padLeft(2, '0')}',
-                        style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+                        style: const TextStyle(color: HushColors.textSecondary, fontSize: 11),
                       ),
                   ],
                 ),
@@ -845,16 +842,18 @@ class _ReportCardItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            isHe ? '👤 יוצר ההאשש (המשתמש שדווח):' : '👤 Secret Creator (Reported User):',
-                            style: const TextStyle(
-                              color: Colors.redAccent,
-                              fontSize: 13,
-                              fontWeight: FontWeight.bold,
+                          Expanded(
+                            child: Text(
+                              isHe ? '👤 יוצר ההאשש (המשתמש שדווח):' : '👤 Secret Creator (Reported User):',
+                              style: const TextStyle(
+                                color: Colors.redAccent,
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
+                          const SizedBox(width: 8),
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                             decoration: BoxDecoration(
@@ -887,6 +886,20 @@ class _ReportCardItem extends StatelessWidget {
                           '${isHe ? 'אימייל:' : 'Email:'} $creatorEmail',
                           style: const TextStyle(color: HushColors.textAccent, fontSize: 12),
                         ),
+                        if (creatorEmail.endsWith('@privaterelay.appleid.com'))
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.shield_outlined, size: 12, color: Colors.white54),
+                                const SizedBox(width: 4),
+                                Text(
+                                  isHe ? 'ממסר פרטי של Apple (הסתרת דוא״ל)' : 'Apple Private Relay (Hidden Email)',
+                                  style: const TextStyle(color: Colors.white54, fontSize: 10),
+                                ),
+                              ],
+                            ),
+                          ),
                       ],
                       if (creatorId.isNotEmpty) ...[
                         const SizedBox(height: 2),
@@ -913,12 +926,14 @@ class _ReportCardItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text(
-                            isHe ? '💬 תוכן ההאשש:' : '💬 Secret Content:',
-                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                          Expanded(
+                            child: Text(
+                              isHe ? '💬 תוכן ההאשש:' : '💬 Secret Content:',
+                              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13),
+                            ),
                           ),
+                          const SizedBox(width: 8),
                           Text(
                             'ID: $secretId',
                             style: const TextStyle(color: HushColors.textMuted, fontSize: 10),
@@ -988,6 +1003,20 @@ class _ReportCardItem extends StatelessWidget {
                         '${isHe ? 'אימייל מדווח:' : 'Reporter email:'} $reporterEmail',
                         style: const TextStyle(color: HushColors.textAccent, fontSize: 12),
                       ),
+                      if (reporterEmail.endsWith('@privaterelay.appleid.com'))
+                        Padding(
+                          padding: const EdgeInsets.only(top: 2),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.shield_outlined, size: 12, color: Colors.white54),
+                              const SizedBox(width: 4),
+                              Text(
+                                isHe ? 'ממסר פרטי של Apple (הסתרת דוא״ל)' : 'Apple Private Relay (Hidden Email)',
+                                style: const TextStyle(color: Colors.white54, fontSize: 10),
+                              ),
+                            ],
+                          ),
+                        ),
                       Text(
                         '${isHe ? 'מזהה מדווח:' : 'Reporter ID:'} $reporterId',
                         style: const TextStyle(color: HushColors.textMuted, fontSize: 10),
@@ -1023,9 +1052,12 @@ class _ReportCardItem extends StatelessWidget {
                           reporterDisplayName,
                         ),
                         icon: const Icon(Icons.delete_forever, size: 18, color: Colors.white),
-                        label: Text(
-                          isHe ? 'מחק והעבר למצב רפאים' : 'Delete & Ghost',
-                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        label: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            isHe ? 'מחק והעבר למצב רפאים' : 'Delete & Ghost',
+                            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                          ),
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: HushColors.tierRed,
@@ -1044,9 +1076,12 @@ class _ReportCardItem extends StatelessWidget {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                         ),
-                        child: Text(
-                          isHe ? 'התעלם מדיווח' : 'Dismiss',
-                          style: const TextStyle(color: Colors.white70),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Text(
+                            isHe ? 'התעלם מדיווח' : 'Dismiss',
+                            style: const TextStyle(color: Colors.white70),
+                          ),
                         ),
                       ),
                     ),
