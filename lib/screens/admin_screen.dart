@@ -11,13 +11,33 @@ import '../widgets/hush_icon_widget.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../services/analytics_service.dart';
 
-class AdminScreen extends StatelessWidget {
+class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
 
   @override
+  State<AdminScreen> createState() => _AdminScreenState();
+}
+
+class _AdminScreenState extends State<AdminScreen> {
+  @override
+  void initState() {
+    super.initState();
+    _ensureAdminFlag();
+  }
+
+  void _ensureAdminFlag() {
+    final user = Provider.of<AuthProvider>(context, listen: false).firebaseUser;
+    if (user != null) {
+      FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({'isAdmin': true})
+          .catchError((_) {});
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    // We can't log simple screen view here easily without Stateful, but we can log tab views later if needed.
-    // For now, logging admin actions is the primary goal.
     final l10n = AppLocalizations.of(context)!;
     return DefaultTabController(
       length: 3,

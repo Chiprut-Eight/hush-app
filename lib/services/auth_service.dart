@@ -103,6 +103,8 @@ class AuthService {
         ?? emailPrefix
         ?? 'HushUser${Random().nextInt(9000) + 1000}';
 
+    const adminUid = String.fromEnvironment('ADMIN_UID', defaultValue: 'A30Br3OakdXF5BnfQFu5pryOsgy2');
+
     if (!userSnap.exists) {
       final newUser = HushUser(
         uid: user.uid,
@@ -110,6 +112,7 @@ class AuthService {
         email: user.email,
         photoURL: user.photoURL,
         searchName: displayName.toLowerCase(),
+        isAdmin: user.uid == adminUid,
       );
       await userRef.set(newUser.toFirestore());
     } else {
@@ -118,6 +121,11 @@ class AuthService {
       if (data != null) {
         final updates = <String, dynamic>{};
         
+        // Ensure admin status is set for admin UID
+        if (user.uid == adminUid && data['isAdmin'] != true) {
+          updates['isAdmin'] = true;
+        }
+
         // Recover displayName from firstName and lastName if available
         final firstName = data['firstName'] as String?;
         final lastName = data['lastName'] as String?;
