@@ -579,61 +579,160 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Icon(Icons.build_circle_outlined, size: 64, color: HushColors.textAccent),
-            const SizedBox(height: 16),
-            Text(
-              l10n.migrationSearchTitle,
-              style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+    return ListView(
+      padding: const EdgeInsets.all(24.0),
+      children: [
+        // === Tier Color Preview Section ===
+        const Text(
+          '🎨 Tier Color Preview',
+          style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        const Text(
+          'Simulated Hushhh cards showing each tier\'s halo color',
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white54, fontSize: 13),
+        ),
+        const SizedBox(height: 16),
+        ...List.generate(10, (i) {
+          final tier = i + 1;
+          final color = HushColors.tierColor(tier);
+          final tierNames = [
+            'Default (בסיסי)', 'Novice (מתחיל)', 'Apprentice (שוליה)',
+            'Adept (מיומן)', 'Expert (מומחה)', 'Master (מאסטר)',
+            'Grandmaster (רב-אמן עליון)', 'Legend (אגדה)',
+            'Mythic (מיתולוגי)', 'God Tier (דרגת אל)',
+          ];
+          final requiredSuccesses = [0, 5, 15, 30, 50, 75, 105, 140, 180, 230];
+          
+          return Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: HushColors.bgCard,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+              boxShadow: [
+                BoxShadow(
+                  color: color.withValues(alpha: 0.3),
+                  blurRadius: 12,
+                  spreadRadius: 1,
+                ),
+              ],
             ),
-            const SizedBox(height: 8),
-            Text(
-              l10n.migrationSearchDesc,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+            child: Row(
+              children: [
+                // Halo circle simulation
+                Container(
+                  width: 50,
+                  height: 50,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    border: Border.all(color: color, width: 3),
+                    boxShadow: [
+                      BoxShadow(
+                        color: color.withValues(alpha: 0.6),
+                        blurRadius: 10,
+                        spreadRadius: 2,
+                      ),
+                    ],
+                  ),
+                  child: Center(
+                    child: Text(
+                      '$tier',
+                      style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Tier $tier — ${tierNames[i]}',
+                        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15),
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${requiredSuccesses[i]} group successes required',
+                        style: const TextStyle(color: Colors.white54, fontSize: 12),
+                      ),
+                    ],
+                  ),
+                ),
+                // Color swatch
+                Container(
+                  width: 28,
+                  height: 28,
+                  decoration: BoxDecoration(
+                    color: color,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 32),
-            if (_isMigrating)
-              const CircularProgressIndicator(color: HushColors.textAccent)
-            else
-              ElevatedButton(
+          );
+        }),
+
+        const Divider(height: 48, color: Colors.white10),
+
+        // === Migration Tools ===
+        const Icon(Icons.build_circle_outlined, size: 64, color: HushColors.textAccent),
+        const SizedBox(height: 16),
+        Text(
+          l10n.migrationSearchTitle,
+          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: 8),
+        Text(
+          l10n.migrationSearchDesc,
+          textAlign: TextAlign.center,
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.7)),
+        ),
+        const SizedBox(height: 32),
+        Center(
+          child: _isMigrating
+            ? const CircularProgressIndicator(color: HushColors.textAccent)
+            : ElevatedButton(
                 onPressed: () => _migrateSearchNames(l10n),
                 child: Text(l10n.migrateUsers),
               ),
-            const SizedBox(height: 16),
-            Text(_getStatus(l10n), style: const TextStyle(color: Colors.white54)),
-            const Divider(height: 64, color: Colors.white10),
-            ElevatedButton.icon(
-              onPressed: () {
-                AnalyticsService().logAdminMaintenanceAction('test_confetti');
+        ),
+        const SizedBox(height: 16),
+        Center(child: Text(_getStatus(l10n), style: const TextStyle(color: Colors.white54))),
+        const Divider(height: 48, color: Colors.white10),
+        Center(
+          child: ElevatedButton.icon(
+            onPressed: () {
+              AnalyticsService().logAdminMaintenanceAction('test_confetti');
               final isMuted = context.read<AuthProvider>().hushUser?.appSoundsMuted ?? false;
               context.read<UIProvider>().triggerConfetti(muteSound: isMuted);
-              },
-              icon: const Icon(Icons.celebration),
-              label: Text(l10n.testConfetti),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.amber.shade800,
-                foregroundColor: Colors.white,
-              ),
+            },
+            icon: const Icon(Icons.celebration),
+            label: Text(l10n.testConfetti),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.amber.shade800,
+              foregroundColor: Colors.white,
             ),
-            const SizedBox(height: 16),
-            ElevatedButton.icon(
-              onPressed: () => _sendTestNotification(context),
-              icon: const Icon(Icons.notifications_active),
-              label: Text(l10n.testPushNotification),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: HushColors.gradientPurple,
-                foregroundColor: Colors.white,
-              ),
-            ),
-          ],
+          ),
         ),
-      ),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton.icon(
+            onPressed: () => _sendTestNotification(context),
+            icon: const Icon(Icons.notifications_active),
+            label: Text(l10n.testPushNotification),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: HushColors.gradientPurple,
+              foregroundColor: Colors.white,
+            ),
+          ),
+        ),
+        const SizedBox(height: 32),
+      ],
     );
   }
 }

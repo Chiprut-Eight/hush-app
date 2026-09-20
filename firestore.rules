@@ -4,6 +4,14 @@ service cloud.firestore {
   match /databases/{database}/documents {
     
     // ========================================
+    // HELPER: Check if user is admin
+    // ========================================
+    function isAdmin() {
+      return request.auth != null &&
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+    
+    // ========================================
     // USERS — Public read, owner-only write for sensitive fields
     // ========================================
     match /users/{userId} {
@@ -15,15 +23,19 @@ service cloud.firestore {
       
       // Only the owner can write their own profile
       // Exception: followerIds may be updated by others (follow system fan-out)
+      // Exception: admins can update any user (for ghost mode, tier resets, etc.)
       allow write: if request.auth != null && (
         request.auth.uid == userId ||
         // Allow other users to ONLY modify followerIds (for follow fan-out)
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followerIds']))
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['followerIds'])) ||
+        // Allow admins to update any user
+        isAdmin()
       );
       
       match /notifications/{notifId} {
-        // Only the owner can read/write their notifications
-        allow read, write: if request.auth != null && request.auth.uid == userId;
+        // Only the owner can read their notifications; admins can write (for ghost mode alerts)
+        allow read: if request.auth != null && request.auth.uid == userId;
+        allow write: if request.auth != null && (request.auth.uid == userId || isAdmin());
       }
     }
     
@@ -46,8 +58,8 @@ service cloud.firestore {
           'unlockedBy', 'isHidden'
         ]);
       
-      // Only creator can delete
-      allow delete: if request.auth != null && resource.data.creatorId == request.auth.uid;
+      // Only creator or admin can delete
+      allow delete: if request.auth != null && (resource.data.creatorId == request.auth.uid || isAdmin());
       
       // PROTECTED CONTENT — Only accessible via Cloud Functions (Admin SDK)
       match /content/{contentId} {
@@ -70,18 +82,21 @@ service cloud.firestore {
     }
     
     // ========================================
-    // REPORTS & APPEALS — Create only, read via admin CF
+    // REPORTS — Any user can create; admin can read & update
     // ========================================
     match /reports/{reportId} {
       allow create: if request.auth != null;
-      allow read: if false;
-      allow update, delete: if false;
+      allow read, update: if isAdmin();
+      allow delete: if false;
     }
     
+    // ========================================
+    // APPEALS — Any user can create; admin can read & update
+    // ========================================
     match /appeals/{appealId} {
       allow create: if request.auth != null;
-      allow read: if false;
-      allow update, delete: if false;
+      allow read, update: if isAdmin();
+      allow delete: if false;
     }
   }
 }

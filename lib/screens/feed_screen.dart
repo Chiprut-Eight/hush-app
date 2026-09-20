@@ -95,6 +95,7 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         if (!mounted) return;
 
         Position position = await GeoService.getCurrentPositionSafe();
+        if (!mounted) return;
 
         final authProvider = context.read<AuthProvider>();
         final uid = authProvider.firebaseUser?.uid;
