@@ -64,9 +64,9 @@ service cloud.firestore {
       // Only creator or admin can delete
       allow delete: if request.auth != null && (resource.data.creatorId == request.auth.uid || isAdmin());
       
-      // PROTECTED CONTENT — Only accessible via Cloud Functions (Admin SDK)
+      // PROTECTED CONTENT — Admin can read/write for moderation; Cloud Functions handle user reveals
       match /content/{contentId} {
-        allow read: if false;
+        allow read: if isAdmin();
         allow write: if isAdmin();
       }
       

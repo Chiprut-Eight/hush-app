@@ -273,11 +273,61 @@ class SecretService {
       'reportCount': FieldValue.increment(1),
     });
 
-    // Create a report document
+    // Fetch secret metadata to record creator & content snapshot
+    String? creatorId;
+    String? creatorName;
+    String? secretType;
+    String? textContent;
+    try {
+      final secretSnap = await _secretsRef.doc(secretId).get();
+      if (secretSnap.exists) {
+        final sData = secretSnap.data() as Map<String, dynamic>?;
+        creatorId = sData?['creatorId'] as String?;
+        creatorName = sData?['creatorName'] as String?;
+        secretType = sData?['type'] as String?;
+        textContent = sData?['textContent'] as String?;
+      }
+    } catch (_) {}
+
+    // If textContent was in subcollection, attempt to fetch it
+    if (textContent == null && secretType != 'voice') {
+      try {
+        final contentSnap = await _secretsRef.doc(secretId).collection('content').doc('data').get();
+        if (contentSnap.exists) {
+          textContent = contentSnap.data()?['textContent'] as String?;
+        }
+      } catch (_) {}
+    }
+
+    // Get reporter email from auth or Firestore profile
+    String? reporterEmail = user.email;
+    String? reporterName = user.displayName;
+    try {
+      final reporterDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (reporterDoc.exists) {
+        final rData = reporterDoc.data();
+        if (reporterEmail == null || reporterEmail.isEmpty) {
+          reporterEmail = rData?['email'] as String?;
+        }
+        final firstName = rData?['firstName'] as String? ?? '';
+        final lastName = rData?['lastName'] as String? ?? '';
+        final fullName = '$firstName $lastName'.trim();
+        if (fullName.isNotEmpty) {
+          reporterName = fullName;
+        }
+      }
+    } catch (_) {}
+
+    // Create a comprehensive report document
     await _firestore.collection('reports').add({
       'secretId': secretId,
       'reporterId': user.uid,
-      'reporterName': user.displayName,
+      'reporterName': reporterName ?? 'Anonymous',
+      'reporterEmail': reporterEmail ?? '',
+      'creatorId': creatorId ?? '',
+      'creatorName': creatorName ?? 'Unknown Creator',
+      'secretType': secretType ?? 'text',
+      'reportedContent': textContent ?? '',
       'reason': reason,
       'status': 'pending',
       'createdAt': FieldValue.serverTimestamp(),
@@ -289,9 +339,28 @@ class SecretService {
     final user = _auth.currentUser;
     if (user == null) return;
 
+    String? userEmail = user.email;
+    String? userName = user.displayName;
+    try {
+      final userDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (userDoc.exists) {
+        final uData = userDoc.data();
+        if (userEmail == null || userEmail.isEmpty) {
+          userEmail = uData?['email'] as String?;
+        }
+        final firstName = uData?['firstName'] as String? ?? '';
+        final lastName = uData?['lastName'] as String? ?? '';
+        final fullName = '$firstName $lastName'.trim();
+        if (fullName.isNotEmpty) {
+          userName = fullName;
+        }
+      }
+    } catch (_) {}
+
     await _firestore.collection('appeals').add({
       'userId': user.uid,
-      'userName': user.displayName,
+      'userName': userName ?? 'User',
+      'userEmail': userEmail ?? '',
       'reason': reason,
       'status': 'pending',
       'createdAt': FieldValue.serverTimestamp(),
