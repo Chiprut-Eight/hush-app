@@ -5,7 +5,10 @@ import 'package:hush_app/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../config/theme.dart';
-
+import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 class ChangeUsernameScreen extends StatefulWidget {
   const ChangeUsernameScreen({super.key});
 
@@ -100,12 +103,26 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(l10n.changeUsernameTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => IconButton(
+                icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : Colors.black87),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),

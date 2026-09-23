@@ -7,7 +7,10 @@ import '../providers/theme_provider.dart';
 import '../config/theme.dart';
 import 'notifications_settings_screen.dart';
 import 'change_username_screen.dart';
-
+import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
@@ -19,12 +22,26 @@ class SettingsScreen extends StatelessWidget {
     final user = authProvider.hushUser;
 
     return Scaffold(
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.settingsMainTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => IconButton(
+                icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : Colors.black87),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
       body: user == null
           ? const Center(child: CircularProgressIndicator())

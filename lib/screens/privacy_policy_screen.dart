@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 class PrivacyPolicyScreen extends StatelessWidget {
   const PrivacyPolicyScreen({super.key});
@@ -13,11 +17,25 @@ class PrivacyPolicyScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(l10n.privacyPolicy, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => IconButton(
+                icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : Colors.black87),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),

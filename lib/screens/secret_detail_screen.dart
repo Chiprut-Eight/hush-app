@@ -5,6 +5,10 @@ import '../config/theme.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
+import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
+import '../core/constants/icons.dart';
+import '../widgets/hush_icon_widget.dart';
 
 class SecretDetailScreen extends StatefulWidget {
   final String secretId;
@@ -72,12 +76,26 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
 
     return Scaffold(
       extendBodyBehindAppBar: true,
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text('Hushhh', style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: isDark ? Colors.white : HushColors.textPrimaryLight),
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => IconButton(
+                icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : HushColors.textPrimaryLight),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
       body: Container(
         height: double.infinity,

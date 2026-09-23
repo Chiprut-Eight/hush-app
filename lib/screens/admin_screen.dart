@@ -10,6 +10,8 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../services/analytics_service.dart';
+import '../widgets/hush_drawer.dart';
+import '../widgets/notifications_button.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -43,10 +45,25 @@ class _AdminScreenState extends State<AdminScreen> {
       length: 3,
       child: Scaffold(
         backgroundColor: HushColors.bgPrimary,
+        drawer: const HushDrawer(),
         appBar: AppBar(
           title: Text(l10n.adminTitle),
           backgroundColor: Colors.transparent,
           elevation: 0,
+          automaticallyImplyLeading: false,
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Builder(
+                builder: (ctx) => IconButton(
+                  icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
+              ),
+              const NotificationsButton(),
+            ],
+          ),
+          leadingWidth: 96,
           bottom: TabBar(
             indicatorColor: HushColors.textAccent,
             labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
