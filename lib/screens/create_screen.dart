@@ -15,8 +15,6 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
-import '../widgets/hush_drawer.dart';
-import '../widgets/notifications_button.dart';
 import '../services/analytics_service.dart';
 
 /// Web-aligned Create Screen

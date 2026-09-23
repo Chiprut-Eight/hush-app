@@ -6,8 +6,6 @@ import '../models/hush_user.dart';
 import '../providers/auth_provider.dart';
 import '../services/social_service.dart';
 import '../widgets/hush_icon_widget.dart';
-import '../widgets/hush_drawer.dart';
-import '../widgets/notifications_button.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
 import 'package:hush_app/l10n/app_localizations.dart';

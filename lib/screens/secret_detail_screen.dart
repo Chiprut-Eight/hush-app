@@ -77,7 +77,6 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
         title: Text('Hushhh', style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: isDark ? Colors.white : HushColors.textPrimaryLight),
       ),
       body: Container(

@@ -18,7 +18,6 @@ class PrivacyPolicyScreen extends StatelessWidget {
         title: Text(l10n.privacyPolicy, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        automaticallyImplyLeading: false,
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),

@@ -20,6 +20,7 @@ import 'screens/app_shell.dart';
 import 'widgets/notifications_button.dart';
 import 'core/constants/icons.dart';
 import 'widgets/hush_icon_widget.dart';
+import 'widgets/hush_drawer.dart';
 /// Global Navigator Key for top-level navigation and back handling
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 

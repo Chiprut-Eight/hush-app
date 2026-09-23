@@ -10,8 +10,6 @@ import 'package:hush_app/models/hush_user.dart';
 import '../services/social_service.dart';
 import '../widgets/secret_card.dart';
 import '../widgets/hush_icon_widget.dart';
-import '../widgets/hush_drawer.dart';
-import '../widgets/notifications_button.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/analytics_service.dart';
