@@ -192,7 +192,6 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Widget _buildMapBody() {
-    final bool isOverlay = widget.targetLat != null;
     
     if (_isLoading && _currentPosition == null) {
       return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
