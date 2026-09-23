@@ -6,6 +6,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../screens/secret_detail_screen.dart';
+import '../main.dart';
 import '../services/analytics_service.dart';
 
 class NotificationsButton extends StatelessWidget {
@@ -21,7 +22,7 @@ class NotificationsButton extends StatelessWidget {
     final langCode = Localizations.localeOf(context).languageCode;
 
     showModalBottomSheet(
-      context: context,
+      context: rootNavigatorKey.currentContext ?? context,
       isScrollControlled: true,
       backgroundColor: isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight,
       shape: const RoundedRectangleBorder(
@@ -98,11 +99,10 @@ class NotificationsButton extends StatelessWidget {
                           
                           return InkWell(
                             onTap: () {
-                              Navigator.pop(context); // Close the bottom sheet
+                              rootNavigatorKey.currentState?.pop(); // Close the bottom sheet
                               AnalyticsService().logNotificationTapped(secretId: secretId);
                               if (secretId != null) {
-                                Navigator.push(
-                                  context,
+                                rootNavigatorKey.currentState?.push(
                                   MaterialPageRoute(
                                     builder: (context) => SecretDetailScreen(secretId: secretId),
                                   ),
