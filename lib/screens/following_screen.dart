@@ -104,26 +104,12 @@ class _FollowingScreenState extends State<FollowingScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      drawer: const HushDrawer(),
       backgroundColor: HushColors.bgPrimary,
       appBar: AppBar(
         title: Text(l10n.followingTabTitle),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Builder(
-              builder: (ctx) => IconButton(
-                icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
-            ),
-            const NotificationsButton(),
-          ],
-        ),
-        leadingWidth: 96,
       ),
       body: Column(
         children: [

@@ -17,7 +17,9 @@ import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
-
+import 'widgets/notifications_button.dart';
+import 'core/constants/icons.dart';
+import 'widgets/hush_icon_widget.dart';
 /// Global Navigator Key for top-level navigation and back handling
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -91,9 +93,12 @@ class _HushAppState extends State<HushApp> {
             localizationsDelegates: AppLocalizations.localizationsDelegates,
             navigatorObservers: [AnalyticsService().observer],
             builder: (context, child) {
-              return Stack(
-                children: [
-                  Material(
+              return Scaffold(
+                backgroundColor: Colors.transparent,
+                drawer: const HushDrawer(),
+                body: Stack(
+                  children: [
+                    Material(
                     color: Colors.transparent, // Background removal for top area
                     child: Column(
                       children: [
@@ -124,42 +129,27 @@ class _HushAppState extends State<HushApp> {
                                     },
                                   ),
                                 ),
-                                // Small persistent Back button opposite the logo (closes keyboard / pops)
-                                Material(
-                                  color: Colors.transparent,
-                                  child: InkWell(
-                                    borderRadius: BorderRadius.circular(20),
-                                    onTap: () {
-                                      FocusManager.instance.primaryFocus?.unfocus();
-                                      rootNavigatorKey.currentState?.maybePop();
-                                    },
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: HushColors.bgCard.withValues(alpha: 0.8),
-                                        borderRadius: BorderRadius.circular(16),
-                                        border: Border.all(color: HushColors.borderSubtle, width: 0.8),
+                                // Hamburger and Notifications Bell
+                                Directionality(
+                                  textDirection: TextDirection.ltr,
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Builder(
+                                        builder: (ctx) {
+                                          final themeProvider = Provider.of<ThemeProvider>(ctx);
+                                          final isDark = themeProvider.isDarkMode;
+                                          return IconButton(
+                                            icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : Colors.black87),
+                                            onPressed: () {
+                                              FocusManager.instance.primaryFocus?.unfocus();
+                                              Scaffold.of(ctx).openDrawer();
+                                            },
+                                          );
+                                        },
                                       ),
-                                      child: const Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Icon(
-                                            Icons.arrow_back_ios_new_rounded,
-                                            size: 12,
-                                            color: HushColors.textSecondary,
-                                          ),
-                                          SizedBox(width: 4),
-                                          Text(
-                                            'Back',
-                                            style: TextStyle(
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600,
-                                              color: HushColors.textSecondary,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
+                                      const NotificationsButton(),
+                                    ],
                                   ),
                                 ),
                               ],
@@ -195,8 +185,9 @@ class _HushAppState extends State<HushApp> {
                       ],
                       gravity: 0.1,
                     ),
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               );
             },
             home: Consumer<AuthProvider>(

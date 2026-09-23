@@ -216,7 +216,6 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
 
     return Scaffold(
       key: widget.scaffoldKey,
-      drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.feedTitle, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
@@ -224,17 +223,6 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-              onPressed: () => widget.scaffoldKey?.currentState?.openDrawer(),
-            ),
-            const NotificationsButton(),
-          ],
-        ),
-        leadingWidth: 96,
       ),
       body: Container(
         decoration: BoxDecoration(

@@ -163,23 +163,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final theyFollowMe = user.followingIds.contains(currentUser?.uid);
 
     return Scaffold(
-      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser)),
         automaticallyImplyLeading: false,
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Builder(
-              builder: (ctx) => IconButton(
-                icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
-            ),
-            const NotificationsButton(),
-          ],
-        ),
-        leadingWidth: 96,
       ),
       body: RefreshIndicator(
         onRefresh: () async {

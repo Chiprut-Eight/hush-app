@@ -6,6 +6,7 @@ import 'package:audio_session/audio_session.dart';
 /// Provider for global UI events and state
 class UIProvider with ChangeNotifier {
   final _confettiTrigger = StreamController<void>.broadcast();
+  final _drawerTrigger = StreamController<void>.broadcast();
   final _audioPlayer = AudioPlayer();
   bool _isAudioReady = false;
 
@@ -48,6 +49,14 @@ class UIProvider with ChangeNotifier {
 
   /// Stream to listen for confetti trigger events
   Stream<void> get confettiStream => _confettiTrigger.stream;
+
+  /// Stream to listen for drawer trigger events globally
+  Stream<void> get drawerStream => _drawerTrigger.stream;
+
+  /// Trigger the global drawer open
+  void triggerDrawer() {
+    _drawerTrigger.add(null);
+  }
 
   /// Trigger the confetti animation globally with sound
   void triggerConfetti({bool muteSound = false}) async {

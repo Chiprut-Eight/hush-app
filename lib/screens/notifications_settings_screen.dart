@@ -5,10 +5,7 @@ import 'package:hush_app/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
 import '../providers/theme_provider.dart';
 import '../config/theme.dart';
-import '../widgets/hush_drawer.dart';
-import '../widgets/notifications_button.dart';
-import '../core/constants/icons.dart';
-import '../widgets/hush_icon_widget.dart';
+
 class NotificationsSettingsScreen extends StatelessWidget {
   const NotificationsSettingsScreen({super.key});
 
@@ -20,26 +17,13 @@ class NotificationsSettingsScreen extends StatelessWidget {
     final user = authProvider.hushUser;
 
     return Scaffold(
-      drawer: const HushDrawer(),
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Builder(
-              builder: (ctx) => IconButton(
-                icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : Colors.black87),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
-            ),
-            const NotificationsButton(),
-          ],
-        ),
-        leadingWidth: 96,
       ),
       body: user == null
           ? const Center(child: CircularProgressIndicator())

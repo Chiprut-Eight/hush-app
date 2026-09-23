@@ -151,7 +151,6 @@ class _MapScreenState extends State<MapScreen> {
     
     return Scaffold(
       key: widget.scaffoldKey,
-      drawer: const HushDrawer(),
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: Text(l10n.mapTitle, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
@@ -159,17 +158,6 @@ class _MapScreenState extends State<MapScreen> {
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            IconButton(
-              icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-              onPressed: () => widget.scaffoldKey?.currentState?.openDrawer(),
-            ),
-            const NotificationsButton(),
-          ],
-        ),
-        leadingWidth: 96,
         actions: [
           IconButton(
             icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),

@@ -304,24 +304,10 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     
     if (user?.isGhostMode == true) {
       return Scaffold(
-        drawer: const HushDrawer(),
         appBar: AppBar(
           title: Text(l10n.createTitle), 
           centerTitle: true,
           automaticallyImplyLeading: false,
-          leading: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Builder(
-                builder: (ctx) => IconButton(
-                  icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
-                  onPressed: () => Scaffold.of(ctx).openDrawer(),
-                ),
-              ),
-              const NotificationsButton(),
-            ],
-          ),
-          leadingWidth: 96,
         ),
         body: Center(
           child: Column(
@@ -340,26 +326,12 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
-      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(l10n.createTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
         automaticallyImplyLeading: false,
-        leading: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Builder(
-              builder: (ctx) => IconButton(
-                icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
-                onPressed: () => Scaffold.of(ctx).openDrawer(),
-              ),
-            ),
-            const NotificationsButton(),
-          ],
-        ),
-        leadingWidth: 96,
       ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
