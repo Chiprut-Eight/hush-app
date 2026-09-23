@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hushhh — Store Marketing Screenshots Showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    :root {
+      --bg-primary: #070A11;
+      --bg-secondary: #0D1322;
+      --bg-card: rgba(17, 24, 39, 0.75);
+      --bg-card-hover: rgba(30, 41, 59, 0.9);
+      --border-subtle: rgba(255, 255, 255, 0.08);
+      --border-accent: rgba(103, 232, 249, 0.35);
+      --cyan: #67E8F9;
+      --blue: #4A9EFF;
+      --purple: #A855F7;
+      --pink: #EC4899;
+      --gold: #FFD700;
+      --text-primary: #F1F5F9;
+      --text-secondary: #94A3B8;
+    }
+
+    body {
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      font-family: 'Assistant', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 80px;
+    }
+
+    /* Ambient glow */
+    .ambient-glow {
+      position: fixed;
+      top: -200px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 1000px;
+      height: 600px;
+      background: radial-gradient(circle, rgba(103, 232, 249, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+      filter: blur(80px);
+    }
+
+    /* Header */
+    header {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 48px 24px 32px;
+      text-align: center;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 22px;
+      border-radius: 40px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-accent);
+      box-shadow: 0 0 20px rgba(103, 232, 249, 0.15);
+      margin-bottom: 20px;
+    }
+
+    .brand-badge img {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+    }
+
+    .brand-badge span {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--cyan);
+      letter-spacing: 0.5px;
+    }
+
+    h1 {
+      font-size: 46px;
+      font-weight: 900;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #FFFFFF 20%, #E2E8F0 50%, var(--cyan) 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      font-size: 20px;
+      color: var(--text-secondary);
+      max-width: 820px;
+      margin: 0 auto 36px;
+      line-height: 1.5;
+    }
+
+    /* Filters Bar */
+    .controls-panel {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto 40px;
+      padding: 0 24px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px;
+      padding: 6px;
+    }
+
+    .filter-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-secondary);
+      padding: 8px 18px;
+      border-radius: 12px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .filter-btn.active {
+      background: var(--cyan);
+      color: #0A0E17;
+      box-shadow: 0 4px 14px rgba(103, 232, 249, 0.35);
+    }
+
+    .stats-badge {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      background: rgba(255, 255, 255, 0.04);
+      padding: 10px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+
+    /* Grid */
+    .screenshots-grid {
+      position: relative;
+      z-index: 10;
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 28px;
+    }
+
+    .screenshot-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .screenshot-card:hover {
+      transform: translateY(-6px);
+      border-color: var(--cyan);
+      box-shadow: 0 18px 40px rgba(103, 232, 249, 0.18);
+    }
+
+    .card-img-wrapper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1284 / 2778;
+      background: #000;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .card-img-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.4s ease;
+    }
+
+    .screenshot-card:hover .card-img-wrapper img {
+      transform: scale(1.02);
+    }
+
+    .card-img-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(10, 14, 23, 0.8) 0%, transparent 40%);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .screenshot-card:hover .card-img-overlay {
+      opacity: 1;
+    }
+
+    .overlay-zoom-btn {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: var(--cyan);
+      color: #0A0E17;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 0 20px rgba(103, 232, 249, 0.5);
+    }
+
+    .card-meta {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      flex: 1;
+      justify-content: space-between;
+    }
+
+    .card-tags {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tag-pill {
+      font-size: 12px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 8px;
+      text-transform: uppercase;
+    }
+
+    .tag-ios {
+      background: rgba(103, 232, 249, 0.15);
+      color: var(--cyan);
+      border: 1px solid rgba(103, 232, 249, 0.3);
+    }
+
+    .tag-android {
+      background: rgba(168, 85, 247, 0.15);
+      color: var(--purple);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+    }
+
+    .tag-res {
+      background: rgba(255, 255, 255, 0.06);
+      color: #CBD5E1;
+    }
+
+    .card-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: #FFFFFF;
+      line-height: 1.3;
+    }
+
+    .card-subtitle {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.4;
+    }
+
+    .download-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border-subtle);
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+
+    .download-btn:hover {
+      background: var(--cyan);
+      color: #0A0E17;
+      border-color: var(--cyan);
+    }
+
+    /* Modal / Lightbox */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.92);
+      backdrop-filter: blur(14px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      position: relative;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .modal-img {
+      max-height: 82vh;
+      border-radius: 24px;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.9);
+      border: 2px solid var(--border-accent);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: -24px;
+      right: -24px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid var(--border-subtle);
+      color: #FFFFFF;
+      font-size: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .modal-close:hover {
+      background: #EF4444;
+      color: #FFF;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="ambient-glow"></div>
+
+  <header>
+    <div class="brand-badge">
+      <img src="assets/logo_hushhh.jpeg" alt="Hushhh">
+      <span>Hushhh • Official Store Assets</span>
+    </div>
+    <h1>צילומי מסך שיווקיים לחנויות (1284 × 2778px)</h1>
+    <p class="subtitle">
+      חבילת צילומי מסך מלאה עבור <strong>App Store</strong> (אייפון 16 פרו) ו-<strong>Google Play</strong> (סמסונג גלקסי S24 אולטרה), מותאמת ב-100% בעברית ובאנגלית לפי כללי העיצוב של Hushhh.
+    </p>
+    <div style="display: inline-flex; align-items: center; justify-content: center; gap: 14px; background: rgba(34, 197, 94, 0.12); border: 1px solid rgba(34, 197, 94, 0.35); padding: 10px 22px; border-radius: 40px; color: #4ADE80; font-weight: 700; font-size: 15px; margin-bottom: 24px;">
+      <span>🟢 עודכן בהצלחה: כל 40 התמונות עודכנו לפי מסכי Flutter האותנטיים (ללא כפתור אורח, ללא פיצ'רים מומצאים)</span>
+      <button onclick="window.location.href = window.location.pathname + '?reload=' + Date.now()" style="background: #22C55E; color: #070A11; border: none; padding: 6px 14px; border-radius: 12px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; font-family: inherit;">
+        <span>רענן תמונות</span>
+        <span>🔄</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Filter & Controls -->
+  <div class="controls-panel">
+    <div style="display: flex; gap: 14px; flex-wrap: wrap;">
+      <!-- Platform filter -->
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="platform" data-value="all">הכל (40)</button>
+        <button class="filter-btn" data-filter="platform" data-value="ios">iPhone (20)</button>
+        <button class="filter-btn" data-filter="platform" data-value="android">Samsung (20)</button>
+      </div>
+
+      <!-- Language filter -->
+      <div class="filter-group">
+        <button class="filter-btn active" data-filter="lang" data-value="all">כל השפות</button>
+        <button class="filter-btn" data-filter="lang" data-value="he">עברית (20)</button>
+        <button class="filter-btn" data-filter="lang" data-value="en">English (20)</button>
+      </div>
+    </div>
+
+    <div class="stats-badge">
+      רזולוציה: <strong>1284 × 2778px</strong> • יחס גובה-רוחב: 19.5:9
+    </div>
+  </div>
+
+  <!-- Screenshots Grid -->
+  <div class="screenshots-grid" id="grid">
+    <!-- Generated dynamically -->
+  </div>
+
+  <!-- Fullscreen Modal -->
+  <div class="modal-overlay" id="modal" onclick="closeModal()">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-close" onclick="closeModal()">✕</div>
+      <img src="" alt="Full preview" class="modal-img" id="modal-img">
+    </div>
+  </div>
+
+  <script>
+    const ITEMS = [
+      // Hebrew - iOS
+      { screen: 1, name: "ברוכים הבאים ל-Hushhh", sub: "הרשת החברתית הגיאו-אקוסטית הראשונה", lang: "he", platform: "ios", file: "store_screenshots/he/ios/01_welcome_iphone.png" },
+      { screen: 2, name: "Hushhh בקרבתך", sub: "גלה Hushhh אקוסטיים סביבך בזמן אמת", lang: "he", platform: "ios", file: "store_screenshots/he/ios/02_nearby_feed_iphone.png" },
+      { screen: 3, name: "מפת Hushhh אינטראקטיבית", sub: "חקור את הסביבה ומצא Hushhh מעניינים על המפה", lang: "he", platform: "ios", file: "store_screenshots/he/ios/03_interactive_map_iphone.png" },
+      { screen: 4, name: "האזנה ל-Hushhh", sub: "האזנה בזמן אמת ל-Hushhh, תגובות ועוד", lang: "he", platform: "ios", file: "store_screenshots/he/ios/04_audio_player_iphone.png" },
+      { screen: 5, name: "הטמן Hushhh", sub: "הקלט Hushhh והטמן במיקום מדויק במרחב", lang: "he", platform: "ios", file: "store_screenshots/he/ios/05_record_plant_iphone.png" },
+      { screen: 6, name: "Hushhh קבוצתי", sub: "Hushhh קבוצתיים שנחשפים רק כשכמה אנשים נפגשים במקום", lang: "he", platform: "ios", file: "store_screenshots/he/ios/06_group_hushhh_iphone.png" },
+      { screen: 7, name: "פרופיל ודרגות", sub: "עקוב אחרי ה-Hushhh שלך, צפה בעוקבים ועלה בדרגות היוצר", lang: "he", platform: "ios", file: "store_screenshots/he/ios/07_clout_tiers_iphone.png" },
+      { screen: 8, name: "היוצרים שאתה אוהב", sub: "הישאר מחובר ל-Hushhh וליוצרים המרתקים ביותר", lang: "he", platform: "ios", file: "store_screenshots/he/ios/08_following_feed_iphone.png" },
+      { screen: 9, name: "התראות חכמות בזמן אמת", sub: "בחר מתי להתעדכן - פתיחת Hushhh קבוצתיים, עוקבים ותגובות", lang: "he", platform: "ios", file: "store_screenshots/he/ios/09_smart_notifications_iphone.png" },
+      { screen: 10, name: "Hushhh שמורים", sub: "קבל התראה כשאתה חולף ליד Hushhh ושמור מועדפים", lang: "he", platform: "ios", file: "store_screenshots/he/ios/10_saved_vault_iphone.png" },
+
+      // Hebrew - Android
+      { screen: 1, name: "ברוכים הבאים ל-Hushhh", sub: "הרשת החברתית הגיאו-אקוסטית הראשונה", lang: "he", platform: "android", file: "store_screenshots/he/android/01_welcome_samsung.png" },
+      { screen: 2, name: "Hushhh בקרבתך", sub: "גלה Hushhh אקוסטיים סביבך בזמן אמת", lang: "he", platform: "android", file: "store_screenshots/he/android/02_nearby_feed_samsung.png" },
+      { screen: 3, name: "מפת Hushhh אינטראקטיבית", sub: "חקור את הסביבה ומצא Hushhh מעניינים על המפה", lang: "he", platform: "android", file: "store_screenshots/he/android/03_interactive_map_samsung.png" },
+      { screen: 4, name: "האזנה ל-Hushhh", sub: "האזנה בזמן אמת ל-Hushhh, תגובות ועוד", lang: "he", platform: "android", file: "store_screenshots/he/android/04_audio_player_samsung.png" },
+      { screen: 5, name: "הטמן Hushhh", sub: "הקלט Hushhh והטמן במיקום מדויק במרחב", lang: "he", platform: "android", file: "store_screenshots/he/android/05_record_plant_samsung.png" },
+      { screen: 6, name: "Hushhh קבוצתי", sub: "Hushhh קבוצתיים שנחשפים רק כשכמה אנשים נפגשים במקום", lang: "he", platform: "android", file: "store_screenshots/he/android/06_group_hushhh_samsung.png" },
+      { screen: 7, name: "פרופיל ודרגות", sub: "עקוב אחרי ה-Hushhh שלך, צפה בעוקבים ועלה בדרגות היוצר", lang: "he", platform: "android", file: "store_screenshots/he/android/07_clout_tiers_samsung.png" },
+      { screen: 8, name: "היוצרים שאתה אוהב", sub: "הישאר מחובר ל-Hushhh וליוצרים המרתקים ביותר", lang: "he", platform: "android", file: "store_screenshots/he/android/08_following_feed_samsung.png" },
+      { screen: 9, name: "התראות חכמות בזמן אמת", sub: "בחר מתי להתעדכן - פתיחת Hushhh קבוצתיים, עוקבים ותגובות", lang: "he", platform: "android", file: "store_screenshots/he/android/09_smart_notifications_samsung.png" },
+      { screen: 10, name: "Hushhh שמורים", sub: "קבל התראה כשאתה חולף ליד Hushhh ושמור מועדפים", lang: "he", platform: "android", file: "store_screenshots/he/android/10_saved_vault_samsung.png" },
+
+      // English - iOS
+      { screen: 1, name: "Welcome to Hushhh", sub: "The First Geo-Acoustic Social Network", lang: "en", platform: "ios", file: "store_screenshots/en/ios/01_welcome_iphone.png" },
+      { screen: 2, name: "Nearby Hushhh", sub: "Discover acoustic Hushhh around you in real time", lang: "en", platform: "ios", file: "store_screenshots/en/ios/02_nearby_feed_iphone.png" },
+      { screen: 3, name: "Interactive Hushhh Map", sub: "Explore your surroundings & find intriguing Hushhh on the map", lang: "en", platform: "ios", file: "store_screenshots/en/ios/03_interactive_map_iphone.png" },
+      { screen: 4, name: "Listen to Hushhh", sub: "Real-time acoustic audio, reactions & more", lang: "en", platform: "ios", file: "store_screenshots/en/ios/04_audio_player_iphone.png" },
+      { screen: 5, name: "Plant a Hushhh", sub: "Record a Hushhh & drop it at an exact spatial coordinate", lang: "en", platform: "ios", file: "store_screenshots/en/ios/05_record_plant_iphone.png" },
+      { screen: 6, name: "Group Hushhh", sub: "Group Hushhh unlocked only when multiple people gather together", lang: "en", platform: "ios", file: "store_screenshots/en/ios/06_group_hushhh_iphone.png" },
+      { screen: 7, name: "Profile & Tiers", sub: "Track your Hushhh, view followers and level up creator tiers", lang: "en", platform: "ios", file: "store_screenshots/en/ios/07_clout_tiers_iphone.png" },
+      { screen: 8, name: "Following Feed", sub: "Stay connected to your favorite creators & their Hushhh", lang: "en", platform: "ios", file: "store_screenshots/en/ios/08_following_feed_iphone.png" },
+      { screen: 9, name: "Smart Notifications", sub: "Stay tuned on group unlocks, new followers and reactions", lang: "en", platform: "ios", file: "store_screenshots/en/ios/09_smart_notifications_iphone.png" },
+      { screen: 10, name: "Saved Hushhh", sub: "Get notified as you pass by a Hushhh & save favorites", lang: "en", platform: "ios", file: "store_screenshots/en/ios/10_saved_vault_iphone.png" },
+
+      // English - Android
+      { screen: 1, name: "Welcome to Hushhh", sub: "The First Geo-Acoustic Social Network", lang: "en", platform: "android", file: "store_screenshots/en/android/01_welcome_samsung.png" },
+      { screen: 2, name: "Nearby Hushhh", sub: "Discover acoustic Hushhh around you in real time", lang: "en", platform: "android", file: "store_screenshots/en/android/02_nearby_feed_samsung.png" },
+      { screen: 3, name: "Interactive Hushhh Map", sub: "Explore your surroundings & find intriguing Hushhh on the map", lang: "en", platform: "android", file: "store_screenshots/en/android/03_interactive_map_samsung.png" },
+      { screen: 4, name: "Listen to Hushhh", sub: "Real-time acoustic audio, reactions & more", lang: "en", platform: "android", file: "store_screenshots/en/android/04_audio_player_samsung.png" },
+      { screen: 5, name: "Plant a Hushhh", sub: "Record a Hushhh & drop it at an exact spatial coordinate", lang: "en", platform: "android", file: "store_screenshots/en/android/05_record_plant_samsung.png" },
+      { screen: 6, name: "Group Hushhh", sub: "Group Hushhh unlocked only when multiple people gather together", lang: "en", platform: "android", file: "store_screenshots/en/android/06_group_hushhh_samsung.png" },
+      { screen: 7, name: "Profile & Tiers", sub: "Track your Hushhh, view followers and level up creator tiers", lang: "en", platform: "android", file: "store_screenshots/en/android/07_clout_tiers_samsung.png" },
+      { screen: 8, name: "Following Feed", sub: "Stay connected to your favorite creators & their Hushhh", lang: "en", platform: "android", file: "store_screenshots/en/android/08_following_feed_samsung.png" },
+      { screen: 9, name: "Smart Notifications", sub: "Stay tuned on group unlocks, new followers and reactions", lang: "en", platform: "android", file: "store_screenshots/en/android/09_smart_notifications_samsung.png" },
+      { screen: 10, name: "Saved Hushhh", sub: "Get notified as you pass by a Hushhh & save favorites", lang: "en", platform: "android", file: "store_screenshots/en/android/10_saved_vault_samsung.png" }
+    ];
+
+    let currentPlatform = 'all';
+    let currentLang = 'all';
+
+    function renderGrid() {
+      const grid = document.getElementById('grid');
+      grid.innerHTML = '';
+
+      const filtered = ITEMS.filter(item => {
+        const matchPlatform = currentPlatform === 'all' || item.platform === currentPlatform;
+        const matchLang = currentLang === 'all' || item.lang === currentLang;
+        return matchPlatform && matchLang;
+      });
+
+      filtered.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'screenshot-card';
+
+        const platformTag = item.platform === 'ios' 
+          ? '<span class="tag-pill tag-ios">iPhone 16 Pro</span>' 
+          : '<span class="tag-pill tag-android">Galaxy S24 Ultra</span>';
+
+        const langTag = item.lang === 'he' ? 'עברית' : 'English';
+
+        const cacheBustUrl = `${item.file}?v=${Date.now()}`;
+
+        card.innerHTML = `
+          <div class="card-img-wrapper" onclick="openModal('${cacheBustUrl}')">
+            <img src="${cacheBustUrl}" alt="${item.name}">
+            <div class="card-img-overlay">
+              <div class="overlay-zoom-btn">🔍</div>
+            </div>
+          </div>
+          <div class="card-meta">
+            <div class="card-tags">
+              ${platformTag}
+              <span class="tag-pill tag-res">${langTag}</span>
+              <span class="tag-pill tag-res">1284×2778</span>
+            </div>
+            <div>
+              <div class="card-title">${item.name}</div>
+              <div class="card-subtitle">${item.sub}</div>
+            </div>
+            <a href="${item.file}" download="${item.file.split('/').pop()}" class="download-btn">
+              <span>⬇️</span>
+              <span>הורד באיכות מלאה (PNG)</span>
+            </a>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    // Modal controls
+    function openModal(src) {
+      const modal = document.getElementById('modal');
+      const img = document.getElementById('modal-img');
+      img.src = src;
+      modal.classList.add('active');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.remove('active');
+    }
+
+    // Filter clicks
+    document.querySelectorAll('.filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filterType = btn.getAttribute('data-filter');
+        const val = btn.getAttribute('data-value');
+
+        // Toggle active style in group
+        btn.parentElement.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        if (filterType === 'platform') currentPlatform = val;
+        if (filterType === 'lang') currentLang = val;
+
+        renderGrid();
+      });
+    });
+
+    renderGrid();
+  </script>
+</body>
+</html>

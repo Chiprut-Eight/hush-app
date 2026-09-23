@@ -277,7 +277,7 @@
   "@usernameChangeWait": { "placeholders": { "days": { "type": "int" } } },
   "usernameChangeLimit": "שינוי שם מתאפשר רק אחת לחצי שנה (180 ימים).\n{waitText}",
   "@usernameChangeLimit": { "placeholders": { "waitText": { "type": "String" } } },
-  "tier1Name": "בסיסי",
+  "tier1Name": "",
   "tier2Name": "מתחיל",
   "tier3Name": "שוליה",
   "tier4Name": "מיומן",

@@ -308,7 +308,20 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         appBar: AppBar(
           title: Text(l10n.createTitle), 
           centerTitle: true,
-          actions: const [NotificationsButton()],
+          automaticallyImplyLeading: false,
+          leading: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Builder(
+                builder: (ctx) => IconButton(
+                  icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
+                  onPressed: () => Scaffold.of(ctx).openDrawer(),
+                ),
+              ),
+              const NotificationsButton(),
+            ],
+          ),
+          leadingWidth: 96,
         ),
         body: Center(
           child: Column(
@@ -327,127 +340,145 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
+      drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(l10n.createTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: true,
-        actions: const [NotificationsButton()],
+        automaticallyImplyLeading: false,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => IconButton(
+                icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              // Content Area (text or voice)
-              if (_activeTab == 0) _buildTextTab(l10n) else _buildVoiceTab(l10n),
+      body: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                // Content Area (text or voice)
+                if (_activeTab == 0) _buildTextTab(l10n) else _buildVoiceTab(l10n),
 
-              const SizedBox(height: 16),
-
-              // GPS Accuracy Indicator
-              _buildGpsAccuracyIndicator(l10n),
-
-              const SizedBox(height: 12),
-
-              // Submit button
-              SizedBox(
-                height: 56,
-                child: ElevatedButton.icon(
-                  onPressed: _canSubmit() ? _publishSecret : null,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: HushColors.textAccent,
-                    disabledBackgroundColor: HushColors.textAccent.withValues(alpha: 0.3),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  ),
-                  icon: const Icon(Icons.place, color: Colors.white, size: 22),
-                  label: Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
-                ),
-              ),
-
-              const SizedBox(height: 24),
-
-              // Tabs
-              CupertinoSlidingSegmentedControl<int>(
-                backgroundColor: HushColors.bgCard,
-                thumbColor: const Color(0xFF1E2638),
-                groupValue: _activeTab,
-                padding: const EdgeInsets.all(4),
-                children: {
-                  0: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.textTab)),
-                  1: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.voiceTab)),
-                },
-                onValueChanged: (int? value) {
-                  setState(() => _activeTab = value!);
-                  AnalyticsService().logCreateTabChanged(value == 0 ? 'text' : 'voice');
-                },
-              ),
-              
-              const SizedBox(height: 32),
-
-              // Secret Type
-              Text(l10n.secretType, style: const TextStyle(color: HushColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 16)),
-              const SizedBox(height: 12),
-
-              _buildTypeOption('regular', l10n.regularSecret, l10n.regularSecretDesc),
-              const SizedBox(height: 12),
-              _buildTypeOption('group', l10n.groupSecret, l10n.groupSecretDesc),
-
-              if (_secretType == 'group') ...[
                 const SizedBox(height: 16),
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: HushColors.bgCard,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: HushColors.borderSubtle),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(l10n.peopleRequired, style: const TextStyle(color: HushColors.textPrimary)),
-                          Text('${_requiredUsers.toInt()}', style: const TextStyle(fontWeight: FontWeight.bold, color: HushColors.textAccent)),
-                        ],
-                      ),
-                      Builder(
-                        builder: (ctx) {
-                          final currentTier = HushTiers.getTier(user?.tierLevel ?? 1);
-                          final double maxUsers = currentTier.maxGroupUsers.toDouble();
-                          
-                          // Ensure requiredUsers is within valid range
-                          if (_requiredUsers > maxUsers) _requiredUsers = maxUsers;
-                          if (_requiredUsers < 3) _requiredUsers = 3;
 
-                          return Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Slider(
-                                value: _requiredUsers,
-                                min: 3,
-                                max: maxUsers < 3 ? 3 : maxUsers,
-                                divisions: maxUsers > 3 ? (maxUsers - 3).toInt() : 1,
-                                activeColor: HushColors.textAccent,
-                                inactiveColor: HushColors.textSecondary,
-                                onChanged: maxUsers > 3 ? (val) => setState(() => _requiredUsers = val) : null,
-                              ),
-                              Text(
-                                l10n.timeWindow(currentTier.timeWindowMinutes),
-                                textAlign: TextAlign.center,
-                                style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
-                              ),
-                            ],
-                          );
-                        }
-                      ),
-                    ],
+                // GPS Accuracy Indicator
+                _buildGpsAccuracyIndicator(l10n),
+
+                const SizedBox(height: 12),
+
+                // Submit button
+                SizedBox(
+                  height: 56,
+                  child: ElevatedButton.icon(
+                    onPressed: _canSubmit() ? _publishSecret : null,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: HushColors.textAccent,
+                      disabledBackgroundColor: HushColors.textAccent.withValues(alpha: 0.3),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                    ),
+                    icon: const Icon(Icons.place, color: Colors.white, size: 22),
+                    label: Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
                   ),
                 ),
-              ],
 
-              const SizedBox(height: 48), // Bottom nav padding
-            ],
+                const SizedBox(height: 24),
+
+                // Tabs
+                CupertinoSlidingSegmentedControl<int>(
+                  backgroundColor: HushColors.bgCard,
+                  thumbColor: const Color(0xFF1E2638),
+                  groupValue: _activeTab,
+                  padding: const EdgeInsets.all(4),
+                  children: {
+                    0: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.textTab)),
+                    1: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.voiceTab)),
+                  },
+                  onValueChanged: (int? value) {
+                    setState(() => _activeTab = value!);
+                    AnalyticsService().logCreateTabChanged(value == 0 ? 'text' : 'voice');
+                  },
+                ),
+                
+                const SizedBox(height: 32),
+
+                // Secret Type
+                Text(l10n.secretType, style: const TextStyle(color: HushColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 16)),
+                const SizedBox(height: 12),
+
+                _buildTypeOption('regular', l10n.regularSecret, l10n.regularSecretDesc),
+                const SizedBox(height: 12),
+                _buildTypeOption('group', l10n.groupSecret, l10n.groupSecretDesc),
+
+                if (_secretType == 'group') ...[
+                  const SizedBox(height: 16),
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: HushColors.bgCard,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: HushColors.borderSubtle),
+                    ),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(l10n.peopleRequired, style: const TextStyle(color: HushColors.textPrimary)),
+                            Text('${_requiredUsers.toInt()}', style: const TextStyle(fontWeight: FontWeight.bold, color: HushColors.textAccent)),
+                          ],
+                        ),
+                        Builder(
+                          builder: (ctx) {
+                            final currentTier = HushTiers.getTier(user?.tierLevel ?? 1);
+                            final double maxUsers = currentTier.maxGroupUsers.toDouble();
+                            
+                            // Ensure requiredUsers is within valid range
+                            if (_requiredUsers > maxUsers) _requiredUsers = maxUsers;
+                            if (_requiredUsers < 3) _requiredUsers = 3;
+
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Slider(
+                                  value: _requiredUsers,
+                                  min: 3,
+                                  max: maxUsers < 3 ? 3 : maxUsers,
+                                  divisions: maxUsers > 3 ? (maxUsers - 3).toInt() : 1,
+                                  activeColor: HushColors.textAccent,
+                                  inactiveColor: HushColors.textSecondary,
+                                  onChanged: maxUsers > 3 ? (val) => setState(() => _requiredUsers = val) : null,
+                                ),
+                                Text(
+                                  l10n.timeWindow(currentTier.timeWindowMinutes),
+                                  textAlign: TextAlign.center,
+                                  style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+                                ),
+                              ],
+                            );
+                          }
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+
+                const SizedBox(height: 48), // Bottom nav padding
+              ],
+            ),
           ),
         ),
       ),
@@ -458,22 +489,45 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        TextField(
-          controller: _textController,
-          maxLength: 140,
-          maxLines: 4,
-          style: const TextStyle(color: Colors.white, fontSize: 18),
-          decoration: InputDecoration(
-            hintText: l10n.secretPlaceholder,
-            hintStyle: const TextStyle(color: HushColors.textMuted),
-            filled: true,
-            fillColor: HushColors.bgCard,
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(16),
-              borderSide: BorderSide.none,
+        Stack(
+          children: [
+            TextField(
+              controller: _textController,
+              maxLength: 140,
+              maxLines: 4,
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+              decoration: InputDecoration(
+                hintText: l10n.secretPlaceholder,
+                hintStyle: const TextStyle(color: HushColors.textMuted),
+                filled: true,
+                fillColor: HushColors.bgCard,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(16),
+                  borderSide: BorderSide.none,
+                ),
+                counterText: '',
+              ),
             ),
-            counterText: '',
-          ),
+            if (_textController.text.isNotEmpty)
+              Positioned(
+                top: 4,
+                right: 4,
+                child: GestureDetector(
+                  onTap: () {
+                    _textController.clear();
+                    FocusScope.of(context).unfocus();
+                  },
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: HushColors.textMuted.withValues(alpha: 0.3),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Icon(Icons.close, size: 16, color: HushColors.textSecondary),
+                  ),
+                ),
+              ),
+          ],
         ),
         const SizedBox(height: 8),
         Text(

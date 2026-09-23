@@ -28,7 +28,7 @@ class HushTiers {
   static const List<TierDef> tiers = [
     TierDef(
       level: 1,
-      name: 'Default',
+      name: '',
       colorHex: '#808080',
       color: Colors.grey,
       requiredSuccesses: 0,

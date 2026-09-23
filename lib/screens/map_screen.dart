@@ -158,8 +158,19 @@ class _MapScreenState extends State<MapScreen> {
         backgroundColor: (isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight).withValues(alpha: 0.8),
         elevation: 0,
         centerTitle: false,
+        automaticallyImplyLeading: false,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : HushColors.textPrimaryLight),
+              onPressed: () => widget.scaffoldKey?.currentState?.openDrawer(),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
         actions: [
-          const NotificationsButton(),
           IconButton(
             icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
             onPressed: () {
@@ -172,13 +183,6 @@ class _MapScreenState extends State<MapScreen> {
               } else {
                 _fetchMapData();
               }
-            },
-          ),
-          IconButton(
-            icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-            onPressed: () {
-              AnalyticsService().logMapRefresh();
-              _fetchMapData();
             },
           ),
         ],
@@ -327,17 +331,7 @@ class _MapScreenState extends State<MapScreen> {
             ),
           ),
           
-        if (isOverlay)
-          Positioned(
-            top: 48,
-            left: 16,
-            child: FloatingActionButton.small(
-              onPressed: () => Navigator.pop(context),
-              backgroundColor: HushColors.bgCard,
-              elevation: 4,
-              child: const HushIcon(HushIcons.arrowLeft, size: 24, color: HushColors.textAccent),
-            ),
-          )
+
       ],
     );
   }

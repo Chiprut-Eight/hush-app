@@ -129,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String _getTierName(BuildContext context, int level) {
     final l10n = AppLocalizations.of(context)!;
     switch (level) {
-      case 1: return "${l10n.tier(1)} (${l10n.tier1Name})";
+      case 1: return l10n.tier(1);
       case 2: return "${l10n.tier(2)} (${l10n.tier2Name})";
       case 3: return "${l10n.tier(3)} (${l10n.tier3Name})";
       case 4: return "${l10n.tier(4)} (${l10n.tier4Name})";
@@ -139,7 +139,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       case 8: return "${l10n.tier(8)} (${l10n.tier8Name})";
       case 9: return "${l10n.tier(9)} (${l10n.tier9Name})";
       case 10: return "${l10n.tier(10)} (${l10n.tier10Name})";
-      default: return "${l10n.tier(1)} (${l10n.tier1Name})";
+      default: return l10n.tier(1);
     }
   }
 
@@ -166,10 +166,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
       drawer: const HushDrawer(),
       appBar: AppBar(
         title: Text(isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser)),
-        leading: !isMe ? IconButton(icon: const Icon(Icons.arrow_back), onPressed: () => Navigator.pop(context)) : null,
-        actions: const [
-          NotificationsButton(),
-        ],
+        automaticallyImplyLeading: false,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Builder(
+              builder: (ctx) => IconButton(
+                icon: const HushIcon(HushIcons.feed, size: 24, color: Colors.white),
+                onPressed: () => Scaffold.of(ctx).openDrawer(),
+              ),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
       body: RefreshIndicator(
         onRefresh: () async {

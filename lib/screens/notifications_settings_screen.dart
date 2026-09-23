@@ -21,6 +21,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
         title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,
+        automaticallyImplyLeading: false,
         iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
       ),
       body: user == null

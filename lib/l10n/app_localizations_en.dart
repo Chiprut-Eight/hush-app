@@ -691,7 +691,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get tier1Name => 'Default';
+  String get tier1Name => '';
 
   @override
   String get tier2Name => 'Novice';

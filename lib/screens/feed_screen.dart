@@ -223,17 +223,18 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         backgroundColor: Colors.transparent,
         elevation: 0,
         centerTitle: false,
-        actions: [
-          const NotificationsButton(),
-          IconButton(
-            icon: HushIcon(HushIcons.refresh, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-            onPressed: () {
-              AnalyticsService().logFeedRefresh();
-              _fetchSecrets(silent: _secrets.isNotEmpty);
-              _startAutoRefresh(); // Reset 45s timer on manual refresh
-            },
-          ),
-        ],
+        automaticallyImplyLeading: false,
+        leading: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : HushColors.textPrimaryLight),
+              onPressed: () => widget.scaffoldKey?.currentState?.openDrawer(),
+            ),
+            const NotificationsButton(),
+          ],
+        ),
+        leadingWidth: 96,
       ),
       body: Container(
         decoration: BoxDecoration(
@@ -253,77 +254,103 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   }
 
   Widget _buildBody(AppLocalizations l10n) {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
-    }
-
-    if (_error != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              HushIcon(HushIcons.error, size: 48, color: Colors.redAccent),
-              const SizedBox(height: 16),
-              Text(
-                _error!,
-                textAlign: TextAlign.center,
-                style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton(
-                onPressed: _fetchSecrets,
-                child: Text(l10n.retry),
-              )
-            ],
-          ),
-        ),
-      );
-    }
-
-    if (_secrets.isEmpty) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            HushIcon(HushIcons.hearingOff, size: 64, color: HushColors.textSecondary.withValues(alpha: 0.5)),
-            const SizedBox(height: 16),
-            Text(
-              l10n.feedEmpty,
-              style: const TextStyle(color: HushColors.textSecondary, fontSize: 18),
-              textAlign: TextAlign.center,
-            ),
-          ],
-        ),
-      );
-    }
-
     return RefreshIndicator(
       onRefresh: () async {
-        await _fetchSecrets(silent: true);
+        AnalyticsService().logFeedRefresh();
+        await _fetchSecrets(silent: _secrets.isNotEmpty);
         _startAutoRefresh(); // Reset 45s timer on manual refresh
       },
       color: HushColors.textAccent,
       backgroundColor: Theme.of(context).colorScheme.surface,
-      child: ListView.builder(
-        padding: const EdgeInsets.only(bottom: 80, top: 8),
-        itemCount: _secrets.length,
-        itemBuilder: (context, index) {
-          return SecretCard(
-            key: ValueKey(_secrets[index].id),
-            secret: _secrets[index],
-            userPosition: _userPosition,
-            onDelete: () {
-              setState(() {
-                _secrets.removeWhere((s) => s.id == _secrets[index].id);
-              });
-            },
-            onInteractionStart: _pauseAutoRefresh,
-            onInteractionEnd: _resumeAutoRefresh,
-          );
-        },
-      ),
+      child: _buildBodyContent(l10n),
+    );
+  }
+
+  Widget _buildBodyContent(AppLocalizations l10n) {
+    if (_isLoading) {
+      return ListView(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: const Center(child: CircularProgressIndicator(color: HushColors.textAccent)),
+          ),
+        ],
+      );
+    }
+
+    if (_error != null) {
+      return ListView(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    HushIcon(HushIcons.error, size: 48, color: Colors.redAccent),
+                    const SizedBox(height: 16),
+                    Text(
+                      _error!,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: _fetchSecrets,
+                      child: Text(l10n.retry),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    if (_secrets.isEmpty) {
+      return ListView(
+        children: [
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  HushIcon(HushIcons.hearingOff, size: 64, color: HushColors.textSecondary.withValues(alpha: 0.5)),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.feedEmpty,
+                    style: const TextStyle(color: HushColors.textSecondary, fontSize: 18),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      );
+    }
+
+    return ListView.builder(
+      padding: const EdgeInsets.only(bottom: 80, top: 8),
+      itemCount: _secrets.length,
+      itemBuilder: (context, index) {
+        return SecretCard(
+          key: ValueKey(_secrets[index].id),
+          secret: _secrets[index],
+          userPosition: _userPosition,
+          onDelete: () {
+            setState(() {
+              _secrets.removeWhere((s) => s.id == _secrets[index].id);
+            });
+          },
+          onInteractionStart: _pauseAutoRefresh,
+          onInteractionEnd: _resumeAutoRefresh,
+        );
+      },
     );
   }
 }

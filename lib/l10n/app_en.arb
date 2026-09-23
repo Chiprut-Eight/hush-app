@@ -292,7 +292,7 @@
   "@usernameChangeWait": { "placeholders": { "days": { "type": "int" } } },
   "usernameChangeLimit": "Name changes are limited to once every half year (180 days).\n{waitText}",
   "@usernameChangeLimit": { "placeholders": { "waitText": { "type": "String" } } },
-  "tier1Name": "Default",
+  "tier1Name": "",
   "tier2Name": "Novice",
   "tier3Name": "Apprentice",
   "tier4Name": "Adept",

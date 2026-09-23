@@ -688,7 +688,7 @@ class AppLocalizationsHe extends AppLocalizations {
   }
 
   @override
-  String get tier1Name => 'בסיסי';
+  String get tier1Name => '';
 
   @override
   String get tier2Name => 'מתחיל';

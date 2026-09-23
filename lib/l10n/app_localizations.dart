@@ -1337,7 +1337,7 @@ abstract class AppLocalizations {
   /// No description provided for @tier1Name.
   ///
   /// In en, this message translates to:
-  /// **'Default'**
+  /// **''**
   String get tier1Name;
 
   /// No description provided for @tier2Name.
