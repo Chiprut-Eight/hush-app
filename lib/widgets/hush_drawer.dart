@@ -176,7 +176,7 @@ class HushDrawer extends StatelessWidget {
                       AnalyticsService().logDrawerAction('tutorial');
                       AnalyticsService().logTutorialStarted(source: 'drawer');
                       showDialog(
-                        context: context,
+                        context: rootNavigatorKey.currentContext ?? context,
                         barrierDismissible: true,
                         builder: (_) => const TutorialPopup(),
                       );
