@@ -76,7 +76,7 @@ class HushDrawer extends StatelessWidget {
                   // Close Button
                   IconButton(
                     icon: Icon(Icons.close, color: isDark ? Colors.white70 : Colors.black54),
-                    onPressed: () => Navigator.pop(context),
+                    onPressed: () => Scaffold.of(context).closeDrawer(),
                   ),
                 ],
               ),
@@ -109,7 +109,7 @@ class HushDrawer extends StatelessWidget {
                     onTap: () {
                       final box = context.findRenderObject() as RenderBox?;
                       final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-                      rootNavigatorKey.currentState?.pop();
+                      Scaffold.of(context).closeDrawer();
                       AnalyticsService().logDrawerAction('invite');
                       AnalyticsService().logShareApp('drawer');
                       Future.delayed(const Duration(milliseconds: 300), () {
@@ -123,7 +123,7 @@ class HushDrawer extends StatelessWidget {
                     leading: HushIcon(HushIcons.bell, size: 22, color: isDark ? Colors.white70 : Colors.black54),
                     title: Text(l10n.settings, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
-                      rootNavigatorKey.currentState?.pop();
+                      Scaffold.of(context).closeDrawer();
                       AnalyticsService().logDrawerAction('settings');
                       rootNavigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => const SettingsScreen()));
                     },
@@ -136,7 +136,7 @@ class HushDrawer extends StatelessWidget {
                     leading: Icon(Icons.description_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
                     title: Text(l10n.termsOfService, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
-                      rootNavigatorKey.currentState?.pop();
+                      Scaffold.of(context).closeDrawer();
                       AnalyticsService().logDrawerAction('terms');
                       rootNavigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => const TermsOfServiceScreen()));
                     },
@@ -145,7 +145,7 @@ class HushDrawer extends StatelessWidget {
                     leading: Icon(Icons.privacy_tip_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
                     title: Text(l10n.privacyPolicy, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
-                      rootNavigatorKey.currentState?.pop();
+                      Scaffold.of(context).closeDrawer();
                       AnalyticsService().logDrawerAction('privacy');
                       rootNavigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => const PrivacyPolicyScreen()));
                     },
@@ -158,7 +158,7 @@ class HushDrawer extends StatelessWidget {
                       leading: const HushIcon(HushIcons.shield, size: 22, color: Colors.orangeAccent),
                       title: Text(l10n.adminTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                       onTap: () {
-                        rootNavigatorKey.currentState?.pop();
+                        Scaffold.of(context).closeDrawer();
                         AnalyticsService().logDrawerAction('admin');
                         rootNavigatorKey.currentState?.push(MaterialPageRoute(builder: (_) => const AdminScreen()));
                       },
@@ -172,7 +172,7 @@ class HushDrawer extends StatelessWidget {
                     leading: const Icon(Icons.info_outline, size: 22, color: HushColors.textAccent),
                     title: Text(l10n.drawer_what_is_hush, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
-                      rootNavigatorKey.currentState?.pop(); // Close drawer
+                      Scaffold.of(context).closeDrawer(); // Close drawer
                       AnalyticsService().logDrawerAction('tutorial');
                       AnalyticsService().logTutorialStarted(source: 'drawer');
                       showDialog(
@@ -203,7 +203,7 @@ class HushDrawer extends StatelessWidget {
                   ],
                   OutlinedButton.icon(
                     onPressed: () {
-                      rootNavigatorKey.currentState?.pop();
+                      Scaffold.of(context).closeDrawer();
                       AnalyticsService().logSignOut();
                       auth.signOut();
                     },
