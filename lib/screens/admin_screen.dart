@@ -10,6 +10,7 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../services/analytics_service.dart';
+import 'create_screen.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -1408,6 +1409,42 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
                   const Icon(Icons.notifications_active),
                   const SizedBox(width: 8),
                   Text(l10n.testPushNotification),
+                ],
+              ),
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Scaffold(
+                    appBar: AppBar(title: Text(isHe ? 'יצירת סוד מרוחק' : 'Remote Secret')),
+                    body: const CreateScreen(
+                      targetLat: 32.1691,
+                      targetLng: 35.0163,
+                    ),
+                  ),
+                ),
+              );
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade700,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.add_location_alt),
+                  const SizedBox(width: 8),
+                  Text(isHe ? 'יצירת האשש עבור הטסטר' : 'Create Hush for Tester'),
                 ],
               ),
             ),

@@ -20,8 +20,10 @@ import '../services/analytics_service.dart';
 /// Web-aligned Create Screen
 class CreateScreen extends StatefulWidget {
   final VoidCallback? onPublished;
+  final double? targetLat;
+  final double? targetLng;
 
-  const CreateScreen({super.key, this.onPublished});
+  const CreateScreen({super.key, this.onPublished, this.targetLat, this.targetLng});
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -82,6 +84,27 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   }
 
   void _startGpsStream() async {
+    if (widget.targetLat != null && widget.targetLng != null) {
+      if (mounted) {
+        setState(() {
+          _gpsAccuracy = 1.0;
+          _lastPosition = Position(
+            latitude: widget.targetLat!,
+            longitude: widget.targetLng!,
+            timestamp: DateTime.now(),
+            accuracy: 1.0,
+            altitude: 0.0,
+            heading: 0.0,
+            speed: 0.0,
+            speedAccuracy: 0.0,
+            altitudeAccuracy: 0.0,
+            headingAccuracy: 0.0,
+          );
+        });
+      }
+      return;
+    }
+
     try {
       // Use GeoService to safely handle permissions and initial position
       final pos = await GeoService.getCurrentPositionSafe();
