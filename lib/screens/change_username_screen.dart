@@ -101,7 +101,6 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: Text(l10n.changeUsernameTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
         backgroundColor: Colors.transparent,
         elevation: 0,

@@ -164,8 +164,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
           },
           leading: CircleAvatar(
             backgroundColor: HushColors.bgCard,
-            backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
-            child: (user.useGenericPhoto || user.photoURL == null) ? const HushIcon(HushIcons.person, size: 18, color: Colors.white) : null,
+            backgroundImage: (user.useGenericPhoto || user.photoURL == null) ? const AssetImage('assets/images/logo_hushhh2.jpeg') : NetworkImage(user.photoURL!),
           ),
           title: Text('${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser), style: const TextStyle(color: Colors.white)),
           subtitle: Text(l10n.tier(user.tierLevel), style: const TextStyle(color: HushColors.textAccent)),

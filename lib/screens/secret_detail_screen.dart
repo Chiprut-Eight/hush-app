@@ -73,7 +73,6 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         title: Text('Hushhh', style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
         backgroundColor: Colors.transparent,
         elevation: 0,

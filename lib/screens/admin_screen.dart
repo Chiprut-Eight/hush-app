@@ -44,7 +44,6 @@ class _AdminScreenState extends State<AdminScreen> {
       child: Scaffold(
         backgroundColor: HushColors.bgPrimary,
         appBar: AppBar(
-        automaticallyImplyLeading: false,
           title: Text(l10n.adminTitle),
           backgroundColor: Colors.transparent,
           elevation: 0,

@@ -606,10 +606,7 @@ class _SecretCardState extends State<SecretCard> {
                                           backgroundColor: HushColors.bgCard,
                                           backgroundImage: c['userPhotoURL'] != null && c['userPhotoURL'] != 'generic'
                                               ? NetworkImage(c['userPhotoURL'])
-                                              : null,
-                                          child: c['userPhotoURL'] == null || c['userPhotoURL'] == 'generic'
-                                              ? const HushIcon(HushIcons.person, size: 14, color: Colors.white54)
-                                              : null,
+                                              : const AssetImage('assets/images/logo_hushhh2.jpeg'),
                                         ),
                                         const SizedBox(width: 10),
                                         Expanded(
@@ -860,10 +857,7 @@ class _SecretCardState extends State<SecretCard> {
                                       backgroundColor: isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight,
                                       backgroundImage: _currentSecret.creatorPhotoURL != null && _currentSecret.creatorPhotoURL != 'generic'
                                           ? NetworkImage(_currentSecret.creatorPhotoURL!)
-                                          : null,
-                                      child: _currentSecret.creatorPhotoURL == 'generic' || _currentSecret.creatorPhotoURL == null
-                                          ? HushIcon(HushIcons.person, size: 18, color: isDark ? Colors.white54 : HushColors.textSecondaryLight)
-                                          : null,
+                                          : const AssetImage('assets/images/logo_hushhh2.jpeg'),
                                     ),
                                   ),
                                   const SizedBox(width: 10),

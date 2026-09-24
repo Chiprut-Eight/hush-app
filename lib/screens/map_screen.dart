@@ -130,7 +130,10 @@ class _MapScreenState extends State<MapScreen> {
     setState(() {
       _selectedSecret = secret;
     });
-    _mapController.move(LatLng(secret.lat, secret.lng), 16.0);
+    // Preserve user's zoom level, only zoom in if they're too far out
+    final currentZoom = _mapController.camera.zoom;
+    final targetZoom = currentZoom < 15.0 ? 15.0 : currentZoom;
+    _mapController.move(LatLng(secret.lat, secret.lng), targetZoom);
   }
 
   Color _getTierColor(String hexCode) {
@@ -293,7 +296,29 @@ class _MapScreenState extends State<MapScreen> {
             right: 0,
             bottom: 20,
             child: SafeArea(
-              child: SecretCard(secret: _selectedSecret!, userPosition: _currentPosition),
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  SecretCard(secret: _selectedSecret!, userPosition: _currentPosition),
+                  Positioned(
+                    top: -12,
+                    right: 8,
+                    child: Material(
+                      color: HushColors.bgCard,
+                      shape: const CircleBorder(),
+                      elevation: 4,
+                      child: IconButton(
+                        icon: const Icon(Icons.close, size: 20, color: HushColors.textPrimaryLight),
+                        constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
+                        padding: EdgeInsets.zero,
+                        onPressed: () {
+                          setState(() => _selectedSecret = null);
+                        },
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
           

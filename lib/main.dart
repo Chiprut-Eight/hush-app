@@ -123,10 +123,15 @@ class _HushAppState extends State<HushApp> {
                                       final bannerWidth = isLandscape
                                           ? (screenWidth * 0.2).clamp(100.0, 180.0)
                                           : screenWidth * 0.38;
-                                      return Image.asset(
-                                        'assets/images/top_banner2.png',
-                                        width: bannerWidth,
-                                        fit: BoxFit.contain,
+                                      return GestureDetector(
+                                        onTap: () {
+                                          context.read<UIProvider>().triggerNavigateHome();
+                                        },
+                                        child: Image.asset(
+                                          'assets/images/top_banner2.png',
+                                          width: bannerWidth,
+                                          fit: BoxFit.contain,
+                                        ),
                                       );
                                     },
                                   ),

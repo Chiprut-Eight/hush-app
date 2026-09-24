@@ -1,7 +1,7 @@
 name: hush_app
 description: "HUSH - Geo-acoustic social network"
 publish_to: 'none'
-version: 1.0.0+30
+version: 1.0.0+31
 
 environment:
   sdk: ^3.10.7
@@ -56,6 +56,7 @@ dependencies:
   confetti: ^0.7.0
   flutter_local_notifications: ^18.0.1
   screen_protector: ^1.5.1
+  package_info_plus: ^8.2.1
 
 dev_dependencies:
   flutter_test:

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
@@ -221,6 +222,19 @@ class HushDrawer extends StatelessWidget {
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       minimumSize: const Size(double.infinity, 40),
                     ),
+                  ),
+                  const SizedBox(height: 12),
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      final version = snapshot.data?.version ?? '';
+                      final buildNumber = snapshot.data?.buildNumber ?? '';
+                      if (version.isEmpty) return const SizedBox.shrink();
+                      return Text(
+                        'v$version+$buildNumber',
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 11),
+                      );
+                    },
                   ),
                 ],
               ),

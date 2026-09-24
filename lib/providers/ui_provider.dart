@@ -7,6 +7,7 @@ import 'package:audio_session/audio_session.dart';
 class UIProvider with ChangeNotifier {
   final _confettiTrigger = StreamController<void>.broadcast();
   final _drawerTrigger = StreamController<void>.broadcast();
+  final _homeTrigger = StreamController<void>.broadcast();
   final _audioPlayer = AudioPlayer();
   bool _isAudioReady = false;
 
@@ -53,9 +54,17 @@ class UIProvider with ChangeNotifier {
   /// Stream to listen for drawer trigger events globally
   Stream<void> get drawerStream => _drawerTrigger.stream;
 
+  /// Stream to listen for navigate-to-home events
+  Stream<void> get homeStream => _homeTrigger.stream;
+
   /// Trigger the global drawer open
   void triggerDrawer() {
     _drawerTrigger.add(null);
+  }
+
+  /// Navigate to the home/feed tab
+  void triggerNavigateHome() {
+    _homeTrigger.add(null);
   }
 
   /// Trigger the confetti animation globally with sound
@@ -90,6 +99,7 @@ class UIProvider with ChangeNotifier {
   @override
   void dispose() {
     _confettiTrigger.close();
+    _homeTrigger.close();
     _audioPlayer.dispose();
     super.dispose();
   }

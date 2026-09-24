@@ -5,6 +5,7 @@ import 'dart:async';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/analytics_service.dart';
+import '../main.dart';
 
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
@@ -40,6 +41,7 @@ class _AppShellState extends State<AppShell> {
   final GlobalKey<ScaffoldState> _mapScaffoldKey = GlobalKey<ScaffoldState>();
 
   late final List<Widget> _screens;
+  StreamSubscription<void>? _homeSub;
 
   @override
   void initState() {
@@ -52,6 +54,11 @@ class _AppShellState extends State<AppShell> {
       const ProfileScreen(),
     ];
     _startInviteTimer();
+    _homeSub = context.read<UIProvider>().homeStream.listen((_) {
+      // Pop any pushed routes (settings, privacy, etc.) back to AppShell
+      rootNavigatorKey.currentState?.popUntil((route) => route.isFirst);
+      if (mounted) setState(() => _currentIndex = 0);
+    });
   }
 
   Timer? _inviteTimer;
@@ -77,6 +84,7 @@ class _AppShellState extends State<AppShell> {
   @override
   void dispose() {
     _inviteTimer?.cancel();
+    _homeSub?.cancel();
     super.dispose();
   }
 

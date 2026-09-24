@@ -9,10 +9,21 @@ import '../screens/secret_detail_screen.dart';
 import '../main.dart';
 import '../services/analytics_service.dart';
 
-class NotificationsButton extends StatelessWidget {
+class NotificationsButton extends StatefulWidget {
   const NotificationsButton({super.key});
 
-  void _showNotificationsMenu(BuildContext context) {
+  @override
+  State<NotificationsButton> createState() => _NotificationsButtonState();
+}
+
+class _NotificationsButtonState extends State<NotificationsButton> {
+  bool _isOpen = false;
+
+  void _toggleNotificationsMenu(BuildContext context) {
+    if (_isOpen) {
+      rootNavigatorKey.currentState?.pop();
+      return;
+    }
     final uid = context.read<AuthProvider>().firebaseUser?.uid;
     if (uid == null) return;
 
@@ -21,6 +32,7 @@ class NotificationsButton extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final langCode = Localizations.localeOf(context).languageCode;
 
+    setState(() => _isOpen = true);
     showModalBottomSheet(
       context: rootNavigatorKey.currentContext ?? context,
       isScrollControlled: true,
@@ -158,7 +170,9 @@ class NotificationsButton extends StatelessWidget {
           ),
         );
       },
-    );
+    ).whenComplete(() {
+      if (mounted) setState(() => _isOpen = false);
+    });
   }
 
   @override
@@ -183,7 +197,7 @@ class NotificationsButton extends StatelessWidget {
           children: [
             IconButton(
               icon: HushIcon(HushIcons.bell, size: 24, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-              onPressed: () => _showNotificationsMenu(context),
+              onPressed: () => _toggleNotificationsMenu(context),
             ),
             if (unreadCount > 0)
               Positioned(

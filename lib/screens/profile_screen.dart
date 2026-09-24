@@ -163,7 +163,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser)),
-        automaticallyImplyLeading: false,
+        automaticallyImplyLeading: !isMe,
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -216,10 +216,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: HushColors.bgCard,
                     backgroundImage: user.photoURL != null && !user.useGenericPhoto
                         ? NetworkImage(user.photoURL!)
-                        : null,
-                    child: (user.useGenericPhoto || user.photoURL == null)
-                        ? const HushIcon(HushIcons.person, size: 48, color: HushColors.textMuted)
-                        : null,
+                        : const AssetImage('assets/images/logo_hushhh2.jpeg'),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -327,16 +324,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ))
             else ..._buildActiveTabList(l10n, isMe),
 
-            const SizedBox(height: 32),
-            
-            // Footer Info
-            Center(
-              child: Text(
-                'HUSH v1.0.0',
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.2), fontSize: 12),
-              ),
-            ),
-            
+
             const SizedBox(height: 80), // Padding for bottom navbar
           ],
         ),
