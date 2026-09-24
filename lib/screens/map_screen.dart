@@ -304,11 +304,11 @@ class _MapScreenState extends State<MapScreen> {
                     top: -12,
                     right: 8,
                     child: Material(
-                      color: HushColors.bgCard,
+                      color: Theme.of(context).brightness == Brightness.dark ? Colors.grey[800] : Colors.white,
                       shape: const CircleBorder(),
                       elevation: 4,
                       child: IconButton(
-                        icon: const Icon(Icons.close, size: 20, color: HushColors.textPrimaryLight),
+                        icon: Icon(Icons.close, size: 20, color: Theme.of(context).brightness == Brightness.dark ? Colors.white : Colors.black87),
                         constraints: const BoxConstraints(minWidth: 32, minHeight: 32),
                         padding: EdgeInsets.zero,
                         onPressed: () {
