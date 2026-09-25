@@ -193,7 +193,6 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           if (silent && _secrets.isNotEmpty) {
             // Smart merge: update existing items in place, add new ones, remove gone ones
             final newIds = secrets.map((s) => s.id).toSet();
-            final oldIds = _secrets.map((s) => s.id).toSet();
 
             // Remove secrets no longer present
             _secrets.removeWhere((s) => !newIds.contains(s.id));

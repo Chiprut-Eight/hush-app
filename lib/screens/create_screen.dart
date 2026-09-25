@@ -183,11 +183,12 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           }
         });
       } catch (e) {
+        if (!mounted) return;
         final isHe = Localizations.localeOf(context).languageCode == 'he';
         final message = isHe
             ? 'לא ניתן להקליט בזמן שיחה'
             : 'Cannot record during a phone call';
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
