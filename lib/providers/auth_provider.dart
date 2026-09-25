@@ -30,7 +30,7 @@ class AuthProvider extends ChangeNotifier {
   }
 
   Future<void> _updateScreenshotPolicy() async {
-    final bool enablePrevention = _hushUser?.isAdmin != true;
+    final bool enablePrevention = _hushUser?.isAdmin != true && _hushUser?.canScreenshot != true;
 
     if (Platform.isIOS) {
       try {

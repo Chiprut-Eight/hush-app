@@ -229,11 +229,12 @@ class _HushAppState extends State<HushApp> {
     );
   }
 
-  /// Apply screenshot prevention policy based on admin status
+  /// Apply screenshot prevention policy based on admin/tester status
   void _applyScreenshotPolicy(AuthProvider auth) {
     if (auth.isAuthenticated && auth.firebaseUser != null) {
       final isAdmin = auth.firebaseUser!.uid == _adminUid;
-      if (isAdmin) {
+      final canScreenshot = auth.hushUser?.canScreenshot == true;
+      if (isAdmin || canScreenshot) {
         _screenshotChannel.invokeMethod('disableScreenshotPrevention');
       } else {
         _screenshotChannel.invokeMethod('enableScreenshotPrevention');

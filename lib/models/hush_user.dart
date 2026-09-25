@@ -37,6 +37,7 @@ class HushUser {
   
   // Admin System
   final bool isAdmin;
+  final bool canScreenshot;
   // Settings - Audio & Notifications
   final bool appSoundsMuted;
   final bool notificationsEnabled;
@@ -73,6 +74,7 @@ class HushUser {
     this.followerIds = const [],
     this.fcmToken,
     this.isAdmin = false,
+    this.canScreenshot = false,
     this.appSoundsMuted = false,
     this.notificationsEnabled = true,
     this.notifyNewFollowerSecrets = true,
@@ -111,6 +113,7 @@ class HushUser {
       searchName: data['searchName'] ?? '',
       fcmToken: data['fcmToken'],
       isAdmin: data['isAdmin'] == true || data['isAdmin'] == 'true',
+      canScreenshot: data['canScreenshot'] == true,
       appSoundsMuted: data['appSoundsMuted'] ?? false,
       notificationsEnabled: data['notificationsEnabled'] ?? true,
       notifyNewFollowerSecrets: data['notifyNewFollowerSecrets'] ?? true,
@@ -147,6 +150,7 @@ class HushUser {
     'searchName': searchName,
     'fcmToken': fcmToken,
     'isAdmin': isAdmin,
+    'canScreenshot': canScreenshot,
     'appSoundsMuted': appSoundsMuted,
     'notificationsEnabled': notificationsEnabled,
     'notifyNewFollowerSecrets': notifyNewFollowerSecrets,

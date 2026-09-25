@@ -1027,15 +1027,17 @@ class _SecretCardState extends State<SecretCard> {
                           ),
                           Row(
                             children: [
-                              // --- REPORT BUTTON ---
+                              // --- REPORT BUTTON (hidden for own secrets) ---
+                              if (!isOwner)
                               GestureDetector(
                                 onTap: _revealed ? () async {
                                   if (widget.onInteractionStart != null) widget.onInteractionStart!();
                                   await _showReportDialog(context, l10n);
                                   if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
                                 } : null,
-                                child: HushIcon(HushIcons.flag, size: 18, color: (_revealed || isOwner) ? HushColors.tierRed : HushColors.tierRed.withValues(alpha: 0.3)),
+                                child: HushIcon(HushIcons.flag, size: 18, color: _revealed ? HushColors.tierRed : HushColors.tierRed.withValues(alpha: 0.3)),
                               ),
+                              if (!isOwner)
                               const SizedBox(width: 16),
                               GestureDetector(
                                 onTap: (_revealed && !_savingInProgress) ? () async {

@@ -183,7 +183,11 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           }
         });
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Recording failed: $e')));
+        final isHe = Localizations.localeOf(context).languageCode == 'he';
+        final message = isHe
+            ? 'לא ניתן להקליט בזמן שיחה'
+            : 'Cannot record during a phone call';
+        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
       }
     }
   }
@@ -373,18 +377,25 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
                 const SizedBox(height: 12),
 
-                // Submit button
-                SizedBox(
-                  height: 56,
-                  child: ElevatedButton.icon(
-                    onPressed: _canSubmit() ? _publishSecret : null,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: HushColors.textAccent,
-                      disabledBackgroundColor: HushColors.textAccent.withValues(alpha: 0.3),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                    ),
-                    icon: const Icon(Icons.place, color: Colors.white, size: 22),
-                    label: Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                // Submit button - appears with animation when content is ready
+                AnimatedSize(
+                  duration: const Duration(milliseconds: 350),
+                  curve: Curves.easeOutCubic,
+                  child: AnimatedOpacity(
+                    duration: const Duration(milliseconds: 300),
+                    opacity: _canSubmit() ? 1.0 : 0.0,
+                    child: _canSubmit() ? SizedBox(
+                      height: 56,
+                      child: ElevatedButton.icon(
+                        onPressed: _publishSecret,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: HushColors.textAccent,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        ),
+                        icon: const Icon(Icons.place, color: Colors.white, size: 22),
+                        label: Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
+                      ),
+                    ) : const SizedBox.shrink(),
                   ),
                 ),
 

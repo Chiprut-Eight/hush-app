@@ -31,7 +31,7 @@ class SettingsScreen extends StatelessWidget {
               children: [
                 SwitchListTile(
                   title: Text(AppLocalizations.of(context)!.muteAppSoundsTitle),
-                  subtitle: Text(AppLocalizations.of(context)!.muteAppSoundsSub),
+                  subtitle: Text(AppLocalizations.of(context)!.muteAppSoundsSub, style: const TextStyle(fontSize: 12)),
                   secondary: const Icon(Icons.volume_off_outlined, color: HushColors.textAccent),
                   activeThumbColor: HushColors.textAccent,
                   value: user.appSoundsMuted,
@@ -44,7 +44,7 @@ class SettingsScreen extends StatelessWidget {
                 ),
                 ListTile(
                   title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle),
-                  subtitle: Text(AppLocalizations.of(context)!.notificationsSettingsSub),
+                  subtitle: Text(AppLocalizations.of(context)!.notificationsSettingsSub, style: const TextStyle(fontSize: 12)),
                   leading: const Icon(Icons.notifications_active_outlined, color: HushColors.textAccent),
                   trailing: const Icon(Icons.chevron_right),
                   onTap: () {

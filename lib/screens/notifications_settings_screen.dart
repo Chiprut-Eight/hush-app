@@ -31,7 +31,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                 // Master Switch
                 SwitchListTile(
                   title: Text(AppLocalizations.of(context)!.enableNotificationsTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-                  subtitle: Text(AppLocalizations.of(context)!.enableNotificationsSub),
+                  subtitle: Text(AppLocalizations.of(context)!.enableNotificationsSub, style: const TextStyle(fontSize: 12)),
                   activeThumbColor: HushColors.textAccent,
                   value: user.notificationsEnabled,
                   onChanged: (value) {
@@ -54,7 +54,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                       children: [
                         SwitchListTile(
                           title: Text(AppLocalizations.of(context)!.notifyNewFollowerSecretsTitle),
-                          subtitle: Text(AppLocalizations.of(context)!.notifyNewFollowerSecretsSub),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyNewFollowerSecretsSub, style: const TextStyle(fontSize: 12)),
                           activeThumbColor: HushColors.textAccent,
                           value: user.notifyNewFollowerSecrets,
                           onChanged: (value) {
@@ -66,7 +66,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                         ),
                         SwitchListTile(
                           title: Text(AppLocalizations.of(context)!.notifyGroupUnlocksTitle),
-                          subtitle: Text(AppLocalizations.of(context)!.notifyGroupUnlocksSub),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyGroupUnlocksSub, style: const TextStyle(fontSize: 12)),
                           activeThumbColor: HushColors.textAccent,
                           value: user.notifyGroupUnlocks,
                           onChanged: (value) {
@@ -78,7 +78,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                         ),
                         SwitchListTile(
                           title: Text(AppLocalizations.of(context)!.notifyNewFollowerTitle),
-                          subtitle: Text(AppLocalizations.of(context)!.notifyNewFollowerSub),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyNewFollowerSub, style: const TextStyle(fontSize: 12)),
                           activeThumbColor: HushColors.textAccent,
                           value: user.notifyNewFollower,
                           onChanged: (value) {
@@ -90,7 +90,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                         ),
                         SwitchListTile(
                           title: Text(AppLocalizations.of(context)!.notifyInteractionsTitle),
-                          subtitle: Text(AppLocalizations.of(context)!.notifyInteractionsSub),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyInteractionsSub, style: const TextStyle(fontSize: 12)),
                           activeThumbColor: HushColors.textAccent,
                           value: user.notifyInteractions,
                           onChanged: (value) {

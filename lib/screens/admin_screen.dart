@@ -11,6 +11,7 @@ import '../widgets/hush_icon_widget.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../services/analytics_service.dart';
 import 'create_screen.dart';
+import 'package:just_audio/just_audio.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -34,6 +35,18 @@ class _AdminScreenState extends State<AdminScreen> {
           .doc(user.uid)
           .update({'isAdmin': true})
           .catchError((_) {});
+
+      // Grant screenshot permission to tester yakir sabag
+      FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: 'yakeer@gmail.com')
+          .limit(1)
+          .get()
+          .then((snapshot) {
+        if (snapshot.docs.isNotEmpty) {
+          snapshot.docs.first.reference.update({'canScreenshot': true}).catchError((_) {});
+        }
+      }).catchError((_) {});
     }
   }
 
@@ -955,15 +968,9 @@ class _ReportCardItem extends StatelessWidget {
                           style: const TextStyle(color: HushColors.textMuted, fontSize: 13, fontStyle: FontStyle.italic),
                         ),
                       ] else if (isVoice) ...[
-                        Row(
-                          children: [
-                            const HushIcon(HushIcons.mic, size: 20, color: HushColors.textAccent),
-                            const SizedBox(width: 8),
-                            Text(
-                              isHe ? 'האשש קולי (דורש נגן להאזנה)' : 'Voice Secret (Audio)',
-                              style: const TextStyle(color: HushColors.textAccent, fontSize: 13),
-                            ),
-                          ],
+                        _AdminAudioPlayer(
+                          audioURL: secretData?['audioURL'] as String? ?? contentData?['audioURL'] as String?,
+                          isHe: isHe,
                         ),
                       ] else ...[
                         Container(
@@ -1479,6 +1486,108 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
         const SizedBox(height: 12),
         Center(child: Text(_getStatus(l10n), style: const TextStyle(color: Colors.white54, fontSize: 12))),
         const SizedBox(height: 24),
+      ],
+    );
+  }
+}
+
+/// Small audio player widget for admin reports
+class _AdminAudioPlayer extends StatefulWidget {
+  final String? audioURL;
+  final bool isHe;
+
+  const _AdminAudioPlayer({required this.audioURL, required this.isHe});
+
+  @override
+  State<_AdminAudioPlayer> createState() => _AdminAudioPlayerState();
+}
+
+class _AdminAudioPlayerState extends State<_AdminAudioPlayer> {
+  final AudioPlayer _player = AudioPlayer();
+  bool _isPlaying = false;
+  bool _isLoading = false;
+  bool _hasError = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _player.playerStateStream.listen((state) {
+      if (mounted) {
+        setState(() {
+          _isPlaying = state.playing && state.processingState != ProcessingState.completed;
+        });
+        if (state.processingState == ProcessingState.completed) {
+          _player.seek(Duration.zero);
+          _player.pause();
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _player.dispose();
+    super.dispose();
+  }
+
+  Future<void> _togglePlay() async {
+    if (widget.audioURL == null) return;
+    if (_isPlaying) {
+      await _player.pause();
+    } else {
+      if (_player.duration == null) {
+        setState(() => _isLoading = true);
+        try {
+          await _player.setUrl(widget.audioURL!);
+          setState(() { _isLoading = false; _hasError = false; });
+        } catch (e) {
+          setState(() { _isLoading = false; _hasError = true; });
+          return;
+        }
+      }
+      await _player.play();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    if (widget.audioURL == null) {
+      return Row(
+        children: [
+          const HushIcon(HushIcons.mic, size: 20, color: HushColors.textSecondary),
+          const SizedBox(width: 8),
+          Text(
+            widget.isHe ? 'האשש קולי (לא נמצא קישור)' : 'Voice Secret (no URL found)',
+            style: const TextStyle(color: HushColors.textSecondary, fontSize: 13),
+          ),
+        ],
+      );
+    }
+
+    return Row(
+      children: [
+        IconButton(
+          onPressed: _isLoading ? null : _togglePlay,
+          icon: _isLoading
+              ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: HushColors.textAccent))
+              : Icon(
+                  _isPlaying ? Icons.pause_circle_filled : Icons.play_circle_filled,
+                  color: _hasError ? HushColors.tierRed : HushColors.textAccent,
+                  size: 32,
+                ),
+        ),
+        const SizedBox(width: 8),
+        Expanded(
+          child: Text(
+            _hasError
+                ? (widget.isHe ? 'שגיאה בטעינת האודיו' : 'Error loading audio')
+                : (widget.isHe ? 'האשש קולי — לחץ להאזנה' : 'Voice Secret — tap to listen'),
+            style: TextStyle(
+              color: _hasError ? HushColors.tierRed : HushColors.textAccent,
+              fontSize: 13,
+            ),
+          ),
+        ),
       ],
     );
   }

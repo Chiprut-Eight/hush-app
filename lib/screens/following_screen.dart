@@ -171,7 +171,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
           trailing: ElevatedButton(
             onPressed: () => _toggleFollow(user),
             style: ElevatedButton.styleFrom(
-              backgroundColor: isFollowing ? Colors.transparent : HushColors.textAccent,
+              backgroundColor: isFollowing ? Colors.transparent : const Color(0xFF1565C0),
               side: isFollowing ? const BorderSide(color: HushColors.textAccent) : null,
             ),
             child: Text(isFollowing ? l10n.unfollowBtn : l10n.followBtn, style: TextStyle(color: isFollowing ? HushColors.textAccent : Colors.white)),
