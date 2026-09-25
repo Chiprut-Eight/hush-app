@@ -653,7 +653,7 @@ class _SecretCardState extends State<SecretCard> {
                                               ],
                                               if (currentUser?.uid != c['userId'])
                                                 ListTile(
-                                                  leading: const HushIcon(HushIcons.alert, color: HushColors.tierRed),
+                                                  leading: const HushIcon(HushIcons.warning, color: HushColors.tierRed),
                                                   title: Text(l10n.reportTitle, style: const TextStyle(color: HushColors.tierRed)),
                                                   onTap: () {
                                                     Navigator.pop(menuCtx);
