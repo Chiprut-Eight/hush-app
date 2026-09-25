@@ -1431,8 +1431,8 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
                   builder: (context) => Scaffold(
                     appBar: AppBar(title: Text(isHe ? 'יצירת סוד מרוחק' : 'Remote Secret')),
                     body: const CreateScreen(
-                      targetLat: 32.1691,
-                      targetLng: 35.0163,
+                      targetLat: 32.16596,
+                      targetLng: 35.02130,
                     ),
                   ),
                 ),
