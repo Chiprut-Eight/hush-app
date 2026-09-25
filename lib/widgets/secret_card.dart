@@ -43,7 +43,9 @@ class SecretCard extends StatefulWidget {
   State<SecretCard> createState() => _SecretCardState();
 }
 
-class _SecretCardState extends State<SecretCard> {
+class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMixin {
+  @override
+  bool get wantKeepAlive => true;
   final SecretService _secretService = SecretService();
   final AudioService _audioService = AudioService();
   final AudioPlayer _audioPlayer = AudioPlayer();
@@ -90,6 +92,14 @@ class _SecretCardState extends State<SecretCard> {
     final currentUser = authProvider.firebaseUser;
     final hushUser = authProvider.hushUser;
     
+    // Auto-reveal immediately for creators OR if already unlocked OR if saved
+    bool isSavedInitial = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
+    if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSavedInitial) {
+      if (!_revealed && !_isRevealLoading) {
+        _fetchContentFromServer();
+      }
+    }
+
     // Start live secret data stream
     _secretDocSubscription = _secretService
         .getSecretStream(_currentSecret.id)
@@ -857,6 +867,7 @@ class _SecretCardState extends State<SecretCard> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     final currentUser = context.read<AuthProvider>().firebaseUser;
     final hushUser = context.read<AuthProvider>().hushUser;
     
