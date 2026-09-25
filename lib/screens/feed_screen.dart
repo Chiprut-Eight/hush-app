@@ -8,6 +8,7 @@ import '../services/secret_service.dart';
 import '../services/geo_service.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/secret_card.dart';
+import '../widgets/skeleton_card.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
@@ -21,10 +22,10 @@ class FeedScreen extends StatefulWidget {
   const FeedScreen({super.key, this.scaffoldKey});
 
   @override
-  State<FeedScreen> createState() => _FeedScreenState();
+  State<FeedScreen> createState() => FeedScreenState();
 }
 
-class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
+class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   final SecretService _secretService = SecretService();
   List<Secret> _secrets = [];
   bool _isLoading = true;
@@ -157,6 +158,13 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     super.dispose();
   }
 
+  Future<void> refreshFeed() async {
+    if (mounted) {
+      setState(() => _isLoading = true);
+      await _fetchSecrets();
+    }
+  }
+
   Future<void> _fetchSecrets({bool silent = false}) async {
     // Get current user info before any async gaps
     final authProvider = context.read<AuthProvider>();
@@ -272,13 +280,9 @@ class _FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
 
   Widget _buildBodyContent(AppLocalizations l10n) {
     if (_isLoading) {
-      return ListView(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.7,
-            child: const Center(child: CircularProgressIndicator(color: HushColors.textAccent)),
-          ),
-        ],
+      return ListView.builder(
+        itemCount: 4,
+        itemBuilder: (context, index) => const SkeletonCard(),
       );
     }
 

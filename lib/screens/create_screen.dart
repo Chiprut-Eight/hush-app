@@ -44,6 +44,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   final TextEditingController _textController = TextEditingController();
 
   bool _isRecording = false;
+  bool _isPublishing = false;
   String? _recordedFilePath;
   int _recordingDurationSeconds = 0;
   bool _isPlayingPreview = false;
@@ -211,13 +212,17 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   }
 
   bool _canSubmit() {
+    if (_isPublishing) return false;
     if (_activeTab == 0) return _textController.text.trim().isNotEmpty && _textController.text.length <= 140;
     if (_activeTab == 1) return _recordedFilePath != null;
     return false;
   }
 
   Future<void> _publishSecret() async {
-    if (!_canSubmit()) return;
+    if (!_canSubmit() || _isPublishing) return;
+    HapticFeedback.heavyImpact();
+
+    setState(() => _isPublishing = true);
 
     final tierLevel = context.read<AuthProvider>().hushUser?.tierLevel ?? 1;
 
@@ -241,31 +246,16 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       try {
         position = await Geolocator.getCurrentPosition();
       } catch (e) {
-        if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.cancel}: $e')));
+        if (mounted) {
+          setState(() => _isPublishing = false);
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${AppLocalizations.of(context)!.cancel}: $e')));
+        }
         return;
       }
     }
 
-    // Immediately navigate to feed and show snackbar
-    if (!mounted) return;
-    FocusScope.of(context).unfocus();
-    _discardRecording();
-    _textController.clear();
-    setState(() => _secretType = 'regular');
-    if (widget.onPublished != null) widget.onPublished!();
-
-    // Show "on the way" snackbar
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.secretOnTheWay),
-          duration: const Duration(seconds: 2),
-        ),
-      );
-    }
-
-    // Publish in background (fire-and-forget)
-    _publishInBackground(
+    // AWAIT the publish to ensure the backend saves it before we navigate to Feed
+    await _publishInBackground(
       contentType: contentType,
       secretType: secretType,
       textContent: textContent,
@@ -277,6 +267,27 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       requiredUsers: requiredU,
       timeWindowMinutes: timeWindow,
     );
+
+    if (!mounted) return;
+
+    setState(() {
+      _isPublishing = false;
+      _secretType = 'regular';
+    });
+
+    FocusScope.of(context).unfocus();
+    _discardRecording();
+    _textController.clear();
+
+    // Show "on the way" snackbar
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(AppLocalizations.of(context)!.secretOnTheWay),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    if (widget.onPublished != null) widget.onPublished!();
   }
 
   Future<void> _publishInBackground({
@@ -650,7 +661,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
         opacity: _canSubmit() ? 1.0 : 0.0,
-        child: _canSubmit()
+        child: _canSubmit() || _isPublishing
             ? Padding(
                 padding: margin ?? EdgeInsets.zero,
                 child: SizedBox(
@@ -667,9 +678,11 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                     ),
-                    icon: const Icon(Icons.place, color: Colors.white, size: 20),
+                    icon: _isPublishing
+                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        : const Icon(Icons.place, color: Colors.white, size: 20),
                     label: Text(
-                      l10n.hideSecretAction,
+                      _isPublishing ? '...' : l10n.hideSecretAction,
                       style: const TextStyle(
                         fontSize: 15,
                         color: Colors.white,

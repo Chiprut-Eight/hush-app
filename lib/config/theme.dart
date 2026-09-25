@@ -106,6 +106,8 @@ ThemeData hushDarkTheme() {
       backgroundColor: HushColors.bgPrimary,
       foregroundColor: HushColors.textPrimary,
       elevation: 0,
+      scrolledUnderElevation: 4,
+      surfaceTintColor: HushColors.bgSecondary,
       centerTitle: true,
       titleTextStyle: GoogleFonts.inter(
         fontSize: 20,
@@ -158,6 +160,16 @@ ThemeData hushDarkTheme() {
       color: HushColors.borderSubtle,
       thickness: 1,
     ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: HushColors.bgSecondary,
+      contentTextStyle: GoogleFonts.inter(color: HushColors.textPrimary, fontSize: 14),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+        side: const BorderSide(color: HushColors.borderSubtle),
+      ),
+      elevation: 4,
+    ),
   );
 }
 
@@ -183,6 +195,8 @@ ThemeData hushLightTheme() {
       backgroundColor: HushColors.bgPrimaryLight,
       foregroundColor: HushColors.textPrimaryLight,
       elevation: 0,
+      scrolledUnderElevation: 4,
+      surfaceTintColor: HushColors.borderLightMode,
       centerTitle: true,
       titleTextStyle: GoogleFonts.inter(
         fontSize: 20,
@@ -235,6 +249,13 @@ ThemeData hushLightTheme() {
     dividerTheme: const DividerThemeData(
       color: HushColors.borderLightMode,
       thickness: 1,
+    ),
+    snackBarTheme: SnackBarThemeData(
+      behavior: SnackBarBehavior.floating,
+      backgroundColor: HushColors.textPrimaryLight,
+      contentTextStyle: GoogleFonts.inter(color: Colors.white, fontSize: 14),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      elevation: 4,
     ),
   );
 }

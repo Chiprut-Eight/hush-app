@@ -146,6 +146,7 @@ class _SecretCardState extends State<SecretCard> {
       );
       
       if (result['success'] == true && mounted) {
+        HapticFeedback.mediumImpact();
         setState(() {
           _revealedTextContent = result['textContent'];
           _revealedAudioURL = result['audioURL'];
@@ -803,9 +804,9 @@ class _SecretCardState extends State<SecretCard> {
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: isDark ? const Color(0xFF1E2638).withValues(alpha: 0.6) : Colors.white.withValues(alpha: 0.85),
+          color: isDark ? HushColors.bgCard : HushColors.bgCardLight,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: isDark ? Colors.white.withValues(alpha: 0.1) : HushColors.borderLightMode, width: 1),
+          border: Border.all(color: isDark ? HushColors.borderSubtle : HushColors.borderLightMode, width: 1),
           boxShadow: [
             // Inner bright glow
             BoxShadow(

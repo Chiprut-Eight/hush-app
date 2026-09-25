@@ -39,6 +39,7 @@ class _AppShellState extends State<AppShell> {
   /// Separate scaffold keys because IndexedStack builds both screens simultaneously
   final GlobalKey<ScaffoldState> _feedScaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldState> _mapScaffoldKey = GlobalKey<ScaffoldState>();
+  final GlobalKey<FeedScreenState> _feedScreenKey = GlobalKey<FeedScreenState>();
 
   late final List<Widget> _screens;
   StreamSubscription<void>? _homeSub;
@@ -47,9 +48,12 @@ class _AppShellState extends State<AppShell> {
   void initState() {
     super.initState();
     _screens = [
-      FeedScreen(scaffoldKey: _feedScaffoldKey),
+      FeedScreen(key: _feedScreenKey, scaffoldKey: _feedScaffoldKey),
       MapScreen(scaffoldKey: _mapScaffoldKey),
-      CreateScreen(onPublished: () => setState(() => _currentIndex = 0)),
+      CreateScreen(onPublished: () {
+        setState(() => _currentIndex = 0);
+        _feedScreenKey.currentState?.refreshFeed();
+      }),
       const FollowingScreen(),
       const ProfileScreen(),
     ];
@@ -104,61 +108,83 @@ class _AppShellState extends State<AppShell> {
   void _showInvitePopup() {
     final l10n = AppLocalizations.of(context)!;
     
-    showDialog(
+    showModalBottomSheet(
       context: context,
-      barrierDismissible: false,
-      builder: (ctx) => AlertDialog(
-        backgroundColor: HushColors.bgCard,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Row(
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => Container(
+        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
+        decoration: const BoxDecoration(
+          color: HushColors.bgCard,
+          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.favorite, color: HushColors.tierRed),
-            const SizedBox(width: 8),
-            Expanded(
-              child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+            Container(
+              width: 40,
+              height: 4,
+              margin: const EdgeInsets.only(bottom: 24),
+              decoration: BoxDecoration(
+                color: HushColors.borderSubtle,
+                borderRadius: BorderRadius.circular(2),
+              ),
             ),
-            IconButton(
-              icon: const Icon(Icons.close, color: HushColors.textMuted),
-              onPressed: () {
-                if (ctx.mounted) Navigator.pop(ctx);
-              },
-              padding: EdgeInsets.zero,
-              constraints: const BoxConstraints(),
+            Row(
+              children: [
+                const Icon(Icons.favorite, color: HushColors.tierRed, size: 28),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                ),
+                IconButton(
+                  icon: const Icon(Icons.close, color: HushColors.textMuted),
+                  onPressed: () {
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              l10n.inviteMessage,
+              style: const TextStyle(color: HushColors.textSecondary, fontSize: 16),
+            ),
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                TextButton(
+                  onPressed: () async {
+                    final prefs = await SharedPreferences.getInstance();
+                    await prefs.setBool('hasSeenInvitePopup', true);
+                    AnalyticsService().logInvitePopupDismissed();
+                    if (ctx.mounted) Navigator.pop(ctx);
+                  },
+                  child: Text(l10n.dontShowAgain, style: const TextStyle(color: HushColors.textMuted)),
+                ),
+                ElevatedButton(
+                  onPressed: () async {
+                    final box = ctx.findRenderObject() as RenderBox?;
+                    final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+                    if (ctx.mounted) Navigator.pop(ctx);
+                    AnalyticsService().logInvitePopupAccepted();
+                    AnalyticsService().logShareApp('invite_popup');
+                    Future.delayed(const Duration(milliseconds: 300), () {
+                      Share.share(l10n.shareAppText, sharePositionOrigin: shareOrigin);
+                    });
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: HushColors.textAccent,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                  ),
+                  child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                ),
+              ],
             ),
           ],
         ),
-        content: Text(
-          l10n.inviteMessage,
-          style: const TextStyle(color: HushColors.textSecondary, fontSize: 14),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () async {
-              final prefs = await SharedPreferences.getInstance();
-              await prefs.setBool('hasSeenInvitePopup', true);
-              AnalyticsService().logInvitePopupDismissed();
-              if (ctx.mounted) Navigator.pop(ctx);
-            },
-            child: Text(l10n.dontShowAgain, style: const TextStyle(color: HushColors.textMuted)),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              final box = ctx.findRenderObject() as RenderBox?;
-              final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-              if (ctx.mounted) Navigator.pop(ctx);
-              AnalyticsService().logInvitePopupAccepted();
-              AnalyticsService().logShareApp('invite_popup');
-              Future.delayed(const Duration(milliseconds: 300), () {
-                Share.share(l10n.shareAppText, sharePositionOrigin: shareOrigin);
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: HushColors.textAccent,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-          ),
-        ],
       ),
     );
   }
@@ -234,6 +260,9 @@ class _AppShellState extends State<AppShell> {
               child: BottomNavigationBar(
                 currentIndex: _currentIndex,
                 onTap: (index) {
+                  if (_currentIndex != index) {
+                    HapticFeedback.lightImpact();
+                  }
                   setState(() => _currentIndex = index);
                   const tabNames = ['feed', 'map', 'create', 'following', 'profile'];
                   AnalyticsService().logTabChanged(tabNames[index]);
