@@ -369,36 +369,18 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Content Area (text or voice)
-                if (_activeTab == 0) _buildTextTab(l10n) else _buildVoiceTab(l10n),
-
-                const SizedBox(height: 16),
-
-                // GPS Accuracy Indicator
-                _buildGpsAccuracyIndicator(l10n),
-
-                const SizedBox(height: 12),
-
-                // Submit button - appears with animation when content is ready
-                AnimatedSize(
-                  duration: const Duration(milliseconds: 350),
-                  curve: Curves.easeOutCubic,
-                  child: AnimatedOpacity(
-                    duration: const Duration(milliseconds: 300),
-                    opacity: _canSubmit() ? 1.0 : 0.0,
-                    child: _canSubmit() ? SizedBox(
-                      height: 56,
-                      child: ElevatedButton.icon(
-                        onPressed: _publishSecret,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: HushColors.textAccent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        ),
-                        icon: const Icon(Icons.place, color: Colors.white, size: 22),
-                        label: Text(l10n.hideSecretAction, style: const TextStyle(fontSize: 18, color: Colors.white, fontWeight: FontWeight.bold)),
-                      ),
-                    ) : const SizedBox.shrink(),
-                  ),
-                ),
+                if (_activeTab == 0) ...[
+                  // For text tab: Submit button appears ABOVE the text field so it's not hidden by keyboard
+                  _buildSubmitButton(l10n, margin: const EdgeInsets.only(bottom: 12)),
+                  _buildTextTab(l10n),
+                  const SizedBox(height: 12),
+                  _buildGpsAccuracyIndicator(l10n),
+                ] else ...[
+                  _buildVoiceTab(l10n),
+                  const SizedBox(height: 16),
+                  _buildGpsAccuracyIndicator(l10n),
+                  _buildSubmitButton(l10n, margin: const EdgeInsets.only(top: 12)),
+                ],
 
                 const SizedBox(height: 24),
 
@@ -658,6 +640,48 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         const SizedBox(width: 8),
         Text(label, style: TextStyle(color: indicatorColor, fontSize: 13, fontWeight: FontWeight.w500)),
       ],
+    );
+  }
+
+  Widget _buildSubmitButton(AppLocalizations l10n, {EdgeInsetsGeometry? margin}) {
+    return AnimatedSize(
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeOutCubic,
+      child: AnimatedOpacity(
+        duration: const Duration(milliseconds: 300),
+        opacity: _canSubmit() ? 1.0 : 0.0,
+        child: _canSubmit()
+            ? Padding(
+                padding: margin ?? EdgeInsets.zero,
+                child: SizedBox(
+                  height: 46,
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _publishSecret,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color(0xFF1565C0),
+                      foregroundColor: Colors.white,
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                    ),
+                    icon: const Icon(Icons.place, color: Colors.white, size: 20),
+                    label: Text(
+                      l10n.hideSecretAction,
+                      style: const TextStyle(
+                        fontSize: 15,
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 0.3,
+                      ),
+                    ),
+                  ),
+                ),
+              )
+            : const SizedBox.shrink(),
+      ),
     );
   }
 
