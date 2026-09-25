@@ -438,6 +438,78 @@ class _SecretCardState extends State<SecretCard> {
     );
   }
 
+  /// Show report comment dialog
+  Future<void> _showReportCommentDialog(BuildContext context, AppLocalizations l10n, String commentId) async {
+    String? selectedReason;
+    await showDialog(
+      context: context,
+      builder: (ctx) {
+        return StatefulBuilder(builder: (ctx, setDialogState) {
+          final reasons = [
+            l10n.reportReasonHate,
+            l10n.reportReasonSpam,
+            l10n.reportReasonHarassment,
+            l10n.reportReasonViolence,
+            l10n.reportReasonOther,
+          ];
+          return AlertDialog(
+            backgroundColor: HushColors.bgCard,
+            title: Text(l10n.reportTitle, style: const TextStyle(color: Colors.white)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(l10n.reportReason, style: const TextStyle(color: HushColors.textSecondary)),
+                const SizedBox(height: 12),
+                ...reasons.map((reason) => GestureDetector(
+                  onTap: () => setDialogState(() => selectedReason = reason),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(vertical: 8),
+                    child: Row(
+                      children: [
+                        Icon(
+                          selectedReason == reason ? Icons.check_circle : Icons.circle_outlined,
+                          color: selectedReason == reason ? HushColors.textAccent : HushColors.textSecondary,
+                          size: 20,
+                        ),
+                        const SizedBox(width: 12),
+                        Text(reason, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                      ],
+                    ),
+                  ),
+                )),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l10n.cancel, style: const TextStyle(color: HushColors.textSecondary)),
+              ),
+              ElevatedButton(
+                onPressed: selectedReason == null ? null : () async {
+                  final messenger = ScaffoldMessenger.of(context);
+                  await _secretService.reportCommentWithDetails(
+                    _currentSecret.id,
+                    commentId,
+                    selectedReason!,
+                  );
+                  if (ctx.mounted) Navigator.pop(ctx);
+                  if (mounted) {
+                    messenger.showSnackBar(
+                      SnackBar(content: Text(l10n.reportSuccess)),
+                    );
+                  }
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
+                child: Text(l10n.reportConfirm, style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        });
+      },
+    );
+  }
+
   /// Show delete confirmation
   Future<void> _showDeleteConfirmation(BuildContext context, AppLocalizations l10n) async {
     await showDialog(
@@ -482,6 +554,7 @@ class _SecretCardState extends State<SecretCard> {
     String? editingCommentId;
     String? replyingToUserId;
     String? replyingToUserName;
+    bool isSubmitting = false;
     final currentUser = context.read<AuthProvider>().firebaseUser;
     
     await showModalBottomSheet(
@@ -578,6 +651,15 @@ class _SecretCardState extends State<SecretCard> {
                                                   },
                                                 ),
                                               ],
+                                              if (currentUser?.uid != c['userId'])
+                                                ListTile(
+                                                  leading: const HushIcon(HushIcons.alert, color: HushColors.tierRed),
+                                                  title: Text(l10n.reportTitle, style: const TextStyle(color: HushColors.tierRed)),
+                                                  onTap: () {
+                                                    Navigator.pop(menuCtx);
+                                                    _showReportCommentDialog(context, l10n, c['id']);
+                                                  },
+                                                ),
                                               ListTile(
                                                 leading: const HushIcon(HushIcons.comment, color: Colors.white),
                                                 title: Text(l10n.replyComment, style: const TextStyle(color: Colors.white)),
@@ -711,38 +793,48 @@ class _SecretCardState extends State<SecretCard> {
                                 ),
                                 const SizedBox(width: 8),
                                 IconButton(
-                                  icon: HushIcon(editingCommentId != null ? HushIcons.check : HushIcons.send, size: 20, color: HushColors.textAccent),
-                                  onPressed: () async {
+                                  icon: isSubmitting
+                                      ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: HushColors.textAccent, strokeWidth: 2))
+                                      : HushIcon(editingCommentId != null ? HushIcons.check : HushIcons.send, size: 20, color: HushColors.textAccent),
+                                  onPressed: isSubmitting ? null : () async {
                                     final text = commentController.text.trim();
                                     if (text.isEmpty) return;
                                     
-                                    if (editingCommentId != null) {
-                                      await _secretService.editComment(_currentSecret.id, editingCommentId!, text);
-                                      AnalyticsService().logCommentEdited(_currentSecret.id);
-                                      if (ctx.mounted) {
-                                        setSheetState(() {
-                                          editingCommentId = null;
-                                          commentController.clear();
-                                        });
-                                      }
-                                    } else {
-                                      await _secretService.addComment(
-                                        _currentSecret.id, 
-                                        text,
-                                        replyToUserId: replyingToUserId,
-                                        replyToUserName: replyingToUserName,
-                                      );
-                                      if (replyingToUserId != null) {
-                                        AnalyticsService().logCommentReplied(_currentSecret.id);
+                                    setSheetState(() => isSubmitting = true);
+                                    
+                                    try {
+                                      if (editingCommentId != null) {
+                                        await _secretService.editComment(_currentSecret.id, editingCommentId!, text);
+                                        AnalyticsService().logCommentEdited(_currentSecret.id);
+                                        if (ctx.mounted) {
+                                          setSheetState(() {
+                                            editingCommentId = null;
+                                            commentController.clear();
+                                          });
+                                        }
                                       } else {
-                                        AnalyticsService().logCommentAdded(_currentSecret.id);
+                                        await _secretService.addComment(
+                                          _currentSecret.id, 
+                                          text,
+                                          replyToUserId: replyingToUserId,
+                                          replyToUserName: replyingToUserName,
+                                        );
+                                        if (replyingToUserId != null) {
+                                          AnalyticsService().logCommentReplied(_currentSecret.id);
+                                        } else {
+                                          AnalyticsService().logCommentAdded(_currentSecret.id);
+                                        }
+                                        if (ctx.mounted) {
+                                          setSheetState(() {
+                                            replyingToUserId = null;
+                                            replyingToUserName = null;
+                                            commentController.clear();
+                                          });
+                                        }
                                       }
+                                    } finally {
                                       if (ctx.mounted) {
-                                        setSheetState(() {
-                                          replyingToUserId = null;
-                                          replyingToUserName = null;
-                                          commentController.clear();
-                                        });
+                                        setSheetState(() => isSubmitting = false);
                                       }
                                     }
                                   },

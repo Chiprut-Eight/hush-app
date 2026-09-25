@@ -334,6 +334,61 @@ class SecretService {
     });
   }
 
+  /// Report a comment with details — creates a report document
+  Future<void> reportCommentWithDetails(String secretId, String commentId, String reason) async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    // Fetch comment metadata
+    String? creatorId;
+    String? creatorName;
+    String? textContent;
+    try {
+      final commentSnap = await _secretsRef.doc(secretId).collection('comments').doc(commentId).get();
+      if (commentSnap.exists) {
+        final cData = commentSnap.data();
+        creatorId = cData?['userId'] as String?;
+        creatorName = cData?['userName'] as String?;
+        textContent = cData?['text'] as String?;
+      }
+    } catch (_) {}
+
+    // Get reporter email/name
+    String? reporterEmail = user.email;
+    String? reporterName = user.displayName;
+    try {
+      final reporterDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (reporterDoc.exists) {
+        final rData = reporterDoc.data();
+        if (reporterEmail == null || reporterEmail.isEmpty) {
+          reporterEmail = rData?['email'] as String?;
+        }
+        final firstName = rData?['firstName'] as String? ?? '';
+        final lastName = rData?['lastName'] as String? ?? '';
+        final fullName = '$firstName $lastName'.trim();
+        if (fullName.isNotEmpty) {
+          reporterName = fullName;
+        }
+      }
+    } catch (_) {}
+
+    // Create a comprehensive report document
+    await _firestore.collection('reports').add({
+      'secretId': secretId,
+      'commentId': commentId,
+      'reporterId': user.uid,
+      'reporterName': reporterName ?? 'Anonymous',
+      'reporterEmail': reporterEmail ?? '',
+      'creatorId': creatorId ?? '',
+      'creatorName': creatorName ?? 'Unknown Creator',
+      'secretType': 'comment',
+      'reportedContent': textContent ?? '',
+      'reason': reason,
+      'status': 'pending',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
+  }
+
   /// Submit an appeal for ghost mode
   Future<void> submitAppeal(String reason) async {
     final user = _auth.currentUser;

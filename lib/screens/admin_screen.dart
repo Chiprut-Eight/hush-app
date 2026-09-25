@@ -535,6 +535,7 @@ class _ReportCardItem extends StatelessWidget {
     String creatorName,
     String creatorEmail,
     String reporterName,
+    {String? commentId}
   ) async {
     final isHe = Localizations.localeOf(context).languageCode == 'he';
 
@@ -550,6 +551,8 @@ class _ReportCardItem extends StatelessWidget {
       return;
     }
 
+    final isComment = commentId != null && commentId.isNotEmpty;
+
     // Show duration picker modal
     final duration = await showDialog<int>(
       context: context,
@@ -557,7 +560,9 @@ class _ReportCardItem extends StatelessWidget {
         backgroundColor: HushColors.bgCard,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         title: Text(
-          isHe ? '🗑️ מחיקת האשש וענישת יוצר' : '🗑️ Delete Secret & Punish Creator',
+          isHe 
+              ? (isComment ? '🗑️ מחיקת תגובה וענישת יוצר' : '🗑️ מחיקת האשש וענישת יוצר')
+              : (isComment ? '🗑️ Delete Comment & Punish Creator' : '🗑️ Delete Secret & Punish Creator'),
           style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
         ),
         content: Column(
@@ -576,8 +581,8 @@ class _ReportCardItem extends StatelessWidget {
                 children: [
                   Text(
                     isHe
-                        ? 'פעולה זו תמחק לצמיתות את ההאשש ותעביר את היוצר למצב רפאים:'
-                        : 'This will permanently delete the secret and put the creator in Ghost Mode:',
+                        ? (isComment ? 'פעולה זו תמחק לצמיתות את התגובה ותעביר את היוצר למצב רפאים:' : 'פעולה זו תמחק לצמיתות את ההאשש ותעביר את היוצר למצב רפאים:')
+                        : (isComment ? 'This will permanently delete the comment and put the creator in Ghost Mode:' : 'This will permanently delete the secret and put the creator in Ghost Mode:'),
                     style: const TextStyle(color: Colors.white70, fontSize: 13),
                   ),
                   const SizedBox(height: 6),
@@ -644,18 +649,30 @@ class _ReportCardItem extends StatelessWidget {
     // 1. Mark report as actioned
     await reportDoc.reference.update({'status': 'actioned'});
 
-    // 2. Delete secret document & subcollection
+    // 2. Delete secret or comment
     if (secretId.isNotEmpty) {
-      try {
-        await FirebaseFirestore.instance
-            .collection('secrets')
-            .doc(secretId)
-            .collection('content')
-            .doc('data')
-            .delete();
-      } catch (_) {}
-      await FirebaseFirestore.instance.collection('secrets').doc(secretId).delete();
-      AnalyticsService().logAdminReportDecision(reportId: reportDoc.id, secretId: secretId, deleted: true);
+      if (isComment) {
+        try {
+          await FirebaseFirestore.instance
+              .collection('secrets')
+              .doc(secretId)
+              .collection('comments')
+              .doc(commentId)
+              .delete();
+          AnalyticsService().logAdminReportDecision(reportId: reportDoc.id, secretId: secretId, deleted: true);
+        } catch (_) {}
+      } else {
+        try {
+          await FirebaseFirestore.instance
+              .collection('secrets')
+              .doc(secretId)
+              .collection('content')
+              .doc('data')
+              .delete();
+        } catch (_) {}
+        await FirebaseFirestore.instance.collection('secrets').doc(secretId).delete();
+        AnalyticsService().logAdminReportDecision(reportId: reportDoc.id, secretId: secretId, deleted: true);
+      }
     }
 
     // 3. Put ONLY the creator into Ghost Mode
@@ -790,6 +807,7 @@ class _ReportCardItem extends StatelessWidget {
 
         final date = (reportData['createdAt'] as Timestamp?)?.toDate();
         final secretId = reportData['secretId'] as String? ?? '';
+        final commentId = reportData['commentId'] as String?;
 
         // Resolved Creator Info
         final creatorId = reportData['creatorId'] as String? ?? secretData?['creatorId'] as String? ?? '';
@@ -1065,6 +1083,7 @@ class _ReportCardItem extends StatelessWidget {
                           creatorDisplayName,
                           creatorEmail,
                           reporterDisplayName,
+                          commentId: commentId,
                         ),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: HushColors.tierRed,

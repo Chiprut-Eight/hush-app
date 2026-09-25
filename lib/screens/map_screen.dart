@@ -159,6 +159,13 @@ class _MapScreenState extends State<MapScreen> {
         elevation: 0,
         centerTitle: false,
         automaticallyImplyLeading: false,
+        leading: Navigator.canPop(context) 
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                color: isDark ? Colors.white : HushColors.textPrimaryLight,
+                onPressed: () => Navigator.pop(context),
+              )
+            : null,
         actions: [
           IconButton(
             icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
