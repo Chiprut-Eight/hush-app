@@ -359,7 +359,7 @@ export const onNewComment = functions.firestore
           en: commentPreview || "New reply to your comment",
           he: commentPreview || "תגובה חדשה לתגובה שלך",
         },
-        { type: "comment", secretId }
+        { type: "comment", secretId, commentId }
       );
     }
 
@@ -375,7 +375,7 @@ export const onNewComment = functions.firestore
           en: commentPreview || "New comment on your Hushhh",
           he: commentPreview || "תגובה חדשה על ה-Hushhh שלך",
         },
-        { type: "comment", secretId }
+        { type: "comment", secretId, commentId }
       );
     }
   });

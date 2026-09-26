@@ -28,6 +28,8 @@ class SecretCard extends StatefulWidget {
   final VoidCallback? onDelete;
   final VoidCallback? onInteractionStart;
   final VoidCallback? onInteractionEnd;
+  final bool autoOpenComments;
+  final String? highlightCommentId;
 
   const SecretCard({
     super.key, 
@@ -37,6 +39,8 @@ class SecretCard extends StatefulWidget {
     this.onDelete,
     this.onInteractionStart,
     this.onInteractionEnd,
+    this.autoOpenComments = false,
+    this.highlightCommentId,
   });
 
   @override
@@ -82,6 +86,15 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     _currentSecret = widget.secret;
+
+    if (widget.autoOpenComments) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          final l10n = AppLocalizations.of(context)!;
+          _showCommentsSheet(context, l10n);
+        }
+      });
+    }
 
     // Default showWarning if highly downvoted or reported
     if (_currentSecret.dislikes > 3 && _currentSecret.dislikes > _currentSecret.likes) {
@@ -718,7 +731,11 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                       },
                                     );
                                   },
-                                  child: Padding(
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: c['id'] == widget.highlightCommentId ? HushColors.textAccent.withOpacity(0.2) : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
                                     padding: EdgeInsetsDirectional.only(
                                       start: isReply ? 32.0 : 0.0,
                                       top: 6.0,

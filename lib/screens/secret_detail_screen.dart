@@ -9,8 +9,15 @@ import '../widgets/secret_card.dart';
 
 class SecretDetailScreen extends StatefulWidget {
   final String secretId;
+  final bool openComments;
+  final String? highlightCommentId;
 
-  const SecretDetailScreen({super.key, required this.secretId});
+  const SecretDetailScreen({
+    super.key, 
+    required this.secretId,
+    this.openComments = false,
+    this.highlightCommentId,
+  });
 
   @override
   State<SecretDetailScreen> createState() => _SecretDetailScreenState();
@@ -142,6 +149,8 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
       child: SecretCard(
         secret: _secret!,
         userPosition: _userPosition,
+        autoOpenComments: widget.openComments,
+        highlightCommentId: widget.highlightCommentId,
         onDelete: () {
           Navigator.of(context).pop();
         },

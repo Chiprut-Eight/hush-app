@@ -309,7 +309,7 @@ exports.onNewComment = functions.firestore
         }, {
             en: commentPreview || "New reply to your comment",
             he: commentPreview || "תגובה חדשה לתגובה שלך",
-        }, { type: "comment", secretId });
+        }, { type: "comment", secretId, commentId });
     }
     // 2. Notify the secret creator (if they are not the ones commenting, and if they weren't just notified as the reply target)
     if (creatorId !== comment.userId && creatorId !== replyToUserId) {
@@ -319,7 +319,7 @@ exports.onNewComment = functions.firestore
         }, {
             en: commentPreview || "New comment on your Hushhh",
             he: commentPreview || "תגובה חדשה על ה-Hushhh שלך",
-        }, { type: "comment", secretId });
+        }, { type: "comment", secretId, commentId });
     }
 });
 // ============================================================
