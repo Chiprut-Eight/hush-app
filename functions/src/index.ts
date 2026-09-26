@@ -455,8 +455,8 @@ export const onNewSecret = functions.firestore
       sendPushToUser(
         followerId,
         {
-          en: `${creatorName} planted a new Hushhh 🌱`,
-          he: `${creatorName} הטמין/ה Hushhh חדש 🌱`,
+          en: `${creatorName} dropped a new Hushhh 🤫`,
+          he: `${creatorName} השאיר/ה Hushhh חדש 🤫`,
         },
         {
           en: "Go explore and find it!",

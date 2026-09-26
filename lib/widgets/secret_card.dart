@@ -969,27 +969,25 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
+                                        Text(
+                                          _currentSecret.creatorName ?? 'Anonymous',
+                                          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
+                                        ),
+                                        const SizedBox(height: 2),
                                         Row(
                                           children: [
-                                            Flexible(
-                                              child: Text(
-                                                _currentSecret.creatorName ?? 'Anonymous',
-                                                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
+                                            Text(
+                                              isGroup ? l10n.groupSecret : l10n.regularSecret,
+                                              style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
                                             ),
                                             const SizedBox(width: 6),
-                                            // --- TIME AGO ---
                                             Text(
-                                              getTimeAgo(_currentSecret.createdAt, l10n),
+                                              '• ${getTimeAgo(_currentSecret.createdAt, l10n)}',
                                               style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
                                             ),
                                           ],
-                                        ),
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          isGroup ? l10n.groupSecret : l10n.regularSecret,
-                                          style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
                                         ),
                                       ],
                                     ),

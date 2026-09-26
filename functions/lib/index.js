@@ -377,8 +377,8 @@ exports.onNewSecret = functions.firestore
     // Send notification to each follower (max 50 to avoid timeout)
     const batchFollowers = followerIds.slice(0, 50);
     const promises = batchFollowers.map((followerId) => sendPushToUser(followerId, {
-        en: `${creatorName} planted a new Hushhh 🌱`,
-        he: `${creatorName} הטמין/ה Hushhh חדש 🌱`,
+        en: `${creatorName} dropped a new Hushhh 🤫`,
+        he: `${creatorName} השאיר/ה Hushhh חדש 🤫`,
     }, {
         en: "Go explore and find it!",
         he: "צאו לחפש ולגלות!",
