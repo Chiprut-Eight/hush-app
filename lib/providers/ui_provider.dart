@@ -17,6 +17,8 @@ class UIProvider with ChangeNotifier {
   bool _isAppBarCollapsed = false;
   bool get isAppBarCollapsed => _isAppBarCollapsed;
 
+  bool get hasPushedTitles => _titleStack.isNotEmpty;
+
   String get currentTitle {
     if (_titleStack.isNotEmpty) {
       return _titleStack.last;

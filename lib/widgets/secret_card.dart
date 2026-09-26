@@ -564,6 +564,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
     String? editingCommentId;
     String? replyingToUserId;
     String? replyingToUserName;
+    String? replyingToCommentId;
     bool isSubmitting = false;
     final currentUser = context.read<AuthProvider>().firebaseUser;
     
@@ -615,11 +616,38 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                 child: Text(l10n.noComments, style: const TextStyle(color: HushColors.textSecondary)),
                               );
                             }
+
+                            // Threading logic: group replies under their parent comments
+                            final List<Map<String, dynamic>> topLevelComments = comments.where((c) => c['replyToCommentId'] == null).toList();
+                            final Map<String, List<Map<String, dynamic>>> repliesMap = {};
+                            for (final c in comments) {
+                              if (c['replyToCommentId'] != null) {
+                                final parentId = c['replyToCommentId'] as String;
+                                repliesMap.putIfAbsent(parentId, () => []).add(c);
+                              }
+                            }
+
+                            final List<Map<String, dynamic>> threadedComments = [];
+                            for (final c in topLevelComments) {
+                              threadedComments.add(c);
+                              if (repliesMap.containsKey(c['id'])) {
+                                threadedComments.addAll(repliesMap[c['id']]!);
+                              }
+                            }
+
+                            // Add any orphaned replies (parent deleted) at the end just in case
+                            for (final c in comments) {
+                              if (c['replyToCommentId'] != null && !topLevelComments.any((tc) => tc['id'] == c['replyToCommentId'])) {
+                                threadedComments.add(c);
+                              }
+                            }
+
                             return ListView.builder(
                               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              itemCount: comments.length,
+                              itemCount: threadedComments.length,
                               itemBuilder: (ctx, i) {
-                                final c = comments[i];
+                                final c = threadedComments[i];
+                                final isReply = c['replyToCommentId'] != null;
                                 final commentTime = (c['createdAt'] as DateTime?) ?? DateTime.now();
                                 return GestureDetector(
                                   onLongPress: () {
@@ -679,6 +707,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                                     commentController.clear();
                                                     replyingToUserId = c['userId'];
                                                     replyingToUserName = c['userName'] ?? 'Someone';
+                                                    replyingToCommentId = c['replyToCommentId'] ?? c['id'];
                                                   });
                                                   Navigator.pop(menuCtx);
                                                 },
@@ -690,7 +719,11 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                     );
                                   },
                                   child: Padding(
-                                    padding: const EdgeInsets.symmetric(vertical: 6),
+                                    padding: EdgeInsetsDirectional.only(
+                                      start: isReply ? 32.0 : 0.0,
+                                      top: 6.0,
+                                      bottom: 6.0,
+                                    ),
                                     child: Row(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -734,6 +767,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                                     commentController.clear();
                                                     replyingToUserId = c['userId'];
                                                     replyingToUserName = c['userName'] ?? 'Someone';
+                                                    replyingToCommentId = c['replyToCommentId'] ?? c['id'];
                                                   });
                                                 },
                                                 child: Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
@@ -774,6 +808,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                           editingCommentId = null;
                                           replyingToUserId = null;
                                           replyingToUserName = null;
+                                          replyingToCommentId = null;
                                           commentController.clear();
                                         });
                                       },
@@ -828,6 +863,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                           text,
                                           replyToUserId: replyingToUserId,
                                           replyToUserName: replyingToUserName,
+                                          replyToCommentId: replyingToCommentId,
                                         );
                                         if (replyingToUserId != null) {
                                           AnalyticsService().logCommentReplied(_currentSecret.id);
@@ -838,6 +874,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                           setSheetState(() {
                                             replyingToUserId = null;
                                             replyingToUserName = null;
+                                            replyingToCommentId = null;
                                             commentController.clear();
                                           });
                                         }

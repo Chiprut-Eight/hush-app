@@ -487,7 +487,7 @@ class SecretService {
   }
 
   /// Add a comment to a secret
-  Future<void> addComment(String secretId, String text, {String? replyToUserId, String? replyToUserName}) async {
+  Future<void> addComment(String secretId, String text, {String? replyToUserId, String? replyToUserName, String? replyToCommentId}) async {
     final user = _auth.currentUser;
     if (user == null) return;
 
@@ -507,6 +507,9 @@ class SecretService {
     if (replyToUserId != null) {
       commentData['replyToUserId'] = replyToUserId;
       commentData['replyToUserName'] = replyToUserName ?? 'Someone';
+    }
+    if (replyToCommentId != null) {
+      commentData['replyToCommentId'] = replyToCommentId;
     }
 
     await _secretsRef.doc(secretId).collection('comments').add(commentData);

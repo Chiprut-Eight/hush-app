@@ -49,8 +49,8 @@ class _AnimatedAppBarState extends State<AnimatedAppBar> {
     
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    // Check if we can pop in the root navigator (meaning we are in a deep screen like Settings)
-    final canPop = rootNavigatorKey.currentState?.canPop() ?? false;
+    // Use hasPushedTitles to determine if we are in a deep screen (prevents bottom sheets from changing the menu icon)
+    final canPop = uiProvider.hasPushedTitles;
 
     // Check if user is authenticated. If not, don't show the AppBar.
     final auth = context.watch<AuthProvider>();
