@@ -169,8 +169,8 @@ export const testPush = functions.https.onCall(async (data, context) => {
       android: {
         priority: "high",
         notification: {
-          channelId: "hush_notifications",
-          sound: "default",
+          channelId: "hush_custom_notifications",
+          sound: "shush_push",
         },
       },
       apns: {
@@ -179,7 +179,7 @@ export const testPush = functions.https.onCall(async (data, context) => {
         },
         payload: {
           aps: {
-            sound: "default",
+            sound: "shush_push.wav",
             badge: 1,
           },
         },
