@@ -664,14 +664,14 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     ),
                     icon: _isPublishing
                         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                         : Image.asset(
                             'assets/images/icon_tap_to_drop.png',
-                            width: 28,
-                            height: 28,
+                            width: 34,
+                            height: 34,
                             fit: BoxFit.contain,
                           ),
                     label: Text(
