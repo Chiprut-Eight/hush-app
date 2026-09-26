@@ -42,7 +42,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get mapTabTitle => 'בסביבה';
 
   @override
-  String get createTitle => 'הטמן Hushhh';
+  String get createTitle => 'השאר Hushhh';
 
   @override
   String get profileTitle => 'פרופיל';

@@ -61,8 +61,8 @@ async function sendPushToUser(userId, title, body, data) {
             android: {
                 priority: "high",
                 notification: {
-                    channelId: "hush_notifications",
-                    sound: "default",
+                    channelId: "hush_custom_notifications",
+                    sound: "shush_push",
                 },
             },
             apns: {
@@ -75,7 +75,7 @@ async function sendPushToUser(userId, title, body, data) {
                             title: t(title, lang),
                             body: t(body, lang),
                         },
-                        sound: "default",
+                        sound: "shush_push.wav",
                         badge: 1,
                     },
                 },

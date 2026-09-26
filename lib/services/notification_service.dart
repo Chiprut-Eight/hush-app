@@ -176,10 +176,12 @@ class NotificationService {
 
     // Create Android notification channel
     const androidChannel = AndroidNotificationChannel(
-      'hush_notifications',
+      'hush_custom_notifications',
       'Hushhh Notifications',
       description: 'Notifications from the Hushhh app',
       importance: Importance.high,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('shush_push'),
     );
 
     await _localNotifications
@@ -200,17 +202,20 @@ class NotificationService {
       notification.body,
       const NotificationDetails(
         android: AndroidNotificationDetails(
-          'hush_notifications',
+          'hush_custom_notifications',
           'Hushhh Notifications',
           channelDescription: 'Notifications from the Hushhh app',
           importance: Importance.high,
           priority: Priority.high,
           icon: '@mipmap/launcher_icon',
+          playSound: true,
+          sound: RawResourceAndroidNotificationSound('shush_push'),
         ),
         iOS: DarwinNotificationDetails(
           presentAlert: true,
           presentBadge: true,
           presentSound: true,
+          sound: 'shush_push.wav',
         ),
       ),
       payload: message.data['type'],
