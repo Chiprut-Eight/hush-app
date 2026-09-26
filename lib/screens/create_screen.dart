@@ -668,7 +668,14 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                     ),
                     icon: _isPublishing
                         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : const Icon(Icons.place, color: Colors.white, size: 20),
+                        : Image.asset(
+                            'assets/images/icon_tap_to_drop.png',
+                            width: 26,
+                            height: 26,
+                            cacheWidth: 78,
+                            cacheHeight: 78,
+                            fit: BoxFit.contain,
+                          ),
                     label: Text(
                       _isPublishing ? '...' : l10n.hideSecretAction,
                       style: const TextStyle(
