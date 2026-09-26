@@ -15,6 +15,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		F1B2C3D51234567800AABBCC /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F1B2C3D61234567800AABBCC /* GoogleService-Info.plist */; };
+		SHUSH0011234567800AABBCC /* shush_push.wav in Resources */ = {isa = PBXBuildFile; fileRef = SHUSH0021234567800AABBCC /* shush_push.wav */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A1B2C3D41234567800AABBCC /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
 		F1B2C3D61234567800AABBCC /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		SHUSH0021234567800AABBCC /* shush_push.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = shush_push.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 				A1B2C3D41234567800AABBCC /* Runner.entitlements */,
 				F1B2C3D61234567800AABBCC /* GoogleService-Info.plist */,
+				SHUSH0021234567800AABBCC /* shush_push.wav */,
 			);
 			path = Runner;
 			sourceTree = "<group>";
@@ -222,6 +225,7 @@
 				97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */,
 				97C146FC1CF9000F007C117D /* Main.storyboard in Resources */,
 				F1B2C3D51234567800AABBCC /* GoogleService-Info.plist in Resources */,
+				SHUSH0011234567800AABBCC /* shush_push.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
