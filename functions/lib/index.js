@@ -290,6 +290,7 @@ exports.onNewComment = functions.firestore
     var _a;
     const comment = snap.data();
     const secretId = context.params.secretId;
+    const commentId = context.params.commentId;
     // Get the secret to find the creator
     const secretDoc = await db.collection("secrets").doc(secretId).get();
     if (!secretDoc.exists)
