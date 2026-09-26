@@ -3,6 +3,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'dart:convert';
+import '../main.dart' as hush_main;
+import '../screens/secret_detail_screen.dart';
 
 /// Top-level background handler — must be a top-level function (not a method)
 @pragma('vm:entry-point')
@@ -170,7 +173,14 @@ class NotificationService {
       initSettings,
       onDidReceiveNotificationResponse: (response) {
         debugPrint('[LOCAL] Notification tapped: ${response.payload}');
-        // Future: Navigate to relevant screen based on payload
+        if (response.payload != null) {
+          try {
+            final data = jsonDecode(response.payload!) as Map<String, dynamic>;
+            _navigateBasedOnData(data);
+          } catch (e) {
+            debugPrint('[LOCAL] Failed to decode payload: $e');
+          }
+        }
       },
     );
 
@@ -218,13 +228,38 @@ class NotificationService {
           sound: 'shush_push.wav',
         ),
       ),
-      payload: message.data['type'],
+      payload: jsonEncode(message.data),
     );
   }
 
   /// Handle notification tap (background/terminated state)
   void _handleNotificationTap(RemoteMessage message) {
     debugPrint('[FCM] Notification tapped: ${message.data}');
-    // Future: Deep link to specific screen based on message.data
+    _navigateBasedOnData(message.data);
+  }
+
+  void _navigateBasedOnData(Map<String, dynamic> data) {
+    final type = data['type'];
+    final secretId = data['secretId'];
+    final commentId = data['commentId'];
+    
+    if (secretId != null && (type == 'comment' || type == 'like' || type == 'new_secret')) {
+      // Find navigator context
+      final nav = hush_main.rootNavigatorKey.currentState;
+      if (nav != null) {
+        nav.push(
+          MaterialPageRoute(
+            builder: (ctx) => SecretDetailScreen(
+              secretId: secretId,
+              openComments: type == 'comment',
+              highlightCommentId: commentId,
+            ),
+          ),
+        );
+      } else {
+        // App is still booting up; could save this route to be handled after boot
+        debugPrint('[FCM] Error: rootNavigatorKey.currentState is null');
+      }
+    }
   }
 }

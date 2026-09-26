@@ -733,7 +733,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: c['id'] == widget.highlightCommentId ? HushColors.textAccent.withOpacity(0.2) : Colors.transparent,
+                                      color: c['id'] == widget.highlightCommentId ? HushColors.textAccent.withValues(alpha: 0.2) : Colors.transparent,
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     padding: EdgeInsetsDirectional.only(
