@@ -240,14 +240,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
 
     return Scaffold(
       key: widget.scaffoldKey,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(l10n.feedTitle, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-      ),
+      backgroundColor: Colors.transparent,
       body: Container(
         decoration: BoxDecoration(
           gradient: LinearGradient(

@@ -11,6 +11,45 @@ class UIProvider with ChangeNotifier {
   final _audioPlayer = AudioPlayer();
   bool _isAudioReady = false;
 
+  final List<String> _titleStack = [];
+  String _currentTitle = '';
+
+  bool _isAppBarCollapsed = false;
+  bool get isAppBarCollapsed => _isAppBarCollapsed;
+
+  String get currentTitle {
+    if (_titleStack.isNotEmpty) {
+      return _titleStack.last;
+    }
+    return _currentTitle;
+  }
+
+  void setCurrentTitle(String newTitle) {
+    if (_currentTitle != newTitle) {
+      _currentTitle = newTitle;
+      notifyListeners();
+    }
+  }
+
+  void pushTitle(String title) {
+    _titleStack.add(title);
+    notifyListeners();
+  }
+
+  void popTitle() {
+    if (_titleStack.isNotEmpty) {
+      _titleStack.removeLast();
+      notifyListeners();
+    }
+  }
+
+  void setAppBarCollapsed(bool collapsed) {
+    if (_isAppBarCollapsed != collapsed) {
+      _isAppBarCollapsed = collapsed;
+      notifyListeners();
+    }
+  }
+
   UIProvider() {
     _initAudioSession();
   }

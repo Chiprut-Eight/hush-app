@@ -699,7 +699,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                           backgroundColor: HushColors.bgCard,
                                           backgroundImage: c['userPhotoURL'] != null && c['userPhotoURL'] != 'generic'
                                               ? NetworkImage(c['userPhotoURL'])
-                                              : const AssetImage('assets/images/logo_hushhh2.jpeg'),
+                                              : const AssetImage('assets/images/icon_only.png'),
                                         ),
                                         const SizedBox(width: 10),
                                         Expanded(
@@ -961,7 +961,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                       backgroundColor: isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight,
                                       backgroundImage: _currentSecret.creatorPhotoURL != null && _currentSecret.creatorPhotoURL != 'generic'
                                           ? NetworkImage(_currentSecret.creatorPhotoURL!)
-                                          : const AssetImage('assets/images/logo_hushhh2.jpeg'),
+                                          : const AssetImage('assets/images/icon_only.png'),
                                     ),
                                   ),
                                   const SizedBox(width: 10),
@@ -976,24 +976,22 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                           maxLines: 1,
                                         ),
                                         const SizedBox(height: 2),
-                                        Row(
-                                          children: [
-                                            Flexible(
-                                              child: Text(
-                                                isGroup ? l10n.groupSecret : l10n.regularSecret,
-                                                style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
-                                                overflow: TextOverflow.ellipsis,
+                                        Text.rich(
+                                          TextSpan(
+                                            children: [
+                                              TextSpan(
+                                                text: isGroup ? l10n.groupSecret : l10n.regularSecret,
+                                                style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary),
                                               ),
-                                            ),
-                                            const SizedBox(width: 6),
-                                            Flexible(
-                                              child: Text(
-                                                '• ${getTimeAgo(_currentSecret.createdAt, l10n)}',
-                                                style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
-                                                overflow: TextOverflow.ellipsis,
+                                              TextSpan(
+                                                text: ' • ${getTimeAgo(_currentSecret.createdAt, l10n)}',
+                                                style: const TextStyle(color: HushColors.textMuted),
                                               ),
-                                            ),
-                                          ],
+                                            ],
+                                          ),
+                                          style: const TextStyle(fontSize: 11),
+                                          overflow: TextOverflow.ellipsis,
+                                          maxLines: 1,
                                         ),
                                       ],
                                     ),

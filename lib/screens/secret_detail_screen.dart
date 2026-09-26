@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../widgets/title_setter.dart';
 import '../config/theme.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
@@ -70,14 +71,10 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text('Hushhh', style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: isDark ? Colors.white : HushColors.textPrimaryLight),
-      ),
+    return TitleSetter(
+      title: 'Hushhh',
+      child: Scaffold(
+        extendBodyBehindAppBar: true,
       body: Container(
         height: double.infinity,
         decoration: BoxDecoration(
@@ -92,6 +89,7 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
         child: SafeArea(
           child: _buildBody(l10n),
         ),
+      ),
       ),
     );
   }
@@ -115,6 +113,31 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     }
 
     return SingleChildScrollView(
+      padding: EdgeInsets.only(
+        top: MediaQuery.of(context).padding.top + 60,
+        bottom: 24,
+      ),
+      child: _buildContent(),
+    );
+  }
+
+  Widget _buildContent() {
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
+    }
+    if (_error != null) {
+      return Center(
+        child: Text(
+          _error!,
+          style: const TextStyle(color: Colors.red, fontSize: 16),
+        ),
+      );
+    }
+    if (_secret == null) {
+      return const Center(child: Text('Secret not found'));
+    }
+
+    return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: SecretCard(
         secret: _secret!,

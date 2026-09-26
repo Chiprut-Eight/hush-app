@@ -12,6 +12,7 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../services/analytics_service.dart';
 import 'create_screen.dart';
 import 'package:just_audio/just_audio.dart';
+import '../widgets/title_setter.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -53,32 +54,37 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        backgroundColor: HushColors.bgPrimary,
-        appBar: AppBar(
-          title: Text(l10n.adminTitle),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          bottom: TabBar(
-            indicatorColor: HushColors.textAccent,
-            labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-            unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
-            labelPadding: const EdgeInsets.symmetric(horizontal: 6),
-            tabs: [
-              Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.appeals))),
-              Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.reports))),
-              Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.maintenanceTitle))),
-            ],
-          ),
-        ),
-        body: const TabBarView(
+    return TitleSetter(
+      title: l10n.adminTitle,
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          backgroundColor: HushColors.bgPrimary,
+          body: Column(
+            children: [
+              SizedBox(height: MediaQuery.of(context).padding.top + 50), // Spacing for AnimatedAppBar
+              TabBar(
+                indicatorColor: HushColors.textAccent,
+                labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
+                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
+                labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                tabs: [
+                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.appeals))),
+                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.reports))),
+                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.maintenanceTitle))),
+                ],
+              ),
+              const Expanded(
+                child: TabBarView(
           children: [
             _AppealsList(),
             _ReportsList(),
             _MaintenanceView(),
           ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

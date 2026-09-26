@@ -3,8 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import '../config/theme.dart';
+
+import '../widgets/title_setter.dart';
 
 class ChangeUsernameScreen extends StatefulWidget {
   const ChangeUsernameScreen({super.key});
@@ -94,18 +95,13 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
     final canChange = _canChangeUsername();
     final l10n = AppLocalizations.of(context)!;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(l10n.changeUsernameTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+    return TitleSetter(
+      title: l10n.changeUsernameTitle,
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
-      ),
       body: Padding(
         padding: const EdgeInsets.all(24.0),
         child: Column(
@@ -176,6 +172,7 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
             const SizedBox(height: 32),
           ],
         ),
+      ),
       ),
     );
   }

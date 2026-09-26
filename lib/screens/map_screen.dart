@@ -3,7 +3,6 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
-import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../services/geo_service.dart';
@@ -14,6 +13,8 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_service.dart';
+import '../widgets/title_setter.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 
 /// Map screen — shows the Echo Map with pulsing markers
 class MapScreen extends StatefulWidget {
@@ -147,44 +148,48 @@ class _MapScreenState extends State<MapScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
-    return Scaffold(
+    Widget content = Scaffold(
       key: widget.scaffoldKey,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        title: Text(l10n.mapTitle, style: TextStyle(fontWeight: FontWeight.bold, color: isDark ? Colors.white : HushColors.textPrimaryLight)),
-        backgroundColor: (isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight).withValues(alpha: 0.8),
-        elevation: 0,
-        centerTitle: false,
-        automaticallyImplyLeading: false,
-        leading: Navigator.canPop(context) 
-            ? IconButton(
-                icon: const Icon(Icons.arrow_back),
-                color: isDark ? Colors.white : HushColors.textPrimaryLight,
-                onPressed: () => Navigator.pop(context),
-              )
-            : null,
-        actions: [
-          IconButton(
-            icon: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
-            onPressed: () {
-              AnalyticsService().logMapCenterOnUser();
-              if (_currentPosition != null) {
-                _mapController.move(
-                  LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 
-                  15.0
-                );
-              } else {
-                _fetchMapData();
-              }
-            },
+      backgroundColor: Colors.transparent,
+      body: Stack(
+        children: [
+          _buildMapBody(),
+          Positioned(
+            top: 16,
+            right: 16,
+            child: FloatingActionButton(
+              mini: true,
+              backgroundColor: HushColors.bgCard,
+              onPressed: () {
+                AnalyticsService().logMapCenterOnUser();
+                if (_currentPosition != null) {
+                  _mapController.move(
+                    LatLng(_currentPosition!.latitude, _currentPosition!.longitude), 
+                    15.0
+                  );
+                } else {
+                  _fetchMapData();
+                }
+              },
+              child: HushIcon(HushIcons.target, size: 20, color: isDark ? Colors.white : HushColors.textPrimaryLight),
+            ),
           ),
         ],
       ),
-      body: _buildMapBody(),
     );
+
+    final bool isPushed = ModalRoute.of(context)?.isFirst == false;
+    if (isPushed) {
+      final l10n = AppLocalizations.of(context)!;
+      content = TitleSetter(
+        title: l10n.mapTabTitle,
+        child: content,
+      );
+    }
+
+    return content;
   }
 
   Widget _buildMapBody() {

@@ -17,10 +17,9 @@ import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
-import 'widgets/notifications_button.dart';
-import 'core/constants/icons.dart';
-import 'widgets/hush_icon_widget.dart';
 import 'widgets/hush_drawer.dart';
+import 'widgets/animated_app_bar.dart';
+
 /// Global Navigator Key for top-level navigation and back handling
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
@@ -104,65 +103,8 @@ class _HushAppState extends State<HushApp> {
                     color: Colors.transparent, // Background removal for top area
                     child: Column(
                       children: [
-                        SafeArea(
-                          bottom: false,
-                          child: Container(
-                            padding: const EdgeInsets.only(left: 20.0, top: 4.0, bottom: 4.0, right: 16.0),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                // Always physical left regardless of RTL
-                                Directionality(
-                                  textDirection: TextDirection.ltr,
-                                  child: Builder(
-                                    builder: (context) {
-                                      final screenWidth = MediaQuery.of(context).size.width;
-                                      final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
-                                      // In landscape, cap the banner width to avoid it being too large
-                                      final bannerWidth = isLandscape
-                                          ? (screenWidth * 0.2).clamp(100.0, 180.0)
-                                          : screenWidth * 0.38;
-                                      return GestureDetector(
-                                        onTap: () {
-                                          context.read<UIProvider>().triggerNavigateHome();
-                                        },
-                                        child: Image.asset(
-                                          'assets/images/top_banner2.png',
-                                          width: bannerWidth,
-                                          fit: BoxFit.contain,
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                                // Hamburger and Notifications Bell
-                                Directionality(
-                                  textDirection: TextDirection.ltr,
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Builder(
-                                        builder: (ctx) {
-                                          final themeProvider = Provider.of<ThemeProvider>(ctx);
-                                          final isDark = themeProvider.isDarkMode;
-                                          return IconButton(
-                                            icon: HushIcon(HushIcons.feed, size: 24, color: isDark ? Colors.white : Colors.black87),
-                                            onPressed: () {
-                                              FocusManager.instance.primaryFocus?.unfocus();
-                                              Scaffold.of(ctx).openDrawer();
-                                            },
-                                          );
-                                        },
-                                      ),
-                                      const NotificationsButton(),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                        // Unified Animated AppBar
+                        const AnimatedAppBar(),
                         Expanded(
                           child: Container(
                             color: currentTheme.scaffoldBackgroundColor, // Apply dynamic background

@@ -3,26 +3,22 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../providers/auth_provider.dart';
-import '../providers/theme_provider.dart';
 import '../config/theme.dart';
+
+import '../widgets/title_setter.dart';
 
 class NotificationsSettingsScreen extends StatelessWidget {
   const NotificationsSettingsScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = context.watch<ThemeProvider>();
-    final isDark = themeProvider.isDarkMode;
     final authProvider = context.watch<AuthProvider>();
     final user = authProvider.hushUser;
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
+    return TitleSetter(
+      title: AppLocalizations.of(context)!.notificationsSettingsTitle,
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
-      ),
       body: user == null
           ? const Center(child: CircularProgressIndicator())
           : ListView(
@@ -106,6 +102,7 @@ class NotificationsSettingsScreen extends StatelessWidget {
                 ),
               ],
             ),
+      ),
     );
   }
 }

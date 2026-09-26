@@ -197,6 +197,18 @@ class _AppShellState extends State<AppShell> {
       builder: (context, auth, _) {
         final hushUser = auth.hushUser;
         
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          String title = '';
+          switch (_currentIndex) {
+            case 0: title = l10n.feedTitle; break;
+            case 1: title = l10n.mapTitle; break;
+            case 2: title = l10n.createTitle; break;
+            case 3: title = l10n.followingTabTitle; break;
+            case 4: title = l10n.profileTitle; break;
+          }
+          context.read<UIProvider>().setCurrentTitle(title);
+        });
+
         // --- TIER-UP CELEBRATION LOGIC ---
         if (hushUser != null) {
           final currentTier = hushUser.tierLevel;

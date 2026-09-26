@@ -103,12 +103,6 @@ class _FollowingScreenState extends State<FollowingScreen> {
 
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
-      appBar: AppBar(
-        title: Text(l10n.followingTabTitle),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        automaticallyImplyLeading: false,
-      ),
       body: Column(
         children: [
           Padding(
@@ -164,7 +158,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
           },
           leading: CircleAvatar(
             backgroundColor: HushColors.bgCard,
-            backgroundImage: (user.useGenericPhoto || user.photoURL == null) ? const AssetImage('assets/images/logo_hushhh2.jpeg') : NetworkImage(user.photoURL!),
+            backgroundImage: (user.useGenericPhoto || user.photoURL == null) ? const AssetImage('assets/images/icon_only.png') : NetworkImage(user.photoURL!),
           ),
           title: Text('${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}' : (user.displayName ?? l10n.anonymousUser), style: const TextStyle(color: Colors.white)),
           subtitle: Text(l10n.tier(user.tierLevel), style: const TextStyle(color: HushColors.textAccent)),
@@ -217,8 +211,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                     child: CircleAvatar(
                       radius: 24,
                       backgroundColor: HushColors.bgPrimary,
-                      backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : null,
-                      child: (user.useGenericPhoto || user.photoURL == null) ? const Icon(Icons.person, color: Colors.white, size: 24) : null,
+                      backgroundImage: user.photoURL != null && !user.useGenericPhoto ? NetworkImage(user.photoURL!) : const AssetImage('assets/images/icon_only.png'),
                     ),
                     onTap: () {
                       Navigator.push(

@@ -11,6 +11,7 @@ import '../widgets/secret_card.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/analytics_service.dart';
+import '../widgets/title_setter.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -157,12 +158,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final bool isMe = widget.targetUserId == null || widget.targetUserId == currentUser?.uid;
     final isFollowing = currentUser?.followingIds.contains(user.uid) ?? false;
     final theyFollowMe = user.followingIds.contains(currentUser?.uid);
+    final String titleStr = isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser);
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(isMe ? l10n.profileTitle : (user.displayName ?? l10n.anonymousUser)),
-        automaticallyImplyLeading: !isMe,
-      ),
+    Widget content = Scaffold(
+      backgroundColor: Colors.transparent,
       body: RefreshIndicator(
         onRefresh: () async {
           if (isMe) await auth.refreshProfile();
@@ -214,7 +213,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     backgroundColor: HushColors.bgCard,
                     backgroundImage: user.photoURL != null && !user.useGenericPhoto
                         ? NetworkImage(user.photoURL!)
-                        : const AssetImage('assets/images/logo_hushhh2.jpeg'),
+                        : const AssetImage('assets/images/icon_only.png'),
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -328,6 +327,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
     );
+
+    final bool isPushed = ModalRoute.of(context)?.isFirst == false;
+    if (!isMe || isPushed) {
+      content = TitleSetter(title: titleStr, child: content);
+    }
+    return content;
   }
   
   List<Widget> _buildActiveTabList(AppLocalizations l10n, bool isMe) {

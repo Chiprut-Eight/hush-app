@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
+import '../widgets/title_setter.dart';
 
 class TermsOfServiceScreen extends StatelessWidget {
   const TermsOfServiceScreen({super.key});
@@ -11,13 +12,10 @@ class TermsOfServiceScreen extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final isHebrew = l10n.localeName == 'he';
 
-    return Scaffold(
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(l10n.termsOfService, style: const TextStyle(fontWeight: FontWeight.bold)),
+    return TitleSetter(
+      title: l10n.termsOfService,
+      child: Scaffold(
         backgroundColor: Colors.transparent,
-        elevation: 0,
-      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Directionality(
@@ -77,6 +75,7 @@ class TermsOfServiceScreen extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

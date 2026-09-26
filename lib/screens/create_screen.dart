@@ -341,11 +341,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     
     if (user?.isGhostMode == true) {
       return Scaffold(
-        appBar: AppBar(
-          title: Text(l10n.createTitle), 
-          centerTitle: true,
-          automaticallyImplyLeading: false,
-        ),
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -363,13 +358,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
-      appBar: AppBar(
-        title: Text(l10n.createTitle, style: const TextStyle(fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        centerTitle: true,
-        automaticallyImplyLeading: false,
-      ),
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         behavior: HitTestBehavior.translucent,
