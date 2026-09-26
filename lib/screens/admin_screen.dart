@@ -1157,12 +1157,14 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
 
     const AndroidNotificationDetails androidPlatformChannelSpecifics =
         AndroidNotificationDetails(
-      'hush_general_channel',
-      'General Notifications',
-      channelDescription: 'App alerts and updates',
+      'hush_custom_notifications',
+      'Hushhh Notifications',
+      channelDescription: 'Notifications from the Hushhh app',
       importance: Importance.max,
       priority: Priority.high,
       showWhen: true,
+      playSound: true,
+      sound: RawResourceAndroidNotificationSound('shush_push'),
     );
 
     const NotificationDetails platformChannelSpecifics = NotificationDetails(
@@ -1171,6 +1173,7 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
         presentAlert: true,
         presentBadge: true,
         presentSound: true,
+        sound: 'shush_push.wav',
       ),
     );
 
