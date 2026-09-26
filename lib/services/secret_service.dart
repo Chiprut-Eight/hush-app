@@ -539,6 +539,7 @@ class SecretService {
                 'isEdited': data['isEdited'] ?? false,
                 'replyToUserId': data['replyToUserId'],
                 'replyToUserName': data['replyToUserName'],
+                'replyToCommentId': data['replyToCommentId'],
               };
             }).toList());
   }
