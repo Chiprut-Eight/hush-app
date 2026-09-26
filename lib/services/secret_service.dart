@@ -66,18 +66,6 @@ class SecretService {
         })
         .toList();
 
-    secrets.sort((a, b) {
-      // 1. Other people's secrets first
-      bool aIsMine = userId != null && a.creatorId == userId;
-      bool bIsMine = userId != null && b.creatorId == userId;
-      
-      if (aIsMine && !bIsMine) return 1;
-      if (!aIsMine && bIsMine) return -1;
-      
-      // 2. Then by date descending
-      return b.createdAt.compareTo(a.createdAt);
-    });
-
     return secrets;
   }
 

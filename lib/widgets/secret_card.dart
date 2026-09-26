@@ -978,14 +978,20 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                         const SizedBox(height: 2),
                                         Row(
                                           children: [
-                                            Text(
-                                              isGroup ? l10n.groupSecret : l10n.regularSecret,
-                                              style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
+                                            Flexible(
+                                              child: Text(
+                                                isGroup ? l10n.groupSecret : l10n.regularSecret,
+                                                style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary, fontSize: 11),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                             const SizedBox(width: 6),
-                                            Text(
-                                              '• ${getTimeAgo(_currentSecret.createdAt, l10n)}',
-                                              style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
+                                            Flexible(
+                                              child: Text(
+                                                '• ${getTimeAgo(_currentSecret.createdAt, l10n)}',
+                                                style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
                                             ),
                                           ],
                                         ),

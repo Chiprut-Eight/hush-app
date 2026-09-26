@@ -61,10 +61,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get stopRecording => 'עצור הקלטה';
 
   @override
-  String get publishSecret => 'הטמן Hushhh';
+  String get publishSecret => 'השאר Hushhh';
 
   @override
-  String get hideSecretAction => 'לחץ להטמנת Hushhh';
+  String get hideSecretAction => 'לחץ להשארת Hushhh';
 
   @override
   String get regularSecret => 'Hushhh רגיל';
@@ -165,7 +165,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get mySecretsTab => 'ה-Hushhh שלי';
 
   @override
-  String get noPlantedSecrets => 'טרם הטמנת Hushhh.';
+  String get noPlantedSecrets => 'טרם השארת Hushhh.';
 
   @override
   String get noSavedSecrets => 'לא נמצאו Hushhh שמורים.';
@@ -231,7 +231,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get ghostModeRestricted => 'פעולות החשבון שלך מוגבלות.';
 
   @override
-  String get cannotPlantGhost => 'אינך יכול להטמין Hushhh כרגע.';
+  String get cannotPlantGhost => 'אינך יכול להשאיר Hushhh כרגע.';
 
   @override
   String get noReports => 'אין דיווחים ממתינים';
@@ -519,7 +519,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get tutorial_p1_content =>
-      'אנחנו רשת חברתית גאוגרפית שבה המרחב הפיזי הופך ללוח ה-Hushhh שלכם.\n• איך זה עובד? Hushhh הוא כמו סוד - אתם \'מטמינים Hushhh\' (הודעות קוליות או טקסט) בנקודה המדויקת שבה אתם נמצאים.\n• העולם הוא הפיד שלכם: הפיד דינמי ומשתנה לפי המיקום שלכם - הוא תמיד יציג את מה שקורה סביבכם ברגע זה.';
+      'אנחנו רשת חברתית גאוגרפית שבה המרחב הפיזי הופך ללוח ה-Hushhh שלכם.\n• איך זה עובד? Hushhh הוא כמו סוד - אתם \'משאירים Hushhh\' (הודעות קוליות או טקסט) בנקודה המדויקת שבה אתם נמצאים.\n• העולם הוא הפיד שלכם: הפיד דינמי ומשתנה לפי המיקום שלכם - הוא תמיד יציג את מה שקורה סביבכם ברגע זה.';
 
   @override
   String get tutorial_p2_title => 'החשיפה של ה-Hushhh';
@@ -540,7 +540,7 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get tutorial_p4_content =>
-      'התוכן ב-Hushhh הוא זמני וחי, מה שיוצר דחיפות ואותנטיות:\n• מנגנון המחיקה: Hushhh שלא נפתחו לצפייה או כאלו שעברו 60 יום נמחקים מהעולם כדי לשמור על המפה נקייה.\n• כפתור השמירה: מצאתם Hushhh שאתם חייבים לשמור? תוכלו לשמור עד 50 Hushhh (שלכם או של אחרים) בפרופיל שלכם, והם לא יימחקו לעולם.\n• איכות מעל הכל: הפרופיל שלכם מציג את ה-Hushhh המובחרים שפרסמתם - אלו ששרדו את מבחן הזמן והעניין של הקהילה.\nפספסתם משהו? אל דאגה. תמיד תוכלו לחזור להסבר המלא דרך תפריט ההגדרות באפליקציה.\nמוכנים להטמין את ה-Hushhh הראשון שלכם?';
+      'התוכן ב-Hushhh הוא זמני וחי, מה שיוצר דחיפות ואותנטיות:\n• מנגנון המחיקה: Hushhh שלא נפתחו לצפייה או כאלו שעברו 60 יום נמחקים מהעולם כדי לשמור על המפה נקייה.\n• כפתור השמירה: מצאתם Hushhh שאתם חייבים לשמור? תוכלו לשמור עד 50 Hushhh (שלכם או של אחרים) בפרופיל שלכם, והם לא יימחקו לעולם.\n• איכות מעל הכל: הפרופיל שלכם מציג את ה-Hushhh המובחרים שפרסמתם - אלו ששרדו את מבחן הזמן והעניין של הקהילה.\nפספסתם משהו? אל דאגה. תמיד תוכלו לחזור להסבר המלא דרך תפריט ההגדרות באפליקציה.\nמוכנים להשאיר את ה-Hushhh הראשון שלכם?';
 
   @override
   String get action_understand => 'הבנתי';

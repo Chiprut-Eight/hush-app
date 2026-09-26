@@ -401,7 +401,7 @@ abstract class AppLocalizations {
   /// No description provided for @noPlantedSecrets.
   ///
   /// In en, this message translates to:
-  /// **'You haven\'t planted any Hushhh yet.'**
+  /// **'You haven\'t dropped any Hushhh yet.'**
   String get noPlantedSecrets;
 
   /// No description provided for @noSavedSecrets.
@@ -527,7 +527,7 @@ abstract class AppLocalizations {
   /// No description provided for @cannotPlantGhost.
   ///
   /// In en, this message translates to:
-  /// **'You cannot plant Hushhh right now.'**
+  /// **'You cannot drop Hushhh right now.'**
   String get cannotPlantGhost;
 
   /// No description provided for @noReports.
@@ -1043,7 +1043,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorial_p1_content.
   ///
   /// In en, this message translates to:
-  /// **'We are a geographic social network where physical space becomes your Hushhh board.\n• How does it work? Hushhh is like a secret - you \'plant a Hushhh\' (voice or text message) at the exact point where you are.\n• The world is your feed: The feed is dynamic and changes according to your location - it will always show what is happening around you right now.'**
+  /// **'We are a geographic social network where physical space becomes your Hushhh board.\n• How does it work? Hushhh is like a secret - you \'drop a Hushhh\' (voice or text message) at the exact point where you are.\n• The world is your feed: The feed is dynamic and changes according to your location - it will always show what is happening around you right now.'**
   String get tutorial_p1_content;
 
   /// No description provided for @tutorial_p2_title.
@@ -1079,7 +1079,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorial_p4_content.
   ///
   /// In en, this message translates to:
-  /// **'Content in Hushhh is temporary and live, creating urgency and authenticity:\n• Deletion mechanism: Hushhh that haven\'t been viewed or are older than 60 days are deleted to keep the map clean.\n• Save button: Found a Hushhh you must keep? You can save up to 50 Hushhh in your profile, and they will never be deleted.\n• Quality above all: Your profile displays distinguished Hushhh you\'ve published - those that survived the test of time.\nMissed something? Don\'t worry. You can always return to the full explanation through the settings menu.\nReady to plant your first Hushhh?'**
+  /// **'Content in Hushhh is temporary and live, creating urgency and authenticity:\n• Deletion mechanism: Hushhh that haven\'t been viewed or are older than 60 days are deleted to keep the map clean.\n• Save button: Found a Hushhh you must keep? You can save up to 50 Hushhh in your profile, and they will never be deleted.\n• Quality above all: Your profile displays distinguished Hushhh you\'ve published - those that survived the test of time.\nMissed something? Don\'t worry. You can always return to the full explanation through the settings menu.\nReady to drop your first Hushhh?'**
   String get tutorial_p4_content;
 
   /// No description provided for @action_understand.
