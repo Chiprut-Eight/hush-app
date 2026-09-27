@@ -41,22 +41,11 @@ class _AppShellState extends State<AppShell> {
   final GlobalKey<ScaffoldState> _mapScaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FeedScreenState> _feedScreenKey = GlobalKey<FeedScreenState>();
 
-  late final List<Widget> _screens;
   StreamSubscription<void>? _homeSub;
 
   @override
   void initState() {
     super.initState();
-    _screens = [
-      FeedScreen(key: _feedScreenKey, scaffoldKey: _feedScaffoldKey),
-      MapScreen(scaffoldKey: _mapScaffoldKey),
-      CreateScreen(onPublished: () {
-        setState(() => _currentIndex = 0);
-        _feedScreenKey.currentState?.refreshFeed();
-      }),
-      const FollowingScreen(),
-      const ProfileScreen(),
-    ];
     _startInviteTimer();
     _homeSub = context.read<UIProvider>().homeStream.listen((_) {
       // Pop any pushed routes (settings, privacy, etc.) back to AppShell
@@ -261,7 +250,16 @@ class _AppShellState extends State<AppShell> {
           child: Scaffold(
             body: IndexedStack(
               index: _currentIndex,
-              children: _screens,
+              children: [
+                FeedScreen(key: _feedScreenKey, scaffoldKey: _feedScaffoldKey),
+                MapScreen(scaffoldKey: _mapScaffoldKey),
+                CreateScreen(onPublished: () {
+                  setState(() => _currentIndex = 0);
+                  _feedScreenKey.currentState?.refreshFeed();
+                }),
+                FollowingScreen(isActive: _currentIndex == 3),
+                const ProfileScreen(),
+              ],
             ),
             bottomNavigationBar: Container(
               decoration: const BoxDecoration(

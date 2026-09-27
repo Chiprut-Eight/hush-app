@@ -14,7 +14,8 @@ import 'package:hush_app/l10n/app_localizations.dart';
 import '../services/analytics_service.dart';
 
 class FollowingScreen extends StatefulWidget {
-  const FollowingScreen({super.key});
+  final bool isActive;
+  const FollowingScreen({super.key, this.isActive = false});
 
   @override
   State<FollowingScreen> createState() => _FollowingScreenState();
@@ -41,14 +42,28 @@ class _FollowingScreenState extends State<FollowingScreen> {
     _fetchFollowedFeed();
   }
 
+  @override
+  void didUpdateWidget(FollowingScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      final user = context.read<AuthProvider>().hushUser;
+      if (user != null && !user.hasSeenFollowingTutorial && _followedFeed.isNotEmpty) {
+        _showTutorial();
+      }
+    }
+  }
+
   Future<void> _fetchFollowedFeed() async {
     setState(() => _isLoading = true);
     final user = context.read<AuthProvider>().hushUser;
     if (user != null) {
       _followedFeed = await _socialService.getFollowedUsersFeed(user.followingIds);
       
-      if (!user.hasSeenFollowingTutorial && _followedFeed.isNotEmpty) {
-        _showTutorial();
+      if (widget.isActive && !user.hasSeenFollowingTutorial && _followedFeed.isNotEmpty) {
+        // Wait a frame for UI to render
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          _showTutorial();
+        });
       }
     }
     if (mounted) setState(() => _isLoading = false);

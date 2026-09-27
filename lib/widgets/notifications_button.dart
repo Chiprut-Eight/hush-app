@@ -107,12 +107,13 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           final body = bodyObj?[langCode] ?? bodyObj?['en'] ?? '';
                           final isRead = data['read'] == true;
                           
-                          final payloadData = data['data'] as Map<String, dynamic>?;
-                          final type = payloadData?['type'] as String? ?? data['type'] as String? ?? 'general';
-                          final secretId = payloadData?['secretId'];
+                          final dynamic payloadData = data['data'];
+                          final type = (payloadData != null && payloadData is Map) ? payloadData['type']?.toString() : data['type']?.toString();
+                          final String safeType = type ?? 'general';
+                          final secretId = (payloadData != null && payloadData is Map) ? payloadData['secretId'] : null;
 
                           IconData actionIcon;
-                          switch (type) {
+                          switch (safeType) {
                             case 'like': actionIcon = HushIcons.heart; break;
                             case 'comment': actionIcon = HushIcons.comment; break;
                             case 'follow': actionIcon = HushIcons.userCircle; break;
