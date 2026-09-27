@@ -14,12 +14,14 @@ class AnalyticsService {
       FirebaseAnalyticsObserver(analytics: _analytics);
 
   // ─── USER PROPERTIES ──────────────────────────────────────────
-
   Future<void> setUserProperties({
     required int tierLevel,
     String? gender,
   }) async {
-    await _analytics.setUserProperty(name: 'tier_level', value: tierLevel.toString());
+    await _analytics.setUserProperty(
+      name: 'tier_level',
+      value: tierLevel.toString(),
+    );
     if (gender != null) {
       await _analytics.setUserProperty(name: 'gender', value: gender);
     }
@@ -47,7 +49,10 @@ class AnalyticsService {
 
   // ─── ONBOARDING ───────────────────────────────────────────────
 
-  Future<void> logOnboardingCompleted({required String gender, required bool useGenericPhoto}) async {
+  Future<void> logOnboardingCompleted({
+    required String gender,
+    required bool useGenericPhoto,
+  }) async {
     await _analytics.logEvent(
       name: 'onboarding_completed',
       parameters: {
@@ -68,12 +73,15 @@ class AnalyticsService {
 
   // ─── SECRET CREATION ──────────────────────────────────────────
 
-  Future<void> logSecretCreated({required String contentType, required String secretType}) async {
+  Future<void> logSecretCreated({
+    required String contentType,
+    required String secretType,
+  }) async {
     await _analytics.logEvent(
       name: 'secret_created',
       parameters: {
         'content_type': contentType, // 'text' or 'voice'
-        'secret_type': secretType,   // 'regular' or 'group'
+        'secret_type': secretType, // 'regular' or 'group'
       },
     );
   }
@@ -115,7 +123,11 @@ class AnalyticsService {
 
   // ─── SECRET INTERACTIONS ──────────────────────────────────────
 
-  Future<void> logSecretRevealed({required String secretId, required String type, required bool isGroup}) async {
+  Future<void> logSecretRevealed({
+    required String secretId,
+    required String type,
+    required bool isGroup,
+  }) async {
     await _analytics.logEvent(
       name: 'secret_revealed',
       parameters: {
@@ -127,116 +139,175 @@ class AnalyticsService {
   }
 
   Future<void> logSecretLiked(String secretId) async {
-    await _analytics.logEvent(name: 'secret_liked', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_liked',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logSecretUnliked(String secretId) async {
-    await _analytics.logEvent(name: 'secret_unliked', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_unliked',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logSecretDisliked(String secretId) async {
-    await _analytics.logEvent(name: 'secret_disliked', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_disliked',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logSecretUndisliked(String secretId) async {
-    await _analytics.logEvent(name: 'secret_undisliked', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_undisliked',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logSecretSaved(String secretId) async {
-    await _analytics.logEvent(name: 'secret_saved', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_saved',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logSecretUnsaved(String secretId) async {
-    await _analytics.logEvent(name: 'secret_unsaved', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_unsaved',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logSecretDeleted(String secretId) async {
-    await _analytics.logEvent(name: 'secret_deleted', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'secret_deleted',
+      parameters: {'secret_id': secretId},
+    );
   }
 
-  Future<void> logSecretReported({required String secretId, required String reason}) async {
+  Future<void> logSecretReported({
+    required String secretId,
+    required String reason,
+  }) async {
     await _analytics.logEvent(
       name: 'secret_reported',
-      parameters: {
-        'secret_id': secretId,
-        'reason': reason,
-      },
+      parameters: {'secret_id': secretId, 'reason': reason},
     );
   }
 
   Future<void> logAudioPlayback(String secretId) async {
-    await _analytics.logEvent(name: 'audio_playback', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'audio_playback',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logCreatorProfileTapped(String creatorId) async {
-    await _analytics.logEvent(name: 'creator_profile_tapped', parameters: {'creator_id': creatorId});
+    await _analytics.logEvent(
+      name: 'creator_profile_tapped',
+      parameters: {'creator_id': creatorId},
+    );
   }
 
   // ─── GROUP SECRETS ────────────────────────────────────────────
 
-  Future<void> logGroupUnlockAttempt({required String secretId, required bool success}) async {
+  Future<void> logGroupUnlockAttempt({
+    required String secretId,
+    required bool success,
+  }) async {
     await _analytics.logEvent(
       name: 'group_unlock_attempt',
-      parameters: {
-        'secret_id': secretId,
-        'success': success.toString(),
-      },
+      parameters: {'secret_id': secretId, 'success': success.toString()},
     );
   }
 
   // ─── CONTENT WARNING ──────────────────────────────────────────
 
   Future<void> logContentWarningDismissed(String secretId) async {
-    await _analytics.logEvent(name: 'content_warning_dismissed', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'content_warning_dismissed',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   // ─── COMMENTS ─────────────────────────────────────────────────
 
   Future<void> logCommentAdded(String secretId) async {
-    await _analytics.logEvent(name: 'comment_added', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'comment_added',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logCommentEdited(String secretId) async {
-    await _analytics.logEvent(name: 'comment_edited', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'comment_edited',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logCommentDeleted(String secretId) async {
-    await _analytics.logEvent(name: 'comment_deleted', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'comment_deleted',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logCommentReplied(String secretId) async {
-    await _analytics.logEvent(name: 'comment_replied', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'comment_replied',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logCommentsOpened(String secretId) async {
-    await _analytics.logEvent(name: 'comments_opened', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'comments_opened',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   // ─── SOCIAL ───────────────────────────────────────────────────
 
   Future<void> logFollow(String targetUserId) async {
-    await _analytics.logEvent(name: 'follow_user', parameters: {'target_user_id': targetUserId});
+    await _analytics.logEvent(
+      name: 'follow_user',
+      parameters: {'target_user_id': targetUserId},
+    );
   }
 
   Future<void> logUnfollow(String targetUserId) async {
-    await _analytics.logEvent(name: 'unfollow_user', parameters: {'target_user_id': targetUserId});
+    await _analytics.logEvent(
+      name: 'unfollow_user',
+      parameters: {'target_user_id': targetUserId},
+    );
   }
 
   Future<void> logUserSearch(String query) async {
     await _analytics.logEvent(
       name: 'user_search',
-      parameters: {'query': query.length > 100 ? query.substring(0, 100) : query},
+      parameters: {
+        'query': query.length > 100 ? query.substring(0, 100) : query,
+      },
     );
   }
 
   Future<void> logFollowedUserTapped(String userId) async {
-    await _analytics.logEvent(name: 'followed_user_tapped', parameters: {'user_id': userId});
+    await _analytics.logEvent(
+      name: 'followed_user_tapped',
+      parameters: {'user_id': userId},
+    );
   }
 
   // ─── MAP ──────────────────────────────────────────────────────
 
   Future<void> logMapMarkerTapped(String secretId) async {
-    await _analytics.logEvent(name: 'map_marker_tapped', parameters: {'secret_id': secretId});
+    await _analytics.logEvent(
+      name: 'map_marker_tapped',
+      parameters: {'secret_id': secretId},
+    );
   }
 
   Future<void> logMapCenterOnUser() async {
@@ -337,10 +408,7 @@ class AnalyticsService {
   Future<void> logTierUp({required int oldTier, required int newTier}) async {
     await _analytics.logEvent(
       name: 'tier_up',
-      parameters: {
-        'old_tier': oldTier,
-        'new_tier': newTier,
-      },
+      parameters: {'old_tier': oldTier, 'new_tier': newTier},
     );
   }
 
@@ -359,7 +427,10 @@ class AnalyticsService {
 
   // ─── ADMIN ────────────────────────────────────────────────────
 
-  Future<void> logAdminAppealDecision({required String appealId, required bool approved}) async {
+  Future<void> logAdminAppealDecision({
+    required String appealId,
+    required bool approved,
+  }) async {
     await _analytics.logEvent(
       name: 'admin_appeal_decision',
       parameters: {
@@ -369,7 +440,11 @@ class AnalyticsService {
     );
   }
 
-  Future<void> logAdminReportDecision({required String reportId, required String secretId, required bool deleted}) async {
+  Future<void> logAdminReportDecision({
+    required String reportId,
+    required String secretId,
+    required bool deleted,
+  }) async {
     await _analytics.logEvent(
       name: 'admin_report_decision',
       parameters: {
@@ -380,12 +455,15 @@ class AnalyticsService {
     );
   }
 
-  Future<void> logAdminMaintenanceAction(String action, {String? details}) async {
+  Future<void> logAdminMaintenanceAction(
+    String action, {
+    String? details,
+  }) async {
     final Map<String, Object> params = {'action': action};
     if (details != null) {
       params['details'] = details;
     }
-    
+
     await _analytics.logEvent(
       name: 'admin_maintenance_action',
       parameters: params,
