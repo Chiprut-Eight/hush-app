@@ -1677,11 +1677,12 @@ class _PushNotificationViewState extends State<_PushNotificationView> {
     final l10n = AppLocalizations.of(context)!;
     final isHe = Localizations.localeOf(context).languageCode == 'he';
 
-    return Padding(
-      padding: const EdgeInsets.all(24.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(24.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           Text(
             isHe ? 'שליחת הודעת פוש לכלל המשתמשים' : 'Send Push Notification to ALL users',
             style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
@@ -1730,7 +1731,7 @@ class _PushNotificationViewState extends State<_PushNotificationView> {
           ),
         ],
       ),
-    );
+    ));
   }
 }
 
