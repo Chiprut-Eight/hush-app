@@ -116,10 +116,14 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           switch (safeType) {
                             case 'like': actionIcon = HushIcons.heart; break;
                             case 'comment': actionIcon = HushIcons.comment; break;
-                            case 'follow': actionIcon = HushIcons.userCircle; break;
-                            case 'broadcast': actionIcon = HushIcons.bell; break;
+                            case 'follower': actionIcon = HushIcons.userCircle; break;
+                            case 'new_secret': actionIcon = HushIcons.feed; break;
+                            case 'expiring': actionIcon = Icons.warning_amber_rounded; break;
+                            case 'decay': actionIcon = Icons.delete_outline; break;
+                            case 'tier_up': actionIcon = Icons.arrow_upward; break;
+                            case 'broadcast': actionIcon = Icons.campaign; break;
                             case 'report': actionIcon = Icons.warning_amber_rounded; break;
-                            default: actionIcon = HushIcons.bell;
+                            default: actionIcon = HushIcons.bell; break;
                           }
                           
                           return InkWell(

@@ -19,7 +19,7 @@ class HushUser {
   // Onboarding
   final bool isOnboarded;
   final bool hasSeenTutorial;
-  final bool hasSeenFollowingTutorial;
+  final bool hasSeenFollowingTutorialV2;
   final String? firstName;
   final String? lastName;
   final DateTime? dateOfBirth;
@@ -105,7 +105,7 @@ class HushUser {
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isOnboarded: data['isOnboarded'] ?? false,
       hasSeenTutorial: data['hasSeenTutorial'] ?? false,
-      hasSeenFollowingTutorial: data['hasSeenFollowingTutorial'] ?? false,
+      hasSeenFollowingTutorialV2: data['hasSeenFollowingTutorialV2'] ?? false,
       firstName: data['firstName'],
       lastName: data['lastName'],
       dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
@@ -143,7 +143,7 @@ class HushUser {
     'createdAt': Timestamp.fromDate(createdAt),
     'isOnboarded': isOnboarded,
     'hasSeenTutorial': hasSeenTutorial,
-    'hasSeenFollowingTutorial': hasSeenFollowingTutorial,
+    'hasSeenFollowingTutorialV2': hasSeenFollowingTutorialV2,
     'firstName': firstName,
     'lastName': lastName,
     'dateOfBirth': dateOfBirth != null ? Timestamp.fromDate(dateOfBirth!) : null,

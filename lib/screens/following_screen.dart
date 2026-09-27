@@ -47,7 +47,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       final user = context.read<AuthProvider>().hushUser;
-      if (user != null && !user.hasSeenFollowingTutorial && _followedFeed.isNotEmpty) {
+      if (user != null && !user.hasSeenFollowingTutorialV2 && _followedFeed.isNotEmpty) {
         _showTutorial();
       }
     }
@@ -59,7 +59,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     if (user != null) {
       _followedFeed = await _socialService.getFollowedUsersFeed(user.followingIds);
       
-      if (widget.isActive && !user.hasSeenFollowingTutorial && _followedFeed.isNotEmpty) {
+      if (widget.isActive && !user.hasSeenFollowingTutorialV2 && _followedFeed.isNotEmpty) {
         // Wait a frame for UI to render
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _showTutorial();
@@ -121,19 +121,19 @@ class _FollowingScreenState extends State<FollowingScreen> {
       TutorialCoachMark(
         targets: targets,
         colorShadow: HushColors.bgPrimary,
-        textSkip: l10n.cancel,
+        textSkip: "הבנתי", // Use explicit text for now
         paddingFocus: 10,
         opacityShadow: 0.8,
         onFinish: () async {
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorial': true});
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV2': true});
           }
         },
         onSkip: () {
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorial': true});
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV2': true});
           }
           return true;
         },
@@ -304,7 +304,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                 Navigator.push(context, MaterialPageRoute(builder: (_) => MapScreen(
                   targetLat: secret.lat, 
                   targetLng: secret.lng,
-                  targetTitle: 'Hushhh של $shortName',
+                  targetTitle: shortName,
                 )));
               }
             },
