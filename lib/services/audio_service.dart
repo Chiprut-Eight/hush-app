@@ -3,6 +3,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:record/record.dart';
 import 'package:uuid/uuid.dart';
+import 'package:audio_session/audio_session.dart';
 
 /// Audio recording and upload service — matches web audioService.ts
 class AudioService {
@@ -20,6 +21,28 @@ class AudioService {
     final hasPermission = await _recorder.hasPermission();
     if (!hasPermission) {
       throw Exception('Microphone permission denied');
+    }
+
+    // Try to acquire audio focus (will fail if in a call)
+    final session = await AudioSession.instance;
+    await session.configure(const AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.record,
+      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.mixWithOthers,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      avAudioSessionSetActiveOptions: AVAudioSessionSetActiveOptions.none,
+      androidAudioAttributes: AndroidAudioAttributes(
+        contentType: AndroidAudioContentType.speech,
+        flags: AndroidAudioFlags.none,
+        usage: AndroidAudioUsage.voiceCommunication,
+      ),
+      androidAudioFocusGainType: AndroidAudioFocusGainType.gainTransientExclusive,
+      androidWillPauseWhenDucked: true,
+    ));
+
+    final success = await session.setActive(true);
+    if (!success) {
+      throw Exception('Could not acquire audio focus. Are you in a call?');
     }
 
     // Use a temporary file

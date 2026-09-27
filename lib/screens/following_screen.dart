@@ -198,8 +198,14 @@ class _FollowingScreenState extends State<FollowingScreen> {
             onTap: () {
               AnalyticsService().logFollowedUserTapped(user.uid);
               if (secret != null) {
+                final displayName = '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}'.trim() : (user.displayName ?? l10n.anonymousUser);
+                final shortName = displayName.length > 15 ? '${displayName.substring(0, 15)}...' : displayName;
                 // Navigate to MapScreen targeting the secret's coordinates
-                Navigator.push(context, MaterialPageRoute(builder: (_) => MapScreen(targetLat: secret.lat, targetLng: secret.lng)));
+                Navigator.push(context, MaterialPageRoute(builder: (_) => MapScreen(
+                  targetLat: secret.lat, 
+                  targetLng: secret.lng,
+                  targetTitle: 'Hushhh של $shortName',
+                )));
               }
             },
             borderRadius: BorderRadius.circular(16),

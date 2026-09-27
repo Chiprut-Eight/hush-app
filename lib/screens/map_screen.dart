@@ -20,12 +20,14 @@ import 'package:hush_app/l10n/app_localizations.dart';
 class MapScreen extends StatefulWidget {
   final double? targetLat;
   final double? targetLng;
+  final String? targetTitle;
   final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const MapScreen({
     super.key,
     this.targetLat,
     this.targetLng,
+    this.targetTitle,
     this.scaffoldKey,
   });
 
@@ -107,13 +109,6 @@ class _MapScreenState extends State<MapScreen> {
           _secrets = secrets;
           _isLoading = false;
         });
-
-        // If target was passed, jump camera there
-        if (widget.targetLat != null && widget.targetLng != null) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            _mapController.move(LatLng(widget.targetLat!, widget.targetLng!), 18.0);
-          });
-        }
       }
     } catch (e) {
       debugPrint('[MapScreen] Error fetching map data: $e');
@@ -184,7 +179,7 @@ class _MapScreenState extends State<MapScreen> {
     if (isPushed) {
       final l10n = AppLocalizations.of(context)!;
       content = TitleSetter(
-        title: l10n.mapTabTitle,
+        title: widget.targetTitle ?? l10n.mapTabTitle,
         child: content,
       );
     }
@@ -223,13 +218,17 @@ class _MapScreenState extends State<MapScreen> {
       );
     }
 
+    final initialLat = widget.targetLat ?? _currentPosition!.latitude;
+    final initialLng = widget.targetLng ?? _currentPosition!.longitude;
+    final initialZoom = widget.targetLat != null ? 18.0 : 15.0;
+
     return Stack(
       children: [
         FlutterMap(
           mapController: _mapController,
           options: MapOptions(
-            initialCenter: LatLng(_currentPosition!.latitude, _currentPosition!.longitude),
-            initialZoom: 15.0,
+            initialCenter: LatLng(initialLat, initialLng),
+            initialZoom: initialZoom,
             onTap: (tapPosition, point) {
               if (_selectedSecret != null) {
                 setState(() => _selectedSecret = null);

@@ -107,7 +107,16 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           final body = bodyObj?[langCode] ?? bodyObj?['en'] ?? '';
                           final isRead = data['read'] == true;
                           
-                          final secretId = data['data']?['secretId'];
+                          final type = data['type'] as String? ?? 'general';
+                          IconData actionIcon;
+                          switch (type) {
+                            case 'like': actionIcon = HushIcons.heart; break;
+                            case 'comment': actionIcon = HushIcons.chat; break;
+                            case 'follow': actionIcon = HushIcons.userCircle; break;
+                            case 'broadcast': actionIcon = HushIcons.bell; break;
+                            case 'report': actionIcon = Icons.warning_amber_rounded; break;
+                            default: actionIcon = HushIcons.bell;
+                          }
                           
                           return InkWell(
                             onTap: () {
@@ -130,7 +139,7 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                                   CircleAvatar(
                                     radius: 18,
                                     backgroundColor: HushColors.bgCard,
-                                    child: const HushIcon(HushIcons.bell, size: 16, color: HushColors.textAccent),
+                                    child: HushIcon(actionIcon, size: 16, color: HushColors.textAccent),
                                   ),
                                   const SizedBox(width: 12),
                                   Expanded(

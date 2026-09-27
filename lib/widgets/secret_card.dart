@@ -1429,6 +1429,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                             duration: _duration,
                             activeColor: HushColors.textAccent,
                             inactiveColor: Colors.white24,
+                            isPlaying: _isPlaying,
                             onSeek: (val) => _audioPlayer.seek(val),
                           ),
                         ),
@@ -1545,12 +1546,13 @@ class _InteractionButton extends StatelessWidget {
   }
 }
 
-class WaveformScrubber extends StatelessWidget {
+class WaveformScrubber extends StatefulWidget {
   final Duration position;
   final Duration duration;
   final ValueChanged<Duration> onSeek;
   final Color activeColor;
   final Color inactiveColor;
+  final bool isPlaying;
 
   const WaveformScrubber({
     super.key,
@@ -1559,7 +1561,51 @@ class WaveformScrubber extends StatelessWidget {
     required this.onSeek,
     required this.activeColor,
     required this.inactiveColor,
+    this.isPlaying = false,
   });
+
+  @override
+  State<WaveformScrubber> createState() => _WaveformScrubberState();
+}
+
+class _WaveformScrubberState extends State<WaveformScrubber> with SingleTickerProviderStateMixin {
+  late AnimationController _animController;
+
+  @override
+  void initState() {
+    super.initState();
+    _animController = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 600),
+    );
+    if (widget.isPlaying) _animController.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(WaveformScrubber oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isPlaying != oldWidget.isPlaying) {
+      if (widget.isPlaying) {
+        _animController.repeat(reverse: true);
+      } else {
+        _animController.stop();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _animController.dispose();
+    super.dispose();
+  }
+
+  void _handleDrag(Offset localPosition, double maxWidth) {
+    if (widget.duration.inMilliseconds == 0) return;
+    final dx = localPosition.dx;
+    final percent = (dx / maxWidth).clamp(0.0, 1.0);
+    final targetMs = (percent * widget.duration.inMilliseconds).round();
+    widget.onSeek(Duration(milliseconds: targetMs));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1570,42 +1616,47 @@ class WaveformScrubber extends StatelessWidget {
         final totalBars = (constraints.maxWidth / (barWidth + barSpacing)).floor();
         if (totalBars <= 0) return const SizedBox();
 
-        final progress = duration.inMilliseconds == 0
+        final progress = widget.duration.inMilliseconds == 0
             ? 0.0
-            : position.inMilliseconds / duration.inMilliseconds;
+            : widget.position.inMilliseconds / widget.duration.inMilliseconds;
         final activeBars = (progress * totalBars).round();
 
         return GestureDetector(
           behavior: HitTestBehavior.opaque,
           onPanUpdate: (details) => _handleDrag(details.localPosition, constraints.maxWidth),
           onTapDown: (details) => _handleDrag(details.localPosition, constraints.maxWidth),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(totalBars, (index) {
-              final heightMultiplier = [0.3, 0.5, 0.8, 1.0, 0.6, 0.4, 0.9, 0.7, 0.5, 0.2][(index * 7) % 10];
-              final height = 10.0 + (16.0 * heightMultiplier);
-              
-              final isActive = index < activeBars;
-              return Container(
-                margin: EdgeInsets.only(right: barSpacing),
-                width: barWidth,
-                height: height,
-                decoration: BoxDecoration(
-                  color: isActive ? activeColor : inactiveColor,
-                  borderRadius: BorderRadius.circular(2),
-                ),
+          child: AnimatedBuilder(
+            animation: _animController,
+            builder: (context, child) {
+              return Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: List.generate(totalBars, (index) {
+                  final baseHeightMultiplier = [0.3, 0.5, 0.8, 1.0, 0.6, 0.4, 0.9, 0.7, 0.5, 0.2][(index * 7) % 10];
+                  final isActive = index < activeBars;
+                  
+                  double dynamicScale = 1.0;
+                  if (widget.isPlaying && isActive) {
+                    final wave = (index * 0.5 + _animController.value * 3.14 * 2) % (3.14 * 2);
+                    dynamicScale = 0.7 + 0.3 * (0.5 * (1 + (wave).remainder(3.14)));
+                  }
+
+                  final height = (10.0 + (16.0 * baseHeightMultiplier)) * dynamicScale;
+
+                  return Container(
+                    margin: EdgeInsets.only(right: barSpacing),
+                    width: barWidth,
+                    height: height,
+                    decoration: BoxDecoration(
+                      color: isActive ? widget.activeColor : widget.inactiveColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  );
+                }),
               );
-            }),
+            },
           ),
         );
       },
     );
-  }
-
-  void _handleDrag(Offset localPosition, double maxWidth) {
-    final dx = localPosition.dx;
-    final percent = (dx / maxWidth).clamp(0.0, 1.0);
-    final targetMs = (percent * duration.inMilliseconds).round();
-    onSeek(Duration(milliseconds: targetMs));
   }
 }

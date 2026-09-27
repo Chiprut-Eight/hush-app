@@ -50,28 +50,11 @@ class HushDrawer extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // App Logo
-                  Container(
-                    width: isLandscape ? 40 : 64,
-                    height: isLandscape ? 40 : 64,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: HushColors.textAccent, width: 2),
-                      image: const DecorationImage(
-                        image: AssetImage('assets/images/icon_only.png'),
-                        fit: BoxFit.contain,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Text(
-                    'Hushhh',
-                    style: TextStyle(
-                      color: isDark ? Colors.white : Colors.black87,
-                      fontSize: isLandscape ? 16 : 20,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 2,
-                    ),
+                  // App Logo Image Only
+                  Image.asset(
+                    'assets/images/logo_hushhh2.jpeg',
+                    height: isLandscape ? 30 : 40,
+                    fit: BoxFit.contain,
                   ),
                   const Spacer(),
                   // Close Button

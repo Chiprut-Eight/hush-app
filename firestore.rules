@@ -99,5 +99,11 @@ service cloud.firestore {
       allow create: if request.auth != null;
       allow read, update, delete: if isAdmin();
     }
+    // ========================================
+    // ADMIN BROADCASTS — Only admins can read, create, update
+    // ========================================
+    match /admin_broadcasts/{broadcastId} {
+      allow read, write: if isAdmin();
+    }
   }
 }
