@@ -28,6 +28,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
   final GlobalKey _profileTargetKey = GlobalKey();
   final GlobalKey _mapTargetKey = GlobalKey();
   bool _tutorialShown = false;
+  TutorialCoachMark? _tutorial;
 
   List<HushUser> _searchResults = [];
   List<FollowedUserFeedItem> _followedFeed = [];
@@ -50,6 +51,10 @@ class _FollowingScreenState extends State<FollowingScreen> {
       if (user != null && !user.hasSeenFollowingTutorialV3 && _followedFeed.isNotEmpty) {
         _showTutorial();
       }
+    } else if (!widget.isActive && oldWidget.isActive) {
+      // If user navigates away while tutorial is showing
+      _tutorial?.finish();
+      _tutorial = null;
     }
   }
 
@@ -109,6 +114,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
             identify: "MapTarget",
             keyTarget: _mapTargetKey,
             alignSkip: Alignment.topRight,
+            shape: ShapeLightFocus.RRect,
+            radius: 16,
             contents: [
               TargetContent(
                 align: ContentAlign.top,
@@ -129,26 +136,28 @@ class _FollowingScreenState extends State<FollowingScreen> {
 
       if (targets.isEmpty) return;
 
-      TutorialCoachMark(
+      _tutorial = TutorialCoachMark(
         targets: targets,
         colorShadow: HushColors.bgPrimary,
         textSkip: "דלג", // Use explicit text for skip
         paddingFocus: 10,
         opacityShadow: 0.8,
         onFinish: () async {
+          _tutorial = null;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
             await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV3': true});
           }
         },
         onSkip: () {
+          _tutorial = null;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
             FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV3': true});
           }
           return true;
         },
-      ).show(context: context);
+      )..show(context: context);
     });
   }
 
