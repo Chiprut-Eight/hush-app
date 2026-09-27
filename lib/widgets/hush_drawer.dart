@@ -50,13 +50,16 @@ class HushDrawer extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  // App Logo Image Only
-                  Image.asset(
-                    'assets/images/logo_hushhh3.png',
-                    height: isLandscape ? 40 : 60,
-                    fit: BoxFit.contain,
+                  Expanded(
+                    child: Align(
+                      alignment: localeProvider.isHebrew ? Alignment.centerRight : Alignment.centerLeft,
+                      child: Image.asset(
+                        'assets/images/logo_hushhh3.png',
+                        height: isLandscape ? 60 : 100,
+                        fit: BoxFit.contain,
+                      ),
+                    ),
                   ),
-                  const Spacer(),
                   // Close Button
                   IconButton(
                     icon: Icon(Icons.close, color: isDark ? Colors.white70 : Colors.black54),
