@@ -261,6 +261,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       textContent: textContent,
       recordedPath: recordedPath,
       audioDuration: audioDuration,
+      amplitudes: _audioService.recordedAmplitudes,
       lat: position.latitude,
       lng: position.longitude,
       isGroup: isGroup,
@@ -296,6 +297,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     required String textContent,
     required String? recordedPath,
     required int audioDuration,
+    required List<double>? amplitudes,
     required double lat,
     required double lng,
     required bool isGroup,
@@ -318,6 +320,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         await _secretService.createVoiceSecret(
           audioURL: downloadUrl,
           audioDuration: audioDuration,
+          amplitudes: amplitudes,
           lat: lat,
           lng: lng,
           isGroup: isGroup,

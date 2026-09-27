@@ -12,6 +12,7 @@ class Secret {
   final String? textContent;
   final String? audioURL;
   final int audioDuration;
+  final List<double>? amplitudes;
   final double lat;
   final double lng;
   final int views;
@@ -39,6 +40,7 @@ class Secret {
     this.textContent,
     this.audioURL,
     this.audioDuration = 0,
+    this.amplitudes,
     required this.lat,
     required this.lng,
     this.views = 0,
@@ -62,6 +64,13 @@ class Secret {
 
   factory Secret.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+    
+    // Parse amplitudes safely
+    List<double>? parsedAmplitudes;
+    if (data['amplitudes'] != null) {
+      parsedAmplitudes = (data['amplitudes'] as List).map((e) => (e as num).toDouble()).toList();
+    }
+    
     return Secret(
       id: doc.id,
       creatorId: data['creatorId'] ?? '',
@@ -73,6 +82,7 @@ class Secret {
       textContent: data['textContent'],
       audioURL: data['audioURL'],
       audioDuration: data['audioDuration'] ?? 0,
+      amplitudes: parsedAmplitudes,
       lat: (data['lat'] as num?)?.toDouble() ?? 0.0,
       lng: (data['lng'] as num?)?.toDouble() ?? 0.0,
       views: data['views'] ?? data['listens'] ?? 0,
@@ -103,6 +113,7 @@ class Secret {
     'textContent': textContent,
     'audioURL': audioURL,
     'audioDuration': audioDuration,
+    'amplitudes': amplitudes,
     'lat': lat,
     'lng': lng,
     'views': views,

@@ -162,6 +162,7 @@ class SecretService {
     required int audioDuration,
     required double lat,
     required double lng,
+    List<double>? amplitudes,
     bool isGroup = false,
     int? minTierLevel,
     int? requiredUsers,
@@ -172,11 +173,12 @@ class SecretService {
       'type': 'voice',
       'audioURL': audioURL,
       'audioDuration': audioDuration,
+      'amplitudes': amplitudes,
       'lat': lat,
       'lng': lng,
       'isGroup': isGroup,
-      'requiredUsers': ?requiredUsers,
-      'timeWindowMinutes': ?timeWindowMinutes,
+      'requiredUsers': requiredUsers,
+      'timeWindowMinutes': timeWindowMinutes,
     });
     final data = Map<String, dynamic>.from(result.data);
     if (data['success'] != true) throw Exception(data['message'] ?? 'Create failed');

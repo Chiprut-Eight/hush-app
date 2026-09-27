@@ -1427,6 +1427,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                           child: WaveformScrubber(
                             position: _position,
                             duration: _duration,
+                            amplitudes: secret.amplitudes,
                             activeColor: HushColors.textAccent,
                             inactiveColor: Colors.white24,
                             isPlaying: _isPlaying,
@@ -1553,6 +1554,7 @@ class WaveformScrubber extends StatefulWidget {
   final Color activeColor;
   final Color inactiveColor;
   final bool isPlaying;
+  final List<double>? amplitudes;
 
   const WaveformScrubber({
     super.key,
@@ -1562,6 +1564,7 @@ class WaveformScrubber extends StatefulWidget {
     required this.activeColor,
     required this.inactiveColor,
     this.isPlaying = false,
+    this.amplitudes,
   });
 
   @override
@@ -1631,13 +1634,24 @@ class _WaveformScrubberState extends State<WaveformScrubber> with SingleTickerPr
               return Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: List.generate(totalBars, (index) {
-                  final baseHeightMultiplier = [0.3, 0.5, 0.8, 1.0, 0.6, 0.4, 0.9, 0.7, 0.5, 0.2][(index * 7) % 10];
+                  double baseHeightMultiplier;
+                  
+                  if (widget.amplitudes != null && widget.amplitudes!.isNotEmpty) {
+                    // Map index to amplitude array index
+                    final mappedIndex = (index / totalBars * widget.amplitudes!.length).floor();
+                    // Keep bounds check just in case
+                    final safeIndex = mappedIndex.clamp(0, widget.amplitudes!.length - 1);
+                    baseHeightMultiplier = widget.amplitudes![safeIndex];
+                  } else {
+                    baseHeightMultiplier = [0.3, 0.5, 0.8, 1.0, 0.6, 0.4, 0.9, 0.7, 0.5, 0.2][(index * 7) % 10];
+                  }
+                  
                   final isActive = index < activeBars;
                   
                   double dynamicScale = 1.0;
                   if (widget.isPlaying && isActive) {
                     final wave = (index * 0.5 + _animController.value * 3.14 * 2) % (3.14 * 2);
-                    dynamicScale = 0.7 + 0.3 * (0.5 * (1 + (wave).remainder(3.14)));
+                    dynamicScale = 0.8 + 0.2 * (0.5 * (1 + (wave).remainder(3.14)));
                   }
 
                   final height = (10.0 + (16.0 * baseHeightMultiplier)) * dynamicScale;

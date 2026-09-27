@@ -849,6 +849,7 @@ exports.createSecretV2 = functions.https.onCall(async (data, context) => {
         expiresAt: admin.firestore.Timestamp.fromDate(expiresAt),
         // Keep type info for display but NOT content
         audioDuration: type === "voice" ? (audioDuration || 0) : 0,
+        amplitudes: type === "voice" && data.amplitudes ? data.amplitudes : null,
     });
     // Store content in protected subcollection
     const contentData = {};
@@ -1088,15 +1089,40 @@ exports.onAdminBroadcast = functions.firestore
         return;
     }
     const payload = {
+        topic: "all_users",
         notification: {
             title: data.title,
             body: data.body,
-            sound: "hush_notification.wav", // Adjust if your custom sound name is different
+        },
+        data: {
+            type: "broadcast",
+        },
+        android: {
+            priority: "high",
+            notification: {
+                channelId: "hush_custom_notifications",
+                sound: "shush_push",
+            },
+        },
+        apns: {
+            headers: {
+                "apns-priority": "10",
+            },
+            payload: {
+                aps: {
+                    alert: {
+                        title: data.title,
+                        body: data.body,
+                    },
+                    sound: "shush_push.wav",
+                    badge: 1,
+                },
+            },
         },
     };
     try {
         // Send to the all_users topic
-        await admin.messaging().sendToTopic("all_users", payload);
+        await admin.messaging().send(payload);
         await snap.ref.update({
             status: "sent",
             sentAt: admin.firestore.FieldValue.serverTimestamp(),

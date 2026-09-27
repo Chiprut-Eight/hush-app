@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:async';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 import 'package:record/record.dart';
@@ -11,6 +12,9 @@ class AudioService {
   final FirebaseStorage _storage = FirebaseStorage.instance;
   bool _isRecording = false;
   String? _currentPath;
+  
+  List<double> recordedAmplitudes = [];
+  StreamSubscription<Amplitude>? _amplitudeSub;
 
   bool get isRecording => _isRecording;
 
@@ -49,6 +53,9 @@ class AudioService {
     final tempDir = Directory.systemTemp;
     _currentPath = '${tempDir.path}/hush_recording_${const Uuid().v4()}.m4a';
 
+    recordedAmplitudes.clear();
+    await _amplitudeSub?.cancel();
+
     await _recorder.start(
       const RecordConfig(
         encoder: AudioEncoder.aacLc,
@@ -59,12 +66,20 @@ class AudioService {
     );
 
     _isRecording = true;
+    _amplitudeSub = _recorder.onAmplitudeChanged(const Duration(milliseconds: 100)).listen((amp) {
+      // Normalize from dB (-50 to 0 typically) to a 0.0 - 1.0 scale
+      double normalized = (amp.current + 50) / 50;
+      if (normalized < 0.05) normalized = 0.05; // Minimum bar height
+      if (normalized > 1.0) normalized = 1.0;
+      recordedAmplitudes.add(normalized);
+    });
   }
 
   /// Stop recording and return the local file path
   Future<String?> stopRecording() async {
     if (!_isRecording) return null;
 
+    await _amplitudeSub?.cancel();
     final path = await _recorder.stop();
     _isRecording = false;
     return path;
