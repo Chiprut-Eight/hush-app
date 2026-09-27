@@ -658,7 +658,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
             ? Padding(
                 padding: margin ?? EdgeInsets.zero,
                 child: SizedBox(
-                  height: 46,
+                  height: 54,
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: _publishSecret,
@@ -675,8 +675,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                         ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                         : Image.asset(
                             'assets/images/icon_tap_to_drop.png',
-                            width: 34,
-                            height: 34,
+                            width: 42,
+                            height: 42,
                             fit: BoxFit.contain,
                           ),
                     label: Text(
