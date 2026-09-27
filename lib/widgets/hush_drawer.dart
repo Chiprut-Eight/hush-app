@@ -73,7 +73,7 @@ class HushDrawer extends StatelessWidget {
                 children: [
                   // Language Toggle
                   ListTile(
-                    leading: const HushIcon(HushIcons.feed, size: 22, color: HushColors.textAccent),
+                    leading: const Icon(Icons.language_outlined, size: 22, color: HushColors.textAccent),
                     title: Text(l10n.language, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     trailing: Text(
                       localeProvider.isHebrew ? 'English' : 'Hebrew',
@@ -104,7 +104,7 @@ class HushDrawer extends StatelessWidget {
 
                   // Settings
                   ListTile(
-                    leading: HushIcon(HushIcons.bell, size: 22, color: isDark ? Colors.white70 : Colors.black54),
+                    leading: Icon(Icons.settings_outlined, size: 22, color: isDark ? Colors.white70 : Colors.black54),
                     title: Text(l10n.settings, style: TextStyle(color: isDark ? Colors.white : Colors.black87)),
                     onTap: () {
                       Scaffold.of(context).closeDrawer();
