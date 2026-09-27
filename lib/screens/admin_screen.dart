@@ -1428,6 +1428,41 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
             ),
           ),
         ),
+        const SizedBox(height: 16),
+        Center(
+          child: ElevatedButton(
+            onPressed: () {
+              final user = context.read<AuthProvider>().firebaseUser;
+              if (user != null) {
+                FirebaseFirestore.instance
+                    .collection('users')
+                    .doc(user.uid)
+                    .update({
+                  'hasSeenTutorial': false,
+                  'hasSeenFollowingTutorialV6': false,
+                });
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tutorials reset! Restart app.")));
+              }
+            },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.redAccent,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            ),
+            child: const FittedBox(
+              fit: BoxFit.scaleDown,
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(Icons.restart_alt),
+                  SizedBox(width: 8),
+                  Text('Reset All Tutorials'),
+                ],
+              ),
+            ),
+          ),
+        ),
         const SizedBox(height: 12),
         Center(
           child: ElevatedButton(

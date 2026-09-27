@@ -29,6 +29,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
   final GlobalKey _mapTargetKey = GlobalKey();
   bool _tutorialShown = false;
   TutorialCoachMark? _tutorial;
+  bool _isNavigatingAway = false;
 
   List<HushUser> _searchResults = [];
   List<FollowedUserFeedItem> _followedFeed = [];
@@ -47,12 +48,14 @@ class _FollowingScreenState extends State<FollowingScreen> {
   void didUpdateWidget(FollowingScreen oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
+      _isNavigatingAway = false;
       final user = context.read<AuthProvider>().hushUser;
       if (user != null && !user.hasSeenFollowingTutorialV6 && _followedFeed.isNotEmpty) {
         _showTutorial();
       }
     } else if (!widget.isActive && oldWidget.isActive) {
       // If user navigates away while tutorial is showing
+      _isNavigatingAway = true;
       _tutorial?.finish();
       _tutorial = null;
     }
@@ -166,6 +169,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
         opacityShadow: 0.8,
         onFinish: () async {
           _tutorial = null;
+          if (_isNavigatingAway) return;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
             await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV6': true});
@@ -173,6 +177,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
         },
         onSkip: () {
           _tutorial = null;
+          if (_isNavigatingAway) return true;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
             FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV6': true});
@@ -198,10 +203,13 @@ class _FollowingScreenState extends State<FollowingScreen> {
     });
 
     final results = await _socialService.searchUsers(query);
+    final currentUserUid = context.read<AuthProvider>().firebaseUser?.uid;
+    final filteredResults = results.where((u) => u.uid != currentUserUid).toList();
+    
     AnalyticsService().logUserSearch(query);
     if (mounted) {
       setState(() {
-        _searchResults = results;
+        _searchResults = filteredResults;
         _isLoading = false;
       });
     }
