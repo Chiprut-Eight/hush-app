@@ -19,7 +19,7 @@ class HushUser {
   // Onboarding
   final bool isOnboarded;
   final bool hasSeenTutorial;
-  final bool hasSeenFollowingTutorialV4;
+  final bool hasSeenFollowingTutorialV5;
   final String? firstName;
   final String? lastName;
   final DateTime? dateOfBirth;
@@ -65,7 +65,7 @@ class HushUser {
     this.ghostModeUntil,
     this.isOnboarded = false,
     this.hasSeenTutorial = false,
-    this.hasSeenFollowingTutorialV4 = false,
+    this.hasSeenFollowingTutorialV5 = false,
     this.firstName,
     this.lastName,
     this.dateOfBirth,
@@ -105,7 +105,7 @@ class HushUser {
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       isOnboarded: data['isOnboarded'] ?? false,
       hasSeenTutorial: data['hasSeenTutorial'] ?? false,
-      hasSeenFollowingTutorialV4: data['hasSeenFollowingTutorialV4'] ?? false,
+      hasSeenFollowingTutorialV5: data['hasSeenFollowingTutorialV5'] ?? false,
       firstName: data['firstName'],
       lastName: data['lastName'],
       dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
@@ -143,7 +143,7 @@ class HushUser {
     'createdAt': Timestamp.fromDate(createdAt),
     'isOnboarded': isOnboarded,
     'hasSeenTutorial': hasSeenTutorial,
-    'hasSeenFollowingTutorialV4': hasSeenFollowingTutorialV4,
+    'hasSeenFollowingTutorialV5': hasSeenFollowingTutorialV5,
     'firstName': firstName,
     'lastName': lastName,
     'dateOfBirth': dateOfBirth != null ? Timestamp.fromDate(dateOfBirth!) : null,
