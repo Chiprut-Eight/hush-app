@@ -302,7 +302,7 @@ class _AppShellState extends State<AppShell> {
                   ),
                   BottomNavigationBarItem(
                     icon: Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.all(8), // Reduced padding
                       decoration: const BoxDecoration(
                         gradient: HushColors.brandGradient,
                         shape: BoxShape.circle,
@@ -315,7 +315,7 @@ class _AppShellState extends State<AppShell> {
                           ),
                         ],
                       ),
-                      child: Image.asset('assets/images/icon_tap_to_drop.png', width: 28, height: 28),
+                      child: Image.asset('assets/images/icon_tap_to_drop.png', width: 40, height: 40), // Increased size
                     ),
                     label: '',
                   ),
