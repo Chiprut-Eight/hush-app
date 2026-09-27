@@ -48,7 +48,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       final user = context.read<AuthProvider>().hushUser;
-      if (user != null && !user.hasSeenFollowingTutorialV5 && _followedFeed.isNotEmpty) {
+      if (user != null && !user.hasSeenFollowingTutorialV6 && _followedFeed.isNotEmpty) {
         _showTutorial();
       }
     } else if (!widget.isActive && oldWidget.isActive) {
@@ -64,7 +64,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     if (user != null) {
       _followedFeed = await _socialService.getFollowedUsersFeed(user.followingIds);
       
-      if (widget.isActive && !user.hasSeenFollowingTutorialV5 && _followedFeed.isNotEmpty) {
+      if (widget.isActive && !user.hasSeenFollowingTutorialV6 && _followedFeed.isNotEmpty) {
         // Wait a frame for UI to render
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _showTutorial();
@@ -168,14 +168,14 @@ class _FollowingScreenState extends State<FollowingScreen> {
           _tutorial = null;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV5': true});
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV6': true});
           }
         },
         onSkip: () {
           _tutorial = null;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV5': true});
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV6': true});
           }
           return true;
         },

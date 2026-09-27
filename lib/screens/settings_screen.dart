@@ -54,6 +54,23 @@ class SettingsScreen extends StatelessWidget {
                     Navigator.push(context, MaterialPageRoute(builder: (_) => const ChangeUsernameScreen()));
                   },
                 ),
+                if (user.isAdmin) ...[
+                  const Divider(color: HushColors.borderSubtle),
+                  ListTile(
+                    title: const Text("Reset All Tutorials (Admin)"),
+                    leading: const Icon(Icons.restart_alt, color: Colors.redAccent),
+                    onTap: () {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .update({
+                        'hasSeenTutorial': false,
+                        'hasSeenFollowingTutorialV6': false,
+                      });
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tutorials reset! Restart app.")));
+                    },
+                  ),
+                ],
               ],
             ),
       ),
