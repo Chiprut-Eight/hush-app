@@ -48,7 +48,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       final user = context.read<AuthProvider>().hushUser;
-      if (user != null && !user.hasSeenFollowingTutorialV3 && _followedFeed.isNotEmpty) {
+      if (user != null && !user.hasSeenFollowingTutorialV4 && _followedFeed.isNotEmpty) {
         _showTutorial();
       }
     } else if (!widget.isActive && oldWidget.isActive) {
@@ -64,7 +64,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     if (user != null) {
       _followedFeed = await _socialService.getFollowedUsersFeed(user.followingIds);
       
-      if (widget.isActive && !user.hasSeenFollowingTutorialV3 && _followedFeed.isNotEmpty) {
+      if (widget.isActive && !user.hasSeenFollowingTutorialV4 && _followedFeed.isNotEmpty) {
         // Wait a frame for UI to render
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _showTutorial();
@@ -99,6 +99,12 @@ class _FollowingScreenState extends State<FollowingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(l10n.clickAvatarToProfile, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _tutorial?.skip(),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white24, foregroundColor: Colors.white),
+                        child: const Text('סגור הדרכה לתמיד'),
+                      ),
                     ],
                   );
                 },
@@ -125,6 +131,12 @@ class _FollowingScreenState extends State<FollowingScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(l10n.clickHereToViewMap, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _tutorial?.skip(),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white24, foregroundColor: Colors.white),
+                        child: const Text('סגור הדרכה לתמיד'),
+                      ),
                     ],
                   );
                 },
@@ -146,14 +158,14 @@ class _FollowingScreenState extends State<FollowingScreen> {
           _tutorial = null;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV3': true});
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV4': true});
           }
         },
         onSkip: () {
           _tutorial = null;
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV3': true});
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV4': true});
           }
           return true;
         },
