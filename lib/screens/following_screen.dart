@@ -104,7 +104,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                         children: [
                           ElevatedButton(
                             onPressed: () => _tutorial?.next(),
-                            style: ElevatedButton.styleFrom(backgroundColor: HushColors.brandPrimary, foregroundColor: Colors.white),
+                            style: ElevatedButton.styleFrom(backgroundColor: HushColors.gradientBlue, foregroundColor: Colors.white),
                             child: Text(l10n.tutorialContinue),
                           ),
                           const SizedBox(width: 8),
@@ -144,7 +144,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => _tutorial?.skip(),
-                        style: ElevatedButton.styleFrom(backgroundColor: HushColors.brandPrimary, foregroundColor: Colors.white),
+                        style: ElevatedButton.styleFrom(backgroundColor: HushColors.gradientBlue, foregroundColor: Colors.white),
                         child: Text(l10n.tutorialGotIt),
                       ),
                     ],
