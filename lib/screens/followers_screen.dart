@@ -90,7 +90,9 @@ class _FollowersScreenState extends State<FollowersScreen> {
                           } else {
                             await _socialService.followUser(currentUser.uid, user.uid);
                           }
-                          await context.read<AuthProvider>().refreshProfile();
+                          if (context.mounted) {
+                            await context.read<AuthProvider>().refreshProfile();
+                          }
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: isFollowing ? Colors.transparent : const Color(0xFF1565C0),

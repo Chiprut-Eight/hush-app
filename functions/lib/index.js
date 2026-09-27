@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
+exports.onAdminBroadcast = exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
@@ -1075,5 +1075,40 @@ exports.resetUserTier = functions.https.onCall(async (data, context) => {
         oldTierLevel: oldTier,
         secretsReset: resetSecrets,
     };
+});
+// ============================================================
+// ADMIN: Push Notification Broadcast Trigger
+// ============================================================
+exports.onAdminBroadcast = functions.firestore
+    .document("admin_broadcasts/{broadcastId}")
+    .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data || !data.title || !data.body) {
+        console.error("Invalid broadcast data", data);
+        return;
+    }
+    const payload = {
+        notification: {
+            title: data.title,
+            body: data.body,
+            sound: "hush_notification.wav", // Adjust if your custom sound name is different
+        },
+    };
+    try {
+        // Send to the all_users topic
+        await admin.messaging().sendToTopic("all_users", payload);
+        await snap.ref.update({
+            status: "sent",
+            sentAt: admin.firestore.FieldValue.serverTimestamp(),
+        });
+        console.log(`Successfully broadcasted: ${data.title}`);
+    }
+    catch (error) {
+        console.error("Error sending broadcast:", error);
+        await snap.ref.update({
+            status: "error",
+            error: error.message,
+        });
+    }
 });
 //# sourceMappingURL=index.js.map

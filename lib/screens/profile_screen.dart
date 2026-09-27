@@ -8,7 +8,7 @@ import '../services/secret_service.dart';
 import 'package:hush_app/models/hush_user.dart';
 import '../services/social_service.dart';
 import '../widgets/secret_card.dart';
-import 'package:flutter/cupertino.dart';
+
 import 'package:geolocator/geolocator.dart';
 import '../services/analytics_service.dart';
 import '../widgets/title_setter.dart';
@@ -297,7 +297,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               builder: (context) => SavedSecretsScreen(
                                 savedSecrets: _savedSecrets,
                                 onUnsave: () {
-                                  _fetchSecrets(); // Refresh if they unsave
+                                  _fetchProfileData(); // Refresh if they unsave
                                 },
                               ),
                             ),
