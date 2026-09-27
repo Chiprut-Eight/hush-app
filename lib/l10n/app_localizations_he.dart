@@ -721,14 +721,14 @@ class AppLocalizationsHe extends AppLocalizations {
   String get tier10Name => 'דרגת אל';
 
   @override
-  String get clickAvatarToProfile => 'Click profile to view user';
+  String get clickAvatarToProfile => 'לחץ על הפרופיל למעבר למשתמש';
 
   @override
-  String get clickHereToViewMap => 'Click here to view on map';
+  String get clickHereToViewMap => 'לחץ כאן כדי לצפות בהאששים במפה';
 
   @override
-  String get tutorialContinue => 'Continue';
+  String get tutorialContinue => 'המשך';
 
   @override
-  String get tutorialGotIt => 'Got it, thanks';
+  String get tutorialGotIt => 'הבנתי, תודה';
 }
