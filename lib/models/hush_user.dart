@@ -19,7 +19,7 @@ class HushUser {
   // Onboarding
   final bool isOnboarded;
   final bool hasSeenTutorial;
-  final bool hasSeenFollowingTutorialV2;
+  final bool hasSeenFollowingTutorialV3;
   final String? firstName;
   final String? lastName;
   final DateTime? dateOfBirth;
