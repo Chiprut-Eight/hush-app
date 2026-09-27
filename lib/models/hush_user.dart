@@ -65,7 +65,7 @@ class HushUser {
     this.ghostModeUntil,
     this.isOnboarded = false,
     this.hasSeenTutorial = false,
-    this.hasSeenFollowingTutorial = false,
+    this.hasSeenFollowingTutorialV2 = false,
     this.firstName,
     this.lastName,
     this.dateOfBirth,
