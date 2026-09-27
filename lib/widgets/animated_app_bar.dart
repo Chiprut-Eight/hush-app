@@ -4,8 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/ui_provider.dart';
 import '../providers/auth_provider.dart';
 import '../config/theme.dart';
-import '../core/constants/icons.dart';
-import 'hush_icon_widget.dart';
+
 import 'notifications_button.dart';
 import '../main.dart';
 

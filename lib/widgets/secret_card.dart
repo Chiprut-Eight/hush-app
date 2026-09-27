@@ -1399,7 +1399,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
           ? GestureDetector(
               behavior: HitTestBehavior.opaque,
               onTap: () => _showCommentsSheet(context, l10n),
-              child: Container(
+              child: SizedBox(
                 width: double.infinity,
                 child: Text(_revealedTextContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4)),
               ),
@@ -1542,6 +1542,7 @@ class _InteractionButton extends StatelessWidget {
             Text('$count', style: TextStyle(color: isActive ? Colors.white : HushColors.textSecondary, fontWeight: FontWeight.w500)),
           ],
         ),
+      ),
     );
   }
 }

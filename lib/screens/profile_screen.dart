@@ -286,7 +286,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildStatBlock(l10n.publishedSecrets, '${_mySecrets.length}'),
                     Container(width: 1, height: 40, color: HushColors.borderSubtle),
                     if (isMe) ...[
-                      _buildStatBlock(l10n.savedTab, '${_savedSecrets.length}'),
+                      _buildStatBlock(l10n.savedSecrets, '${_savedSecrets.length}'),
                       Container(width: 1, height: 40, color: HushColors.borderSubtle),
                     ],
                     _buildStatBlock(l10n.followers, '${user.followerIds.length}'),
