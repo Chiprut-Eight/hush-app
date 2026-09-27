@@ -243,21 +243,10 @@ class _MapScreenState extends State<MapScreen> {
           ),
           children: [
             TileLayer(
-              urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+              urlTemplate: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png',
+              subdomains: const ['a', 'b', 'c', 'd'],
               userAgentPackageName: 'com.chiprut.hushhh',
               retinaMode: MediaQuery.of(context).devicePixelRatio > 1.0,
-              tileBuilder: (context, tileWidget, tile) {
-                // Invert colors to create a dark mode effect from standard OSM tiles
-                return ColorFiltered(
-                  colorFilter: const ColorFilter.matrix([
-                    -0.8,    0,    0, 0, 150,  // Red
-                       0, -0.8,    0, 0, 150,  // Green 
-                       0,    0, -0.8, 0, 170,  // Blue (slightly higher for cool tint)
-                       0,    0,    0, 1,   0,  // Alpha
-                  ]),
-                  child: tileWidget,
-                );
-              },
             ),
             MarkerLayer(
               markers: [
