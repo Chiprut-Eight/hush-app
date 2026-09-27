@@ -100,10 +100,20 @@ class _FollowingScreenState extends State<FollowingScreen> {
                     children: [
                       Text(l10n.clickAvatarToProfile, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => _tutorial?.skip(),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white24, foregroundColor: Colors.white),
-                        child: const Text('סגור הדרכה לתמיד'),
+                      Row(
+                        children: [
+                          ElevatedButton(
+                            onPressed: () => _tutorial?.next(),
+                            style: ElevatedButton.styleFrom(backgroundColor: HushColors.primary, foregroundColor: Colors.white),
+                            child: Text(l10n.tutorialContinue),
+                          ),
+                          const SizedBox(width: 8),
+                          TextButton(
+                            onPressed: () => _tutorial?.skip(),
+                            style: TextButton.styleFrom(foregroundColor: Colors.white54),
+                            child: Text(l10n.tutorialGotIt),
+                          ),
+                        ],
                       ),
                     ],
                   );
@@ -121,7 +131,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
             keyTarget: _mapTargetKey,
             alignSkip: Alignment.topRight,
             shape: ShapeLightFocus.RRect,
-            radius: 16,
+            radius: 8,
             contents: [
               TargetContent(
                 align: ContentAlign.top,
@@ -134,8 +144,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
                       const SizedBox(height: 16),
                       ElevatedButton(
                         onPressed: () => _tutorial?.skip(),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.white24, foregroundColor: Colors.white),
-                        child: const Text('סגור הדרכה לתמיד'),
+                        style: ElevatedButton.styleFrom(backgroundColor: HushColors.primary, foregroundColor: Colors.white),
+                        child: Text(l10n.tutorialGotIt),
                       ),
                     ],
                   );
@@ -151,7 +161,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
       _tutorial = TutorialCoachMark(
         targets: targets,
         colorShadow: HushColors.bgPrimary,
-        textSkip: "דלג", // Use explicit text for skip
+        hideSkip: true,
         paddingFocus: 10,
         opacityShadow: 0.8,
         onFinish: () async {
@@ -320,7 +330,6 @@ class _FollowingScreenState extends State<FollowingScreen> {
         final secret = item.latestSecret;
 
         return Card(
-          key: index == 0 ? _mapTargetKey : null,
           color: HushColors.bgCard,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           margin: const EdgeInsets.only(bottom: 12),
@@ -380,6 +389,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                         const SizedBox(height: 4),
                         if (secret != null) ...[
                           Row(
+                            key: index == 0 ? _mapTargetKey : null,
                             children: [
                               HushIcon(secret.type == 'voice' ? HushIcons.mic : HushIcons.textSnippet, size: 14, color: HushColors.textAccent),
                               const SizedBox(width: 4),

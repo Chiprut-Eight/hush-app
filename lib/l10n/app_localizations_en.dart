@@ -728,4 +728,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get clickHereToViewMap => 'Click here to view on map';
+
+  @override
+  String get tutorialContinue => 'Continue';
+
+  @override
+  String get tutorialGotIt => 'Got it, thanks';
 }

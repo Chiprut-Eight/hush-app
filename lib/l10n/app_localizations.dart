@@ -1411,6 +1411,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Click here to view on map'**
   String get clickHereToViewMap;
+
+  /// No description provided for @tutorialContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get tutorialContinue;
+
+  /// No description provided for @tutorialGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it, thanks'**
+  String get tutorialGotIt;
 }
 
 class _AppLocalizationsDelegate

@@ -304,5 +304,7 @@
   "tier9Name": "Mythic",
   "tier10Name": "God Tier",
   "clickAvatarToProfile": "Click profile to view user",
-  "clickHereToViewMap": "Click here to view on map"
+  "clickHereToViewMap": "Click here to view on map",
+  "tutorialContinue": "Continue",
+  "tutorialGotIt": "Got it, thanks"
 }
