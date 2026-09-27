@@ -1427,7 +1427,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                           child: WaveformScrubber(
                             position: _position,
                             duration: _duration,
-                            amplitudes: secret.amplitudes,
+                            amplitudes: widget.secret.amplitudes,
                             activeColor: HushColors.textAccent,
                             inactiveColor: Colors.white24,
                             isPlaying: _isPlaying,
