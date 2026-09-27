@@ -254,8 +254,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       }
     }
 
-    // AWAIT the publish to ensure the backend saves it before we navigate to Feed
-    await _publishInBackground(
+    // FIRE AND FORGET - Don't await so the UI navigates immediately
+    _publishInBackground(
       contentType: contentType,
       secretType: secretType,
       textContent: textContent,
@@ -267,7 +267,9 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       isGroup: isGroup,
       requiredUsers: requiredU,
       timeWindowMinutes: timeWindow,
-    );
+    ).catchError((e) {
+      debugPrint("Background publish error: $e");
+    });
 
     if (!mounted) return;
 
