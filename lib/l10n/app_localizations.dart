@@ -1400,8 +1400,16 @@ abstract class AppLocalizations {
   /// **'God Tier'**
   String get tier10Name;
 
+  /// No description provided for @clickAvatarToProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Click profile to view user'**
   String get clickAvatarToProfile;
 
+  /// No description provided for @clickHereToViewMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Click here to view on map'**
   String get clickHereToViewMap;
 }
 

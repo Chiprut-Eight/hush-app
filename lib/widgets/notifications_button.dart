@@ -107,8 +107,9 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           final body = bodyObj?[langCode] ?? bodyObj?['en'] ?? '';
                           final isRead = data['read'] == true;
                           
-                          final type = data['type'] as String? ?? 'general';
-                          final secretId = data['data']?['secretId'];
+                          final payloadData = data['data'] as Map<String, dynamic>?;
+                          final type = payloadData?['type'] as String? ?? data['type'] as String? ?? 'general';
+                          final secretId = payloadData?['secretId'];
 
                           IconData actionIcon;
                           switch (type) {

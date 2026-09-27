@@ -721,8 +721,8 @@ class AppLocalizationsHe extends AppLocalizations {
   String get tier10Name => 'דרגת אל';
 
   @override
-  String get clickAvatarToProfile => 'לחץ על הפרופיל למעבר לעמוד האישי';
+  String get clickAvatarToProfile => 'Click profile to view user';
 
   @override
-  String get clickHereToViewMap => 'לחץ כאן לצפייה בהאששים במפה';
+  String get clickHereToViewMap => 'Click here to view on map';
 }

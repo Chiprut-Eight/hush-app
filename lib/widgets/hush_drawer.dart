@@ -52,8 +52,8 @@ class HushDrawer extends StatelessWidget {
                 children: [
                   // App Logo Image Only
                   Image.asset(
-                    'assets/images/logo_hushhh2.jpeg',
-                    height: isLandscape ? 30 : 40,
+                    'assets/images/top_banner2.png',
+                    height: isLandscape ? 40 : 60,
                     fit: BoxFit.contain,
                   ),
                   const Spacer(),

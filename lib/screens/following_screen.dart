@@ -8,6 +8,8 @@ import '../services/social_service.dart';
 import '../widgets/hush_icon_widget.dart';
 import 'map_screen.dart';
 import 'profile_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../services/analytics_service.dart';
 
@@ -22,6 +24,10 @@ class _FollowingScreenState extends State<FollowingScreen> {
   final SocialService _socialService = SocialService();
   final TextEditingController _searchController = TextEditingController();
   
+  final GlobalKey _profileTargetKey = GlobalKey();
+  final GlobalKey _mapTargetKey = GlobalKey();
+  bool _tutorialShown = false;
+
   List<HushUser> _searchResults = [];
   List<FollowedUserFeedItem> _followedFeed = [];
   
@@ -40,8 +46,84 @@ class _FollowingScreenState extends State<FollowingScreen> {
     final user = context.read<AuthProvider>().hushUser;
     if (user != null) {
       _followedFeed = await _socialService.getFollowedUsersFeed(user.followingIds);
+      
+      if (!user.hasSeenFollowingTutorial && _followedFeed.isNotEmpty) {
+        _showTutorial();
+      }
     }
     if (mounted) setState(() => _isLoading = false);
+  }
+
+  void _showTutorial() {
+    if (_tutorialShown) return;
+    _tutorialShown = true;
+    
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      
+      final l10n = AppLocalizations.of(context)!;
+      final targets = [
+        TargetFocus(
+          identify: "ProfileTarget",
+          keyTarget: _profileTargetKey,
+          alignSkip: Alignment.topRight,
+          contents: [
+            TargetContent(
+              align: ContentAlign.bottom,
+              builder: (context, controller) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.clickAvatarToProfile, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+        TargetFocus(
+          identify: "MapTarget",
+          keyTarget: _mapTargetKey,
+          alignSkip: Alignment.topRight,
+          contents: [
+            TargetContent(
+              align: ContentAlign.top,
+              builder: (context, controller) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(l10n.clickHereToViewMap, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                  ],
+                );
+              },
+            ),
+          ],
+        ),
+      ];
+
+      TutorialCoachMark(
+        targets: targets,
+        colorShadow: HushColors.bgPrimary,
+        textSkip: l10n.cancel,
+        paddingFocus: 10,
+        opacityShadow: 0.8,
+        onFinish: () async {
+          final auth = context.read<AuthProvider>();
+          if (auth.firebaseUser != null) {
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorial': true});
+          }
+        },
+        onSkip: () {
+          final auth = context.read<AuthProvider>();
+          if (auth.firebaseUser != null) {
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorial': true});
+          }
+          return true;
+        },
+      ).show(context: context);
+    });
   }
 
   Future<void> _performSearch(String query) async {
@@ -191,6 +273,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
         final secret = item.latestSecret;
 
         return Card(
+          key: index == 0 ? _mapTargetKey : null,
           color: HushColors.bgCard,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           margin: const EdgeInsets.only(bottom: 12),
@@ -198,8 +281,10 @@ class _FollowingScreenState extends State<FollowingScreen> {
             onTap: () {
               AnalyticsService().logFollowedUserTapped(user.uid);
               if (secret != null) {
-                final displayName = '${user.firstName ?? ''} ${user.lastName ?? ''}'.trim().isNotEmpty ? '${user.firstName} ${user.lastName}'.trim() : (user.displayName ?? l10n.anonymousUser);
-                final shortName = displayName.length > 15 ? '${displayName.substring(0, 15)}...' : displayName;
+                final firstName = user.firstName?.trim();
+                final displayName = (firstName != null && firstName.isNotEmpty) ? firstName : (user.displayName ?? l10n.anonymousUser);
+                final shortName = displayName.split(' ').first; // Take only the first word/name
+                
                 // Navigate to MapScreen targeting the secret's coordinates
                 Navigator.push(context, MaterialPageRoute(builder: (_) => MapScreen(
                   targetLat: secret.lat, 
@@ -214,6 +299,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
               child: Row(
                 children: [
                   GestureDetector(
+                    key: index == 0 ? _profileTargetKey : null,
                     child: CircleAvatar(
                       radius: 24,
                       backgroundColor: HushColors.bgPrimary,
@@ -256,22 +342,6 @@ class _FollowingScreenState extends State<FollowingScreen> {
                                   overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                            ],
-                          ),
-                          const SizedBox(height: 8),
-                          Row(
-                            children: [
-                              const Icon(Icons.touch_app, size: 14, color: HushColors.textAccent),
-                              const SizedBox(width: 4),
-                              Expanded(child: Text(l10n.clickAvatarToProfile, style: const TextStyle(color: HushColors.textAccent, fontSize: 12))),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          Row(
-                            children: [
-                              const Icon(Icons.map, size: 14, color: HushColors.textAccent),
-                              const SizedBox(width: 4),
-                              Expanded(child: Text(l10n.clickHereToViewMap, style: const TextStyle(color: HushColors.textAccent, fontSize: 12))),
                             ],
                           ),
                         ] else ...[
