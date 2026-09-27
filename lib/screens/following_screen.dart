@@ -47,7 +47,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     super.didUpdateWidget(oldWidget);
     if (widget.isActive && !oldWidget.isActive) {
       final user = context.read<AuthProvider>().hushUser;
-      if (user != null && !user.hasSeenFollowingTutorialV2 && _followedFeed.isNotEmpty) {
+      if (user != null && !user.hasSeenFollowingTutorialV3 && _followedFeed.isNotEmpty) {
         _showTutorial();
       }
     }
@@ -59,7 +59,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     if (user != null) {
       _followedFeed = await _socialService.getFollowedUsersFeed(user.followingIds);
       
-      if (widget.isActive && !user.hasSeenFollowingTutorialV2 && _followedFeed.isNotEmpty) {
+      if (widget.isActive && !user.hasSeenFollowingTutorialV3 && _followedFeed.isNotEmpty) {
         // Wait a frame for UI to render
         WidgetsBinding.instance.addPostFrameCallback((_) {
           _showTutorial();
@@ -132,19 +132,19 @@ class _FollowingScreenState extends State<FollowingScreen> {
       TutorialCoachMark(
         targets: targets,
         colorShadow: HushColors.bgPrimary,
-        textSkip: "הבנתי", // Use explicit text for now
+        textSkip: "דלג", // Use explicit text for skip
         paddingFocus: 10,
         opacityShadow: 0.8,
         onFinish: () async {
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV2': true});
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV3': true});
           }
         },
         onSkip: () {
           final auth = context.read<AuthProvider>();
           if (auth.firebaseUser != null) {
-            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV2': true});
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFollowingTutorialV3': true});
           }
           return true;
         },
