@@ -99,9 +99,12 @@ class _MapScreenState extends State<MapScreen> {
         });
       }
 
+      final searchLat = widget.targetLat ?? _currentPosition!.latitude;
+      final searchLng = widget.targetLng ?? _currentPosition!.longitude;
+
       final secrets = await _secretService.getSecretsForMap(
-        _currentPosition!.latitude, 
-        _currentPosition!.longitude,
+        searchLat, 
+        searchLng,
         userId: uid,
         savedSecretIds: savedIds,
       );
