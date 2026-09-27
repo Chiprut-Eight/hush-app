@@ -658,9 +658,9 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
             ? Padding(
                 padding: margin ?? EdgeInsets.zero,
                 child: SizedBox(
-                  height: 54,
+                  height: 60, // Let's make it 60 to comfortably fit a 50px icon with padding
                   width: double.infinity,
-                  child: ElevatedButton.icon(
+                  child: ElevatedButton(
                     onPressed: _publishSecret,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF1565C0),
@@ -671,22 +671,29 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                       ),
                       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
                     ),
-                    icon: _isPublishing
-                        ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                        : Image.asset(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        if (_isPublishing)
+                          const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                        else
+                          Image.asset(
                             'assets/images/icon_tap_to_drop.png',
-                            width: 42,
-                            height: 42,
+                            width: 50,
+                            height: 50,
                             fit: BoxFit.contain,
                           ),
-                    label: Text(
-                      _isPublishing ? '...' : l10n.hideSecretAction,
-                      style: const TextStyle(
-                        fontSize: 15,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        letterSpacing: 0.3,
-                      ),
+                        const SizedBox(width: 8),
+                        Text(
+                          _isPublishing ? '...' : l10n.hideSecretAction,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
