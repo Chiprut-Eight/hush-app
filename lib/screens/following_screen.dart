@@ -77,46 +77,57 @@ class _FollowingScreenState extends State<FollowingScreen> {
       if (!mounted) return;
       
       final l10n = AppLocalizations.of(context)!;
-      final targets = [
-        TargetFocus(
-          identify: "ProfileTarget",
-          keyTarget: _profileTargetKey,
-          alignSkip: Alignment.topRight,
-          contents: [
-            TargetContent(
-              align: ContentAlign.bottom,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.clickAvatarToProfile, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-        TargetFocus(
-          identify: "MapTarget",
-          keyTarget: _mapTargetKey,
-          alignSkip: Alignment.topRight,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) {
-                return Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(l10n.clickHereToViewMap, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ];
+      final targets = <TargetFocus>[];
+      
+      if (_profileTargetKey.currentContext != null) {
+        targets.add(
+          TargetFocus(
+            identify: "ProfileTarget",
+            keyTarget: _profileTargetKey,
+            alignSkip: Alignment.topRight,
+            contents: [
+              TargetContent(
+                align: ContentAlign.bottom,
+                builder: (context, controller) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.clickAvatarToProfile, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    ],
+                  );
+                },
+              ),
+            ],
+          )
+        );
+      }
+      
+      if (_mapTargetKey.currentContext != null) {
+        targets.add(
+          TargetFocus(
+            identify: "MapTarget",
+            keyTarget: _mapTargetKey,
+            alignSkip: Alignment.topRight,
+            contents: [
+              TargetContent(
+                align: ContentAlign.top,
+                builder: (context, controller) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(l10n.clickHereToViewMap, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
+                    ],
+                  );
+                },
+              ),
+            ],
+          )
+        );
+      }
+
+      if (targets.isEmpty) return;
 
       TutorialCoachMark(
         targets: targets,
@@ -305,6 +316,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
                   targetLat: secret.lat, 
                   targetLng: secret.lng,
                   targetTitle: shortName,
+                  targetUserId: user.uid,
                 )));
               }
             },

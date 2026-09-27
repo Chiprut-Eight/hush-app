@@ -21,6 +21,7 @@ class MapScreen extends StatefulWidget {
   final double? targetLat;
   final double? targetLng;
   final String? targetTitle;
+  final String? targetUserId;
   final GlobalKey<ScaffoldState>? scaffoldKey;
 
   const MapScreen({
@@ -28,6 +29,7 @@ class MapScreen extends StatefulWidget {
     this.targetLat,
     this.targetLng,
     this.targetTitle,
+    this.targetUserId,
     this.scaffoldKey,
   });
 
@@ -104,9 +106,13 @@ class _MapScreenState extends State<MapScreen> {
         savedSecretIds: savedIds,
       );
 
+      final filteredSecrets = widget.targetUserId != null 
+          ? secrets.where((s) => s.creatorId == widget.targetUserId).toList()
+          : secrets;
+
       if (mounted) {
         setState(() {
-          _secrets = secrets;
+          _secrets = filteredSecrets;
           _isLoading = false;
         });
       }

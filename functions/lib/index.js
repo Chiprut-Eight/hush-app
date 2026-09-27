@@ -222,7 +222,7 @@ exports.decaySecretsJob = functions.pubsub
         if (reasonEN) {
             // Notify creator before deletion
             if (secret.creatorId) {
-                await sendPushToUser(secret.creatorId, { en: "Hushhh Removed 🗑️", he: "Hushhh הוסר 🗑️" }, { en: reasonEN, he: reasonHE }, { type: "decay", secretId: doc.id });
+                await sendPushToUser(secret.creatorId, { en: "Hushhh Removed", he: "Hushhh הוסר" }, { en: reasonEN, he: reasonHE }, { type: "decay", secretId: doc.id });
             }
             // Delete audio file from Storage if voice secret
             if (secret.type === "voice") {
@@ -279,7 +279,7 @@ exports.onNewLike = functions.firestore
     const creatorId = after.creatorId;
     if (!creatorId)
         return;
-    await sendPushToUser(creatorId, { en: "Someone liked your Hushhh ❤️", he: "מישהו עשה לייק ל-Hushhh שלך ❤️" }, { en: "Your Hushhh is getting attention!", he: "ה-Hushhh שלך מקבל תשומת לב!" }, { type: "like", secretId: change.after.id });
+    await sendPushToUser(creatorId, { en: "Someone liked your Hushhh", he: "מישהו עשה לייק ל-Hushhh שלך" }, { en: "Your Hushhh is getting attention!", he: "ה-Hushhh שלך מקבל תשומת לב!" }, { type: "like", secretId: change.after.id });
 });
 // ============================================================
 // 3. NEW COMMENT — Notify secret creator
@@ -305,8 +305,8 @@ exports.onNewComment = functions.firestore
     // 1. Notify the user being replied to (if any and it's not themselves)
     if (replyToUserId && replyToUserId !== comment.userId) {
         await sendPushToUser(replyToUserId, {
-            en: `${commenterName} replied to you 💬`,
-            he: `${commenterName} הגיב/ה לך 💬`,
+            en: `${commenterName} replied to you`,
+            he: `${commenterName} הגיב/ה לך`,
         }, {
             en: commentPreview || "New reply to your comment",
             he: commentPreview || "תגובה חדשה לתגובה שלך",
@@ -315,8 +315,8 @@ exports.onNewComment = functions.firestore
     // 2. Notify the secret creator (if they are not the ones commenting, and if they weren't just notified as the reply target)
     if (creatorId !== comment.userId && creatorId !== replyToUserId) {
         await sendPushToUser(creatorId, {
-            en: `${commenterName} commented 💬`,
-            he: `${commenterName} הגיב/ה 💬`,
+            en: `${commenterName} commented`,
+            he: `${commenterName} הגיב/ה`,
         }, {
             en: commentPreview || "New comment on your Hushhh",
             he: commentPreview || "תגובה חדשה על ה-Hushhh שלך",
@@ -345,8 +345,8 @@ exports.onNewFollower = functions.firestore
             `${((_b = followerDoc.data()) === null || _b === void 0 ? void 0 : _b.firstName) || ""} ${((_c = followerDoc.data()) === null || _c === void 0 ? void 0 : _c.lastName) || ""}`.trim() ||
             "Someone";
         await sendPushToUser(targetUserId, {
-            en: `${followerName} has started following you 👋`,
-            he: `${followerName} התחיל/ה לעקוב אחריך 👋`,
+            en: `${followerName} has started following you`,
+            he: `${followerName} התחיל/ה לעקוב אחריך`,
         }, {
             en: "You have a new follower!",
             he: "יש לך עוקב/ת חדש/ה!",
@@ -378,8 +378,8 @@ exports.onNewSecret = functions.firestore
     // Send notification to each follower (max 50 to avoid timeout)
     const batchFollowers = followerIds.slice(0, 50);
     const promises = batchFollowers.map((followerId) => sendPushToUser(followerId, {
-        en: `${creatorName} dropped a new Hushhh 🤫`,
-        he: `${creatorName} השאיר/ה Hushhh חדש 🤫`,
+        en: `${creatorName} dropped a new Hushhh`,
+        he: `${creatorName} השאיר/ה Hushhh חדש`,
     }, {
         en: "Go explore and find it!",
         he: "צאו לחפש ולגלות!",
@@ -445,7 +445,7 @@ exports.onSecretExpiringSoon = functions.pubsub
             warningHE = `ל-Hushhh שלך יש רק ${views} ${views === 1 ? "צפייה" : "צפיות"} ויימחק בקרוב. שמור אותו כדי לשמר אותו לנצח!`;
         }
         if (warningEN && secret.creatorId) {
-            await sendPushToUser(secret.creatorId, { en: "⚠️ Your Hushhh is about to be deleted", he: "⚠️ ה-Hushhh שלך עומד להימחק" }, { en: warningEN, he: warningHE }, { type: "expiring", secretId: doc.id });
+            await sendPushToUser(secret.creatorId, { en: "Your Hushhh is about to be deleted", he: "ה-Hushhh שלך עומד להימחק" }, { en: warningEN, he: warningHE }, { type: "expiring", secretId: doc.id });
             // Mark as warned to prevent duplicate notifications
             await doc.ref.update({ expiryWarned: true });
             notifiedCount++;
@@ -647,8 +647,8 @@ exports.verifyGroupUnlock = functions.https.onCall(async (data, context) => {
                     he: `דרגה ${tierResult.newTier}`,
                 };
                 await sendPushToUser(secret.creatorId, {
-                    en: `🎉 You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
-                    he: `🎉 הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
+                    en: `You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
+                    he: `הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
                 }, {
                     en: "Your Group Hushhh successes earned you a promotion!",
                     he: "הצלחות ה-Hushhh הקבוצתי שלך הזכו אותך בעלייה!",

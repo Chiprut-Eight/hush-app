@@ -256,7 +256,7 @@ export const decaySecretsJob = functions.pubsub
         if (secret.creatorId) {
           await sendPushToUser(
             secret.creatorId,
-            { en: "Hushhh Removed 🗑️", he: "Hushhh הוסר 🗑️" },
+            { en: "Hushhh Removed", he: "Hushhh הוסר" },
             { en: reasonEN, he: reasonHE },
             { type: "decay", secretId: doc.id }
           );
@@ -320,7 +320,7 @@ export const onNewLike = functions.firestore
 
     await sendPushToUser(
       creatorId,
-      { en: "Someone liked your Hushhh ❤️", he: "מישהו עשה לייק ל-Hushhh שלך ❤️" },
+      { en: "Someone liked your Hushhh", he: "מישהו עשה לייק ל-Hushhh שלך" },
       { en: "Your Hushhh is getting attention!", he: "ה-Hushhh שלך מקבל תשומת לב!" },
       { type: "like", secretId: change.after.id }
     );
@@ -353,8 +353,8 @@ export const onNewComment = functions.firestore
       await sendPushToUser(
         replyToUserId,
         {
-          en: `${commenterName} replied to you 💬`,
-          he: `${commenterName} הגיב/ה לך 💬`,
+          en: `${commenterName} replied to you`,
+          he: `${commenterName} הגיב/ה לך`,
         },
         {
           en: commentPreview || "New reply to your comment",
@@ -369,8 +369,8 @@ export const onNewComment = functions.firestore
       await sendPushToUser(
         creatorId,
         {
-          en: `${commenterName} commented 💬`,
-          he: `${commenterName} הגיב/ה 💬`,
+          en: `${commenterName} commented`,
+          he: `${commenterName} הגיב/ה`,
         },
         {
           en: commentPreview || "New comment on your Hushhh",
@@ -413,8 +413,8 @@ export const onNewFollower = functions.firestore
       await sendPushToUser(
         targetUserId,
         {
-          en: `${followerName} has started following you 👋`,
-          he: `${followerName} התחיל/ה לעקוב אחריך 👋`,
+          en: `${followerName} has started following you`,
+          he: `${followerName} התחיל/ה לעקוב אחריך`,
         },
         {
           en: "You have a new follower!",
@@ -456,8 +456,8 @@ export const onNewSecret = functions.firestore
       sendPushToUser(
         followerId,
         {
-          en: `${creatorName} dropped a new Hushhh 🤫`,
-          he: `${creatorName} השאיר/ה Hushhh חדש 🤫`,
+          en: `${creatorName} dropped a new Hushhh`,
+          he: `${creatorName} השאיר/ה Hushhh חדש`,
         },
         {
           en: "Go explore and find it!",
@@ -538,7 +538,7 @@ export const onSecretExpiringSoon = functions.pubsub
       if (warningEN && secret.creatorId) {
         await sendPushToUser(
           secret.creatorId,
-          { en: "⚠️ Your Hushhh is about to be deleted", he: "⚠️ ה-Hushhh שלך עומד להימחק" },
+          { en: "Your Hushhh is about to be deleted", he: "ה-Hushhh שלך עומד להימחק" },
           { en: warningEN, he: warningHE },
           { type: "expiring", secretId: doc.id }
         );
@@ -796,8 +796,8 @@ export const verifyGroupUnlock = functions.https.onCall(
           await sendPushToUser(
             secret.creatorId,
             {
-              en: `🎉 You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
-              he: `🎉 הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
+              en: `You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
+              he: `הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
             },
             {
               en: "Your Group Hushhh successes earned you a promotion!",
