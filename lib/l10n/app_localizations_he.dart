@@ -12,7 +12,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get appTitle => 'HUSH';
 
   @override
-  String get loginTitle => 'ברוכים הבאים ל-HUSH';
+  String get loginTitle => 'ברוכים הבאים ל-Hushhh';
 
   @override
   String get loginSubtitle => 'הרשת החברתית הגיאו-אקוסטית';

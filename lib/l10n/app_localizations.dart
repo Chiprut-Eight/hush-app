@@ -107,7 +107,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to HUSH'**
+  /// **'Welcome to Hushhh'**
   String get loginTitle;
 
   /// No description provided for @loginSubtitle.

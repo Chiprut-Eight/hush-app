@@ -315,7 +315,7 @@ class _AppShellState extends State<AppShell> {
                           ),
                         ],
                       ),
-                      child: const HushIcon(HushIcons.plusCircle, size: 28, color: Colors.white),
+                      child: Image.asset('assets/images/icon_tap_to_drop.png', width: 28, height: 28),
                     ),
                     label: '',
                   ),
