@@ -1319,3 +1319,40 @@ export const resetUserTier = functions.https.onCall(
     };
   }
 );
+
+// ============================================================
+// ADMIN: Push Notification Broadcast Trigger
+// ============================================================
+export const onAdminBroadcast = functions.firestore
+  .document("admin_broadcasts/{broadcastId}")
+  .onCreate(async (snap, context) => {
+    const data = snap.data();
+    if (!data || !data.title || !data.body) {
+      console.error("Invalid broadcast data", data);
+      return;
+    }
+
+    const payload = {
+      notification: {
+        title: data.title,
+        body: data.body,
+        sound: "hush_notification.wav", // Adjust if your custom sound name is different
+      },
+    };
+
+    try {
+      // Send to the all_users topic
+      await admin.messaging().sendToTopic("all_users", payload);
+      await snap.ref.update({
+        status: "sent",
+        sentAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log(`Successfully broadcasted: ${data.title}`);
+    } catch (error: any) {
+      console.error("Error sending broadcast:", error);
+      await snap.ref.update({
+        status: "error",
+        error: error.message,
+      });
+    }
+  });

@@ -19,6 +19,18 @@ class SocialService {
     return HushUser.fromFirestore(doc);
   }
 
+  /// Get multiple users by IDs
+  Future<List<HushUser>> getUsersByIds(List<String> ids) async {
+    if (ids.isEmpty) return [];
+    List<HushUser> users = [];
+    for (var i = 0; i < ids.length; i += 10) {
+      final chunk = ids.sublist(i, i + 10 > ids.length ? ids.length : i + 10);
+      final usersSnap = await _firestore.collection('users').where(FieldPath.documentId, whereIn: chunk).get();
+      users.addAll(usersSnap.docs.map((doc) => HushUser.fromFirestore(doc)));
+    }
+    return users;
+  }
+
   /// Search users by name prefix (case insensitive indexed search)
   Future<List<HushUser>> searchUsers(String query) async {
     if (query.trim().isEmpty) return [];

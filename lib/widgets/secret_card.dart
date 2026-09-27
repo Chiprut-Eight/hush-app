@@ -1419,20 +1419,18 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                       icon: HushIcon(_isPlaying ? HushIcons.pause : HushIcons.play, size: 40, color: HushColors.textAccent),
                       onPressed: _togglePlay,
                     ),
-                    const SizedBox(width: 8),
-                    PlayingWaveform(isPlaying: _isPlaying, color: HushColors.textAccent),
-                    const SizedBox(width: 8),
                     Expanded(
-                      child: SliderTheme(
-                        data: SliderTheme.of(context).copyWith(
-                          activeTrackColor: HushColors.textAccent,
-                          inactiveTrackColor: Colors.white24,
-                          thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-                        ),
-                        child: Slider(
-                          value: _position.inMilliseconds.toDouble(),
-                          max: _duration.inMilliseconds > 0 ? _duration.inMilliseconds.toDouble() : 100,
-                          onChanged: (val) => _audioPlayer.seek(Duration(milliseconds: val.toInt())),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                        child: SizedBox(
+                          height: 30, // constrain height for the waveform
+                          child: WaveformScrubber(
+                            position: _position,
+                            duration: _duration,
+                            activeColor: HushColors.textAccent,
+                            inactiveColor: Colors.white24,
+                            onSeek: (val) => _audioPlayer.seek(val),
+                          ),
                         ),
                       ),
                     ),
@@ -1547,68 +1545,67 @@ class _InteractionButton extends StatelessWidget {
   }
 }
 
-class PlayingWaveform extends StatefulWidget {
-  final bool isPlaying;
-  final Color color;
-  const PlayingWaveform({super.key, required this.isPlaying, required this.color});
+class WaveformScrubber extends StatelessWidget {
+  final Duration position;
+  final Duration duration;
+  final ValueChanged<Duration> onSeek;
+  final Color activeColor;
+  final Color inactiveColor;
 
-  @override
-  State<PlayingWaveform> createState() => _PlayingWaveformState();
-}
-
-class _PlayingWaveformState extends State<PlayingWaveform> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
-    if (widget.isPlaying) _controller.repeat(reverse: true);
-  }
-
-  @override
-  void didUpdateWidget(PlayingWaveform old) {
-    super.didUpdateWidget(old);
-    if (widget.isPlaying && !old.isPlaying) {
-      _controller.repeat(reverse: true);
-    } else if (!widget.isPlaying && old.isPlaying) {
-      _controller.stop();
-      _controller.value = 0.5;
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  const WaveformScrubber({
+    super.key,
+    required this.position,
+    required this.duration,
+    required this.onSeek,
+    required this.activeColor,
+    required this.inactiveColor,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedBuilder(
-      animation: _controller,
-      builder: (context, child) {
-        return Row(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: List.generate(5, (index) {
-            final delay = index * 0.2;
-            var val = (_controller.value + delay) % 1.0;
-            if (val > 0.5) val = 1.0 - val;
-            val = val * 2.0; // 0 to 1
-            final height = widget.isPlaying ? 8.0 + (16.0 * val) : 4.0;
-            return Container(
-              margin: const EdgeInsets.symmetric(horizontal: 2),
-              width: 3,
-              height: height,
-              decoration: BoxDecoration(
-                color: widget.color,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            );
-          }),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final barWidth = 3.0;
+        final barSpacing = 2.0;
+        final totalBars = (constraints.maxWidth / (barWidth + barSpacing)).floor();
+        if (totalBars <= 0) return const SizedBox();
+
+        final progress = duration.inMilliseconds == 0
+            ? 0.0
+            : position.inMilliseconds / duration.inMilliseconds;
+        final activeBars = (progress * totalBars).round();
+
+        return GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onPanUpdate: (details) => _handleDrag(details.localPosition, constraints.maxWidth),
+          onTapDown: (details) => _handleDrag(details.localPosition, constraints.maxWidth),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: List.generate(totalBars, (index) {
+              final heightMultiplier = [0.3, 0.5, 0.8, 1.0, 0.6, 0.4, 0.9, 0.7, 0.5, 0.2][(index * 7) % 10];
+              final height = 10.0 + (16.0 * heightMultiplier);
+              
+              final isActive = index < activeBars;
+              return Container(
+                margin: EdgeInsets.only(right: barSpacing),
+                width: barWidth,
+                height: height,
+                decoration: BoxDecoration(
+                  color: isActive ? activeColor : inactiveColor,
+                  borderRadius: BorderRadius.circular(2),
+                ),
+              );
+            }),
+          ),
         );
       },
     );
+  }
+
+  void _handleDrag(Offset localPosition, double maxWidth) {
+    final dx = localPosition.dx;
+    final percent = (dx / maxWidth).clamp(0.0, 1.0);
+    final targetMs = (percent * duration.inMilliseconds).round();
+    onSeek(Duration(milliseconds: targetMs));
   }
 }

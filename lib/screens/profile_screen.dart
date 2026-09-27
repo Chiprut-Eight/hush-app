@@ -12,6 +12,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:geolocator/geolocator.dart';
 import '../services/analytics_service.dart';
 import '../widgets/title_setter.dart';
+import 'followers_screen.dart';
+import 'saved_secrets_screen.dart';
 
 /// Profile screen — user info, published/saved secrets, ghost mode, admin, sign out
 class ProfileScreen extends StatefulWidget {
@@ -30,7 +32,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   List<Secret> _mySecrets = [];
   List<Secret> _savedSecrets = [];
   bool _isLoading = true;
-  int _activeTabIndex = 0; // 0 for 'My Secrets', 1 for 'Saved Secrets'
   Position? _userPosition;
 
   @override
@@ -274,7 +275,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Container(
-                padding: const EdgeInsets.symmetric(vertical: 16),
+                padding: const EdgeInsets.symmetric(vertical: 8),
                 decoration: BoxDecoration(
                   color: HushColors.bgCard,
                   borderRadius: BorderRadius.circular(12),
@@ -286,10 +287,37 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     _buildStatBlock(l10n.publishedSecrets, '${_mySecrets.length}'),
                     Container(width: 1, height: 40, color: HushColors.borderSubtle),
                     if (isMe) ...[
-                      _buildStatBlock(l10n.savedSecrets, '${_savedSecrets.length}'),
+                      _buildStatBlock(
+                        l10n.savedSecrets, 
+                        '${_savedSecrets.length}',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SavedSecretsScreen(
+                                savedSecrets: _savedSecrets,
+                                onUnsave: () {
+                                  _fetchSecrets(); // Refresh if they unsave
+                                },
+                              ),
+                            ),
+                          );
+                        },
+                      ),
                       Container(width: 1, height: 40, color: HushColors.borderSubtle),
                     ],
-                    _buildStatBlock(l10n.followers, '${user.followerIds.length}'),
+                    _buildStatBlock(
+                      l10n.followers, 
+                      '${user.followerIds.length}',
+                      onTap: isMe ? () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => FollowersScreen(followerIds: user.followerIds),
+                          ),
+                        );
+                      } : null,
+                    ),
                   ],
                 ),
               ),
@@ -297,44 +325,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 32),
             
-            // Tab Switcher for Secrets (Only show 'My Secrets' tab for public view)
-            if (isMe) ...[
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: CupertinoSlidingSegmentedControl<int>(
-                  backgroundColor: HushColors.bgCard,
-                  thumbColor: const Color(0xFF1E2638), // Slightly lighter than bgCard
-                  groupValue: _activeTabIndex,
-                  padding: const EdgeInsets.all(4),
-                  children: {
-                    0: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text(l10n.mySecretsTab, style: TextStyle(color: _activeTabIndex == 0 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
-                    ),
-                    1: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      child: Text('${l10n.savedSecrets} (${_savedSecrets.length})', style: TextStyle(color: _activeTabIndex == 1 ? Colors.white : HushColors.textMuted, fontWeight: FontWeight.w600)),
-                    ),
-                  },
-                  onValueChanged: (int? value) {
-                    if (value != null) {
-                      setState(() => _activeTabIndex = value);
-                      AnalyticsService().logProfileTabChanged(value == 0 ? 'my_secrets' : 'saved_secrets');
-                    }
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-            ],
-            
-            // Secrets List Builder
+            // Secrets List Builder (Always show My Secrets)
             if (_isLoading)
               const Center(child: Padding(
                 padding: EdgeInsets.all(32.0),
                 child: CircularProgressIndicator(color: HushColors.textAccent),
               ))
             else ..._buildActiveTabList(l10n, isMe),
-
 
             const SizedBox(height: 80), // Padding for bottom navbar
           ],
@@ -350,10 +347,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   
   List<Widget> _buildActiveTabList(AppLocalizations l10n, bool isMe) {
-    // For public view, always show published secrets
-    final list = (isMe && _activeTabIndex == 1) ? _savedSecrets : _mySecrets;
-    
-    if (list.isEmpty) {
+    if (_mySecrets.isEmpty) {
       return [
         Padding(
           padding: const EdgeInsets.all(32.0),
@@ -361,12 +355,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: Column(
               children: [
                 Icon(
-                  (isMe && _activeTabIndex == 1) ? Icons.bookmark_border : Icons.edit_note,
+                  Icons.edit_note,
                   size: 48, color: HushColors.textSecondary.withValues(alpha: 0.5)
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  (isMe && _activeTabIndex == 1) ? l10n.noSavedSecrets : l10n.noPlantedSecrets,
+                  l10n.noPlantedSecrets, // or l10n.noActiveSecrets if l10n.noPlantedSecrets is unavailable
                   style: TextStyle(color: HushColors.textSecondary.withValues(alpha: 0.7)),
                 ),
               ],
@@ -376,42 +370,45 @@ class _ProfileScreenState extends State<ProfileScreen> {
       ];
     }
     
-    return list.map((secret) => SecretCard(
+    return _mySecrets.map((secret) => SecretCard(
       key: ValueKey(secret.id),
       secret: secret,
       userPosition: _userPosition,
       onDelete: isMe ? () {
         setState(() {
-          if (_activeTabIndex == 0) {
-            _mySecrets.removeWhere((s) => s.id == secret.id);
-          } else {
-            _savedSecrets.removeWhere((s) => s.id == secret.id);
-          }
+          _mySecrets.removeWhere((s) => s.id == secret.id);
         });
       } : null,
     )).toList();
   }
 
-  Widget _buildStatBlock(String label, String value) {
+  Widget _buildStatBlock(String label, String value, {VoidCallback? onTap}) {
     return Expanded(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            value,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: HushColors.textPrimary,
-              fontSize: 20,
-            ),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(
+                value,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: HushColors.textPrimary,
+                  fontSize: 20,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                label,
+                style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
-            textAlign: TextAlign.center,
-          ),
-        ],
+        ),
       ),
     );
   }
