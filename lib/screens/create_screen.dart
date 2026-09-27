@@ -542,30 +542,41 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       ),
       child: Center(
         child: _recordedFilePath == null
-            ? AnimatedBuilder(
-                animation: _pulseAnimation,
-                builder: (context, child) {
-                  return Transform.scale(
-                    scale: _isRecording ? _pulseAnimation.value : 1.0,
-                    child: GestureDetector(
-                      onTap: _toggleRecording,
-                      child: Container(
-                        width: 90,
-                        height: 90,
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: Border.all(color: HushColors.tierRed, width: 2),
-                          color: _isRecording ? HushColors.tierRed.withValues(alpha: 0.2) : Colors.transparent,
+            ? Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  AnimatedBuilder(
+                    animation: _pulseAnimation,
+                    builder: (context, child) {
+                      return Transform.scale(
+                        scale: _isRecording ? _pulseAnimation.value : 1.0,
+                        child: GestureDetector(
+                          onTap: _toggleRecording,
+                          child: Container(
+                            width: 70,
+                            height: 70,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: HushColors.tierRed, width: 2),
+                              color: _isRecording ? HushColors.tierRed.withValues(alpha: 0.2) : Colors.transparent,
+                            ),
+                            child: HushIcon(
+                              _isRecording ? HushIcons.stop : HushIcons.mic,
+                              color: HushColors.tierRed,
+                              size: 32,
+                            ),
+                          ),
                         ),
-                        child: HushIcon(
-                          _isRecording ? HushIcons.stop : HushIcons.mic,
-                          color: HushColors.tierRed,
-                          size: 40,
-                        ),
-                      ),
-                    ),
-                  );
-                },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    l10n.secretPlaceholder,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(color: HushColors.textMuted, fontSize: 14),
+                  ),
+                ],
               )
             : Column(
                 children: [
