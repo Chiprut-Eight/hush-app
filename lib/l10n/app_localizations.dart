@@ -278,6 +278,12 @@ abstract class AppLocalizations {
   /// **'Hushhh Ready'**
   String get secretReady;
 
+  /// No description provided for @discoverHushhh.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover the Hushhh'**
+  String get discoverHushhh;
+
   /// No description provided for @tapToRecord.
   ///
   /// In en, this message translates to:

@@ -103,6 +103,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get secretReady => 'Hushhh Ready';
 
   @override
+  String get discoverHushhh => 'Discover the Hushhh';
+
+  @override
   String get tapToRecord => 'Tap to Record';
 
   @override

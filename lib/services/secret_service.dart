@@ -372,8 +372,12 @@ class SecretService {
       }
     } catch (_) {}
 
-    // Create a comprehensive report document
-    await _firestore.collection('reports').add({
+    // Create a comprehensive report document using deterministic ID to prevent duplicates
+    final docId = commentId != null 
+        ? '${secretId}_${commentId}_${user.uid}'
+        : '${secretId}_${user.uid}';
+
+    await _firestore.collection('reports').doc(docId).set({
       'secretId': secretId,
       'commentId': commentId,
       'reporterId': user.uid,
@@ -381,7 +385,7 @@ class SecretService {
       'reporterEmail': reporterEmail ?? '',
       'creatorId': creatorId ?? '',
       'creatorName': creatorName ?? 'Unknown Creator',
-      'secretType': 'comment',
+      'secretType': commentId != null ? 'comment' : 'secret',
       'reportedContent': textContent ?? '',
       'reason': reason,
       'status': 'pending',

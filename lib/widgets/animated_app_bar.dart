@@ -70,86 +70,96 @@ class _AnimatedAppBarState extends State<AnimatedAppBar> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Start side: The Logo (Always visible)
+                // Start side: Back Arrow and Logo
                 Expanded(
-                  child: GestureDetector(
-                    onTap: () {
-                      context.read<UIProvider>().triggerNavigateHome();
-                    },
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        // TEXT PART (comes first in reading order)
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 600),
-                          curve: Curves.easeInOut,
-                          width: isCollapsed ? 0 : 130, // Increased width to fit larger text
-                          child: AnimatedOpacity(
-                            opacity: isCollapsed ? 0.0 : 1.0,
-                            duration: const Duration(milliseconds: 400),
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 0.0), // Gap completely removed
-                              child: Image.asset(
-                                'assets/images/text_only.png',
-                                height: 42, // Increased from 38
-                                fit: BoxFit.contain,
-                                alignment: AlignmentDirectional.centerEnd,
-                              ),
-                            ),
+                  child: Row(
+                    children: [
+                      if (canPop)
+                        Padding(
+                          padding: const EdgeInsetsDirectional.only(end: 8.0),
+                          child: IconButton(
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            icon: Icon(Icons.arrow_back_ios_new_rounded, size: 26, color: isDark ? Colors.white : Colors.black87),
+                            onPressed: () {
+                              rootNavigatorKey.currentState?.pop();
+                            },
                           ),
                         ),
-                        // ICON PART (comes second)
-                        Image.asset(
-                          'assets/images/icon_only.png',
-                          height: 48,
-                          fit: BoxFit.contain,
-                        ),
-                        // TITLE PART (comes third, appears when collapsed)
-                        Expanded(
-                          child: AnimatedOpacity(
-                            opacity: isCollapsed ? 1.0 : 0.0,
-                            duration: const Duration(milliseconds: 400),
-                            child: Padding(
-                              padding: const EdgeInsetsDirectional.only(start: 8.0),
-                              child: Text(
-                                title,
-                                style: TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: isDark ? Colors.white : HushColors.textPrimaryLight,
+                      Expanded(
+                        child: GestureDetector(
+                          onTap: () {
+                            context.read<UIProvider>().triggerNavigateHome();
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // TEXT PART (comes first in reading order)
+                              AnimatedContainer(
+                                duration: const Duration(milliseconds: 600),
+                                curve: Curves.easeInOut,
+                                width: isCollapsed ? 0 : 130, // Increased width to fit larger text
+                                child: AnimatedOpacity(
+                                  opacity: isCollapsed ? 0.0 : 1.0,
+                                  duration: const Duration(milliseconds: 400),
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 0.0), // Gap completely removed
+                                    child: Image.asset(
+                                      'assets/images/text_only.png',
+                                      height: 42, // Increased from 38
+                                      fit: BoxFit.contain,
+                                      alignment: AlignmentDirectional.centerEnd,
+                                    ),
+                                  ),
                                 ),
-                                maxLines: 1,
-                                overflow: TextOverflow.fade,
-                                softWrap: false,
                               ),
-                            ),
+                              // ICON PART (comes second)
+                              Image.asset(
+                                'assets/images/icon_only.png',
+                                height: 48,
+                                fit: BoxFit.contain,
+                              ),
+                              // TITLE PART (comes third, appears when collapsed)
+                              Expanded(
+                                child: AnimatedOpacity(
+                                  opacity: isCollapsed ? 1.0 : 0.0,
+                                  duration: const Duration(milliseconds: 400),
+                                  child: Padding(
+                                    padding: const EdgeInsetsDirectional.only(start: 8.0),
+                                    child: Text(
+                                      title,
+                                      style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: isDark ? Colors.white : HushColors.textPrimaryLight,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.fade,
+                                      softWrap: false,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 ),
                 
-                // End side: Menu/Back and Notifications
+                // End side: Notifications and Hamburger Menu
                 Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     const NotificationsButton(),
-                    if (canPop)
-                      IconButton(
-                        icon: Icon(Icons.arrow_back_ios_new_rounded, size: 28, color: isDark ? Colors.white : Colors.black87),
-                        onPressed: () {
-                          rootNavigatorKey.currentState?.pop();
-                        },
-                      )
-                    else
-                      IconButton(
-                        icon: HushIcon(HushIcons.feed, size: 26, color: isDark ? Colors.white : Colors.black87),
-                        onPressed: () {
-                          FocusManager.instance.primaryFocus?.unfocus();
-                          Scaffold.of(context).openDrawer();
-                        },
-                      ),
+                    IconButton(
+                      icon: Icon(Icons.menu_rounded, size: 30, color: isDark ? Colors.white : Colors.black87),
+                      onPressed: () {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        Scaffold.of(context).openDrawer();
+                      },
+                    ),
                   ],
                 ),
               ],

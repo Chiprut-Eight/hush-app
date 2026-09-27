@@ -86,6 +86,7 @@ class NotificationService {
       if (token != null) {
         await _log(uid, 'Success! Saving FCM token');
         await _saveToken(uid, token);
+        await _messaging.subscribeToTopic('all_users');
       } else {
         await _log(uid, 'WARNING: FCM token is null');
       }
@@ -98,6 +99,7 @@ class NotificationService {
             final retryToken = await _messaging.getToken();
             if (retryToken != null) {
               await _saveToken(uid, retryToken);
+              await _messaging.subscribeToTopic('all_users');
             }
           } catch (retryErr) {
             debugPrint('[FCM] Retry token fetch error: $retryErr');

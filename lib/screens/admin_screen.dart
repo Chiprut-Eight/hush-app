@@ -57,7 +57,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return TitleSetter(
       title: l10n.adminTitle,
       child: DefaultTabController(
-        length: 3,
+        length: 4,
         child: Scaffold(
           backgroundColor: HushColors.bgPrimary,
           body: Column(
@@ -72,15 +72,17 @@ class _AdminScreenState extends State<AdminScreen> {
                   Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.appeals))),
                   Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.reports))),
                   Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.maintenanceTitle))),
+                  const Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text('Push'))),
                 ],
               ),
               const Expanded(
                 child: TabBarView(
-          children: [
-            _AppealsList(),
-            _ReportsList(),
-            _MaintenanceView(),
-          ],
+                  children: [
+                    _AppealsList(),
+                    _ReportsList(),
+                    _MaintenanceView(),
+                    _PushNotificationView(),
+                  ],
                 ),
               ),
             ],
@@ -1620,3 +1622,115 @@ class _AdminAudioPlayerState extends State<_AdminAudioPlayer> {
     );
   }
 }
+
+class _PushNotificationView extends StatefulWidget {
+  const _PushNotificationView();
+  @override
+  State<_PushNotificationView> createState() => _PushNotificationViewState();
+}
+
+class _PushNotificationViewState extends State<_PushNotificationView> {
+  final TextEditingController _titleController = TextEditingController();
+  final TextEditingController _bodyController = TextEditingController();
+  bool _isSending = false;
+
+  Future<void> _sendBroadcast(AppLocalizations l10n) async {
+    final title = _titleController.text.trim();
+    final body = _bodyController.text.trim();
+    
+    if (title.isEmpty || body.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please fill all fields', style: TextStyle(color: Colors.white)), backgroundColor: HushColors.tierRed),
+      );
+      return;
+    }
+
+    setState(() => _isSending = true);
+
+    try {
+      await FirebaseFirestore.instance.collection('admin_broadcasts').add({
+        'title': title,
+        'body': body,
+        'createdAt': FieldValue.serverTimestamp(),
+        'status': 'pending',
+      });
+      _titleController.clear();
+      _bodyController.clear();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Broadcast queued successfully!', style: TextStyle(color: Colors.white)), backgroundColor: Colors.green),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e', style: const TextStyle(color: Colors.white)), backgroundColor: HushColors.tierRed),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+
+    return Padding(
+      padding: const EdgeInsets.all(24.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            isHe ? 'שליחת הודעת פוש לכלל המשתמשים' : 'Send Push Notification to ALL users',
+            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 24),
+          TextField(
+            controller: _titleController,
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              labelText: isHe ? 'כותרת (Title)' : 'Title',
+              labelStyle: const TextStyle(color: HushColors.textSecondary),
+              filled: true,
+              fillColor: HushColors.bgCard,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            ),
+          ),
+          const SizedBox(height: 16),
+          TextField(
+            controller: _bodyController,
+            style: const TextStyle(color: Colors.white),
+            maxLines: 4,
+            decoration: InputDecoration(
+              labelText: isHe ? 'תוכן (Body)' : 'Body',
+              labelStyle: const TextStyle(color: HushColors.textSecondary),
+              filled: true,
+              fillColor: HushColors.bgCard,
+              border: OutlineInputBorder(borderRadius: BorderRadius.circular(12), borderSide: BorderSide.none),
+            ),
+          ),
+          const SizedBox(height: 32),
+          SizedBox(
+            width: double.infinity,
+            height: 50,
+            child: ElevatedButton.icon(
+              onPressed: _isSending ? null : () => _sendBroadcast(l10n),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: HushColors.textAccent,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              ),
+              icon: _isSending ? const SizedBox(width: 20, height: 20, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2)) : const Icon(Icons.send, color: Colors.white),
+              label: Text(
+                _isSending ? (isHe ? 'שולח...' : 'Sending...') : (isHe ? 'שלח פוש לכולם' : 'Send Broadcast'),
+                style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+

@@ -270,14 +270,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
             const SizedBox(height: 32),
 
-            // Stats cards
+            // Stats row
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
-              child: Column(
-                children: [
-                  _buildStatRow(l10n.publishedSecrets, '${_mySecrets.length}'),
-                  _buildStatRow(l10n.followers, '${user.followerIds.length}'),
-                ],
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                decoration: BoxDecoration(
+                  color: HushColors.bgCard,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: HushColors.borderSubtle),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    _buildStatBlock(l10n.publishedSecrets, '${_mySecrets.length}'),
+                    Container(width: 1, height: 40, color: HushColors.borderSubtle),
+                    if (isMe) ...[
+                      _buildStatBlock(l10n.savedTab, '${_savedSecrets.length}'),
+                      Container(width: 1, height: 40, color: HushColors.borderSubtle),
+                    ],
+                    _buildStatBlock(l10n.followers, '${user.followerIds.length}'),
+                  ],
+                ),
               ),
             ),
 
@@ -378,30 +392,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
     )).toList();
   }
 
-  Widget _buildStatRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-        decoration: BoxDecoration(
-          color: HushColors.bgCard,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: HushColors.borderSubtle),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(label, style: const TextStyle(color: HushColors.textSecondary)),
-            Text(
-              value,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: HushColors.textPrimary,
-                fontSize: 18,
-              ),
+  Widget _buildStatBlock(String label, String value) {
+    return Expanded(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(
+            value,
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+              color: HushColors.textPrimary,
+              fontSize: 20,
             ),
-          ],
-        ),
+          ),
+          const SizedBox(height: 4),
+          Text(
+            label,
+            style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+            textAlign: TextAlign.center,
+          ),
+        ],
       ),
     );
   }

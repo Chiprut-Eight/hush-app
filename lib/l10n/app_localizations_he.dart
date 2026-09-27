@@ -102,6 +102,9 @@ class AppLocalizationsHe extends AppLocalizations {
   String get secretReady => 'ה-Hushhh מוכן';
 
   @override
+  String get discoverHushhh => 'גלו את ה-Hushhh';
+
+  @override
   String get tapToRecord => 'הקש כדי להקליט';
 
   @override

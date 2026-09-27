@@ -96,6 +96,7 @@ class _HushAppState extends State<HushApp> {
               return Scaffold(
                 backgroundColor: Colors.transparent,
                 resizeToAvoidBottomInset: false,
+                drawerEdgeDragWidth: 0,
                 drawer: const HushDrawer(),
                 body: Stack(
                   children: [

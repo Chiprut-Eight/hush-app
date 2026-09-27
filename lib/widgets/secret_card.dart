@@ -1029,24 +1029,15 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                           overflow: TextOverflow.ellipsis,
                                           maxLines: 1,
                                         ),
-                                        const SizedBox(height: 2),
-                                        Text.rich(
-                                          TextSpan(
-                                            children: [
-                                              TextSpan(
-                                                text: isGroup ? l10n.groupSecret : l10n.regularSecret,
-                                                style: TextStyle(color: isGroup ? _getTierColor() : HushColors.textSecondary),
-                                              ),
-                                              TextSpan(
-                                                text: ' • ${getTimeAgo(_currentSecret.createdAt, l10n)}',
-                                                style: const TextStyle(color: HushColors.textMuted),
-                                              ),
-                                            ],
+                                        if (isGroup) ...[
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            l10n.groupSecret,
+                                            style: TextStyle(color: _getTierColor(), fontSize: 11),
+                                            overflow: TextOverflow.ellipsis,
+                                            maxLines: 1,
                                           ),
-                                          style: const TextStyle(fontSize: 11),
-                                          overflow: TextOverflow.ellipsis,
-                                          maxLines: 1,
-                                        ),
+                                        ]
                                       ],
                                     ),
                                   ),
@@ -1054,28 +1045,39 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                               ),
                             ),
                           ),
-                          // Distance + delete button for owner
-                          Row(
+                          // Distance, Time + delete button for owner
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              if (distance != null)
-                                Text(
-                                  distance > 1000 
-                                      ? l10n.distanceAwayKm((distance / 1000).toStringAsFixed(1))
-                                      : l10n.distanceAwayMeters(distance.toInt()),
-                                  style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
-                                ),
-                              if (isOwner) ...[
-                                const SizedBox(width: 8),
-                                GestureDetector(
-                                  onTap: () async {
-                                    if (widget.onInteractionStart != null) widget.onInteractionStart!();
-                                    await _showDeleteConfirmation(context, l10n);
-                                    if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
-                                  },
-                                  child: const HushIcon(HushIcons.trash, size: 20, color: HushColors.tierRed),
-                                ),
-                              ],
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  if (distance != null)
+                                    Text(
+                                      distance > 1000 
+                                          ? l10n.distanceAwayKm((distance / 1000).toStringAsFixed(1))
+                                          : l10n.distanceAwayMeters(distance.toInt()),
+                                      style: const TextStyle(color: HushColors.textSecondary, fontSize: 12),
+                                    ),
+                                  if (isOwner) ...[
+                                    const SizedBox(width: 8),
+                                    GestureDetector(
+                                      onTap: () async {
+                                        if (widget.onInteractionStart != null) widget.onInteractionStart!();
+                                        await _showDeleteConfirmation(context, l10n);
+                                        if (widget.onInteractionEnd != null) widget.onInteractionEnd!();
+                                      },
+                                      child: const HushIcon(HushIcons.trash, size: 20, color: HushColors.tierRed),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                getTimeAgo(_currentSecret.createdAt, l10n),
+                                style: const TextStyle(color: HushColors.textMuted, fontSize: 11),
+                              ),
                             ],
                           ),
                         ],
@@ -1366,7 +1368,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      l10n.secretReady,
+                      isInRange ? l10n.secretReady : l10n.discoverHushhh,
                       textAlign: TextAlign.center,
                       style: const TextStyle(
                         fontSize: 16,
@@ -1394,7 +1396,14 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
       return Container(
         padding: const EdgeInsets.symmetric(vertical: 8),
         child: _revealedTextContent != null
-          ? Text(_revealedTextContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4))
+          ? GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _showCommentsSheet(context, l10n),
+              child: Container(
+                width: double.infinity,
+                child: Text(_revealedTextContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4)),
+              ),
+            )
           : Directionality(
               // Task 5: Force LTR for audio player
               textDirection: TextDirection.ltr,
@@ -1410,6 +1419,8 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                       icon: HushIcon(_isPlaying ? HushIcons.pause : HushIcons.play, size: 40, color: HushColors.textAccent),
                       onPressed: _togglePlay,
                     ),
+                    const SizedBox(width: 8),
+                    PlayingWaveform(isPlaying: _isPlaying, color: HushColors.textAccent),
                     const SizedBox(width: 8),
                     Expanded(
                       child: SliderTheme(
@@ -1531,7 +1542,72 @@ class _InteractionButton extends StatelessWidget {
             Text('$count', style: TextStyle(color: isActive ? Colors.white : HushColors.textSecondary, fontWeight: FontWeight.w500)),
           ],
         ),
-      ),
+    );
+  }
+}
+
+class PlayingWaveform extends StatefulWidget {
+  final bool isPlaying;
+  final Color color;
+  const PlayingWaveform({super.key, required this.isPlaying, required this.color});
+
+  @override
+  State<PlayingWaveform> createState() => _PlayingWaveformState();
+}
+
+class _PlayingWaveformState extends State<PlayingWaveform> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(vsync: this, duration: const Duration(milliseconds: 500));
+    if (widget.isPlaying) _controller.repeat(reverse: true);
+  }
+
+  @override
+  void didUpdateWidget(PlayingWaveform old) {
+    super.didUpdateWidget(old);
+    if (widget.isPlaying && !old.isPlaying) {
+      _controller.repeat(reverse: true);
+    } else if (!widget.isPlaying && old.isPlaying) {
+      _controller.stop();
+      _controller.value = 0.5;
+    }
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _controller,
+      builder: (context, child) {
+        return Row(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: List.generate(5, (index) {
+            final delay = index * 0.2;
+            var val = (_controller.value + delay) % 1.0;
+            if (val > 0.5) val = 1.0 - val;
+            val = val * 2.0; // 0 to 1
+            final height = widget.isPlaying ? 8.0 + (16.0 * val) : 4.0;
+            return Container(
+              margin: const EdgeInsets.symmetric(horizontal: 2),
+              width: 3,
+              height: height,
+              decoration: BoxDecoration(
+                color: widget.color,
+                borderRadius: BorderRadius.circular(2),
+              ),
+            );
+          }),
+        );
+      },
     );
   }
 }
