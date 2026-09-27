@@ -56,6 +56,10 @@ class AppLocalizationsEn extends AppLocalizations {
       'What\'s on your mind? Keep it Hushhh... (max 140 chars)';
 
   @override
+  String get voicePlaceholder =>
+      'What\'s on your mind? Keep it Hushhh... (max 60 seconds)';
+
+  @override
   String get recordVoice => 'Record Voice Hushhh';
 
   @override

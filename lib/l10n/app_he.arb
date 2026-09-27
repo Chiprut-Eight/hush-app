@@ -15,6 +15,7 @@
   "profileTitle": "פרופיל",
   "adminTitle": "פאנל ניהול",
   "secretPlaceholder": "מה עובר לך בראש? שמור את זה ב-Hushhh... (עד 140 תווים)",
+  "voicePlaceholder": "מה עובר לך בראש? שמור את זה ב-Hushhh... (עד 60 שניות)",
   "recordVoice": "הקלט Hushhh קולי",
   "stopRecording": "עצור הקלטה",
   "publishSecret": "השאר Hushhh",

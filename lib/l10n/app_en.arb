@@ -15,6 +15,7 @@
   "profileTitle": "Profile",
   "adminTitle": "Admin Panel",
   "secretPlaceholder": "What's on your mind? Keep it Hushhh... (max 140 chars)",
+  "voicePlaceholder": "What's on your mind? Keep it Hushhh... (max 60 seconds)",
   "recordVoice": "Record Voice Hushhh",
   "stopRecording": "Stop Recording",
   "publishSecret": "Drop Hushhh",

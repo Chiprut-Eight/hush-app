@@ -188,6 +188,12 @@ abstract class AppLocalizations {
   /// **'What\'s on your mind? Keep it Hushhh... (max 140 chars)'**
   String get secretPlaceholder;
 
+  /// No description provided for @voicePlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s on your mind? Keep it Hushhh... (max 60 seconds)'**
+  String get voicePlaceholder;
+
   /// No description provided for @recordVoice.
   ///
   /// In en, this message translates to:

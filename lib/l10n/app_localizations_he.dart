@@ -55,6 +55,10 @@ class AppLocalizationsHe extends AppLocalizations {
       'מה עובר לך בראש? שמור את זה ב-Hushhh... (עד 140 תווים)';
 
   @override
+  String get voicePlaceholder =>
+      'מה עובר לך בראש? שמור את זה ב-Hushhh... (עד 60 שניות)';
+
+  @override
   String get recordVoice => 'הקלט Hushhh קולי';
 
   @override

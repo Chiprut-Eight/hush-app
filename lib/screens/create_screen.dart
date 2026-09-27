@@ -572,7 +572,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                   ),
                   const SizedBox(height: 16),
                   Text(
-                    l10n.secretPlaceholder,
+                    l10n.voicePlaceholder,
                     textAlign: TextAlign.center,
                     style: const TextStyle(color: HushColors.textMuted, fontSize: 14),
                   ),
