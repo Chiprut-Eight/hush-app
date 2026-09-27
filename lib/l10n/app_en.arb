@@ -302,5 +302,4 @@
   "tier7Name": "Grandmaster",
   "tier8Name": "Legend",
   "tier9Name": "Mythic",
-  "tier10Name": "God Tier"
-}
+  "tier10Name": "God Tier",`r`n  "clickAvatarToProfile": "Click profile to view user",`r`n  "clickHereToViewMap": "Click here to view on map"`r`n}

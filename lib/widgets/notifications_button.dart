@@ -108,10 +108,12 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           final isRead = data['read'] == true;
                           
                           final type = data['type'] as String? ?? 'general';
+                          final secretId = data['data']?['secretId'];
+
                           IconData actionIcon;
                           switch (type) {
                             case 'like': actionIcon = HushIcons.heart; break;
-                            case 'comment': actionIcon = HushIcons.chat; break;
+                            case 'comment': actionIcon = HushIcons.comment; break;
                             case 'follow': actionIcon = HushIcons.userCircle; break;
                             case 'broadcast': actionIcon = HushIcons.bell; break;
                             case 'report': actionIcon = Icons.warning_amber_rounded; break;

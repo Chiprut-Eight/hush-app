@@ -1399,6 +1399,10 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'God Tier'**
   String get tier10Name;
+
+  String get clickAvatarToProfile;
+
+  String get clickHereToViewMap;
 }
 
 class _AppLocalizationsDelegate

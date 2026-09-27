@@ -722,4 +722,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tier10Name => 'God Tier';
+
+  @override
+  String get clickAvatarToProfile => 'Click profile to view user';
+
+  @override
+  String get clickHereToViewMap => 'Click here to view on map';
 }

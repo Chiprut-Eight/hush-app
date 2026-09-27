@@ -258,8 +258,22 @@ class _FollowingScreenState extends State<FollowingScreen> {
                               ),
                             ],
                           ),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(Icons.touch_app, size: 14, color: HushColors.textAccent),
+                              const SizedBox(width: 4),
+                              Expanded(child: Text(l10n.clickAvatarToProfile, style: const TextStyle(color: HushColors.textAccent, fontSize: 12))),
+                            ],
+                          ),
                           const SizedBox(height: 4),
-                          Text(l10n.tapToViewMap, style: const TextStyle(color: HushColors.textAccent, fontSize: 12)),
+                          Row(
+                            children: [
+                              const Icon(Icons.map, size: 14, color: HushColors.textAccent),
+                              const SizedBox(width: 4),
+                              Expanded(child: Text(l10n.clickHereToViewMap, style: const TextStyle(color: HushColors.textAccent, fontSize: 12))),
+                            ],
+                          ),
                         ] else ...[
                           Text(l10n.noActiveSecrets, style: const TextStyle(color: HushColors.textMuted, fontSize: 12)),
                         ]
