@@ -202,8 +202,8 @@ class _FollowingScreenState extends State<FollowingScreen> {
       _isLoading = true;
     });
 
-    final results = await _socialService.searchUsers(query);
     final currentUserUid = context.read<AuthProvider>().firebaseUser?.uid;
+    final results = await _socialService.searchUsers(query);
     final filteredResults = results.where((u) => u.uid != currentUserUid).toList();
     
     AnalyticsService().logUserSearch(query);
