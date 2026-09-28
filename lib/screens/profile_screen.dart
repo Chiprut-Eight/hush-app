@@ -8,6 +8,7 @@ import '../services/secret_service.dart';
 import 'package:hush_app/models/hush_user.dart';
 import '../services/social_service.dart';
 import '../widgets/secret_card.dart';
+import '../config/tiers.dart';
 
 import 'package:geolocator/geolocator.dart';
 import '../services/analytics_service.dart';
@@ -141,6 +142,54 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  void _showNextTierInfo(BuildContext context, HushUser user) {
+    if (user.tierLevel >= 10) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('הגעת לדרגה הגבוהה ביותר!')),
+      );
+      return;
+    }
+
+    final nextTierDef = HushTiers.tiers.firstWhere((t) => t.level == user.tierLevel + 1);
+    final requiredTotal = nextTierDef.requiredSuccesses;
+    final currentSuccesses = user.groupSuccesses;
+    final missingSuccesses = (requiredTotal - currentSuccesses) > 0 ? (requiredTotal - currentSuccesses) : 0;
+    
+    final nextTierName = _getTierName(context, nextTierDef.level);
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    
+    final message = isHe
+      ? 'הדרגה הבאה היא $nextTierName! כדי להגיע אליה ולהיות מזוהים כיוצרי Hushhh מובילים - צריך שיפתחו עוד $missingSuccesses Hushhh קבוצתיים שהשארת - כשכל אחד מהם יפתח על ידי 3 אנשים לפחות.'
+      : 'Your next tier is $nextTierName! To reach it and be recognized as a top Hushhh creator, you need $missingSuccesses more of your Group Hushhhs to be opened - with each being opened by at least 3 people.';
+
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        backgroundColor: HushColors.bgCard,
+        title: Row(
+          children: [
+            Icon(Icons.auto_graph, color: nextTierDef.color),
+            const SizedBox(width: 8),
+            Text(
+              isHe ? 'הדרך לדרגה הבאה' : 'Path to Next Tier',
+              style: const TextStyle(color: Colors.white, fontSize: 18),
+            ),
+          ],
+        ),
+        content: Text(
+          message,
+          style: const TextStyle(color: HushColors.textSecondary, height: 1.5, fontSize: 15),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: Text(isHe ? 'הבנתי' : 'Got it', style: const TextStyle(color: HushColors.textAccent)),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -227,20 +276,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                        decoration: BoxDecoration(
-                          color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.2),
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.5),
+                      GestureDetector(
+                        onTap: () => _showNextTierInfo(context, user),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.2),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: HushColors.tierColor(user.tierLevel).withValues(alpha: 0.5),
+                            ),
                           ),
-                        ),
-                        child: Text(
-                          _getTierName(context, user.tierLevel),
-                          style: TextStyle(
-                            color: HushColors.tierColor(user.tierLevel),
-                            fontWeight: FontWeight.w600,
+                          child: Text(
+                            _getTierName(context, user.tierLevel),
+                            style: TextStyle(
+                              color: HushColors.tierColor(user.tierLevel),
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
                       ),
