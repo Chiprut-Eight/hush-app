@@ -1796,11 +1796,16 @@ class _StatisticsViewState extends State<_StatisticsView> {
   Future<void> _fetchStats() async {
     setState(() => _isLoading = true);
     try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      final adminUid = authProvider.firebaseUser?.uid;
+
       final db = FirebaseFirestore.instance;
       // Get users count
       final usersSnap = await db.collection('users').count().get();
       // Get secrets count
-      final secretsSnap = await db.collection('secrets').count().get();
+      final secretsSnap = adminUid != null
+          ? await db.collection('secrets').where('creatorId', isNotEqualTo: adminUid).count().get()
+          : await db.collection('secrets').count().get();
       
       // Assume 1 admin exists, so we subtract 1 if > 0
       final usersCount = usersSnap.count ?? 0;
