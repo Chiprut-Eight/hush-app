@@ -13,6 +13,7 @@ import '../services/analytics_service.dart';
 import 'create_screen.dart';
 import 'package:just_audio/just_audio.dart';
 import '../widgets/title_setter.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -1786,6 +1787,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
   bool _isLoading = true;
   int _totalUsers = 0;
   int _totalSecrets = 0;
+  int _onlineUsers = 0;
 
   @override
   void initState() {
@@ -1807,17 +1809,38 @@ class _StatisticsViewState extends State<_StatisticsView> {
           ? await db.collection('secrets').where('creatorId', isNotEqualTo: adminUid).count().get()
           : await db.collection('secrets').count().get();
       
+      // Get online users from RTDB
+      int onlineUsersCount = 0;
+      try {
+        final rtdb = FirebaseDatabase.instance;
+        final statusSnap = await rtdb.ref('status').orderByChild('state').equalTo('online').once();
+        if (statusSnap.snapshot.value != null) {
+          final Map<dynamic, dynamic> statuses = statusSnap.snapshot.value as Map<dynamic, dynamic>;
+          statuses.forEach((key, value) {
+            if (value['state'] == 'online' && key != adminUid) {
+              onlineUsersCount++;
+            }
+          });
+        }
+      } catch (e) {
+        print('RTDB error: $e');
+        // Fallback to 0 if RTDB is not setup yet
+      }
+
       // Assume 1 admin exists, so we subtract 1 if > 0
       final usersCount = usersSnap.count ?? 0;
       final secretsCount = secretsSnap.count ?? 0;
 
-      setState(() {
-        _totalUsers = usersCount > 0 ? usersCount - 1 : 0; 
-        _totalSecrets = secretsCount; 
-        _isLoading = false;
-      });
+      if (mounted) {
+        setState(() {
+          _totalUsers = usersCount > 0 ? usersCount - 1 : 0; 
+          _totalSecrets = secretsCount; 
+          _onlineUsers = onlineUsersCount;
+          _isLoading = false;
+        });
+      }
     } catch (e) {
-      setState(() => _isLoading = false);
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -1852,8 +1875,8 @@ class _StatisticsViewState extends State<_StatisticsView> {
           const SizedBox(height: 16),
           _StatCard(
             title: isHe ? 'משתמשים מחוברים כעת' : 'Users Online Now',
-            subtitle: isHe ? 'דורש חיבור נתונים בזמן אמת (לא נתמך כרגע)' : 'Requires Realtime DB connection (N/A)',
-            value: '-',
+            subtitle: isHe ? 'לא כולל אדמין' : 'Excluding admin',
+            value: _onlineUsers.toString(),
             icon: Icons.wifi,
           ),
         ],
