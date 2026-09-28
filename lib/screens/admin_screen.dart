@@ -57,7 +57,7 @@ class _AdminScreenState extends State<AdminScreen> {
     return TitleSetter(
       title: l10n.adminTitle,
       child: DefaultTabController(
-        length: 4,
+        length: 5,
         child: Scaffold(
           backgroundColor: HushColors.bgPrimary,
           body: Column(
@@ -73,6 +73,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.reports))),
                   Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.maintenanceTitle))),
                   const Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text('Push'))),
+                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(Localizations.localeOf(context).languageCode == 'he' ? 'סטטיסטיקות' : 'Stats'))),
                 ],
               ),
               const Expanded(
@@ -82,6 +83,7 @@ class _AdminScreenState extends State<AdminScreen> {
                     _ReportsList(),
                     _MaintenanceView(),
                     _PushNotificationView(),
+                    _StatisticsView(),
                   ],
                 ),
               ),
@@ -1767,6 +1769,154 @@ class _PushNotificationViewState extends State<_PushNotificationView> {
         ],
       ),
     ));
+  }
+}
+
+// ============================================================================
+// 5. STATISTICS VIEW
+// ============================================================================
+class _StatisticsView extends StatefulWidget {
+  const _StatisticsView();
+
+  @override
+  State<_StatisticsView> createState() => _StatisticsViewState();
+}
+
+class _StatisticsViewState extends State<_StatisticsView> {
+  bool _isLoading = true;
+  int _totalUsers = 0;
+  int _totalSecrets = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchStats();
+  }
+
+  Future<void> _fetchStats() async {
+    setState(() => _isLoading = true);
+    try {
+      final db = FirebaseFirestore.instance;
+      // Get users count
+      final usersSnap = await db.collection('users').count().get();
+      // Get secrets count
+      final secretsSnap = await db.collection('secrets').count().get();
+      
+      // Assume 1 admin exists, so we subtract 1 if > 0
+      final usersCount = usersSnap.count ?? 0;
+      final secretsCount = secretsSnap.count ?? 0;
+
+      setState(() {
+        _totalUsers = usersCount > 0 ? usersCount - 1 : 0; 
+        _totalSecrets = secretsCount; 
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isLoading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    
+    if (_isLoading) {
+      return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
+    }
+
+    return RefreshIndicator(
+      onRefresh: _fetchStats,
+      color: HushColors.textAccent,
+      backgroundColor: HushColors.bgCard,
+      child: ListView(
+        padding: const EdgeInsets.all(16),
+        children: [
+          _StatCard(
+            title: isHe ? 'סה"כ משתמשים רשומים' : 'Total Registered Users',
+            subtitle: isHe ? 'לא כולל אדמין' : 'Excluding admin',
+            value: _totalUsers.toString(),
+            icon: Icons.people_alt,
+          ),
+          const SizedBox(height: 16),
+          _StatCard(
+            title: isHe ? 'סה"כ Hushhh באפליקציה' : 'Total Secrets',
+            subtitle: isHe ? 'מכל הזמנים (לא כולל מחיקות אוטומטיות)' : 'All time (excluding auto-deleted)',
+            value: _totalSecrets.toString(),
+            icon: Icons.speaker_notes,
+          ),
+          const SizedBox(height: 16),
+          _StatCard(
+            title: isHe ? 'משתמשים מחוברים כעת' : 'Users Online Now',
+            subtitle: isHe ? 'דורש חיבור נתונים בזמן אמת (לא נתמך כרגע)' : 'Requires Realtime DB connection (N/A)',
+            value: '-',
+            icon: Icons.wifi,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final String value;
+  final IconData icon;
+
+  const _StatCard({
+    required this.title,
+    required this.subtitle,
+    required this.value,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: HushColors.bgCard,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: HushColors.borderSubtle),
+      ),
+      child: Row(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: HushColors.textAccent.withValues(alpha: 0.1),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(icon, color: HushColors.textAccent, size: 28),
+          ),
+          const SizedBox(width: 16),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: const TextStyle(color: HushColors.textMuted, fontSize: 13),
+                ),
+              ],
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: HushColors.textAccent,
+              fontSize: 28,
+              fontWeight: FontWeight.w900,
+            ),
+          ),
+        ],
+      ),
+    );
   }
 }
 

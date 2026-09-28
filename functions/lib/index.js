@@ -479,6 +479,13 @@ function getRevealRadius(tierLevel, isGroup) {
     return TIER_REVEAL_RADIUS[tierLevel] || 15;
 }
 // ============================================================
+// UTILITY: Tier max group users mapping (mirrors client tiers.dart)
+// ============================================================
+const TIER_MAX_GROUP_USERS = {
+    1: 3, 2: 8, 3: 15, 4: 25, 5: 40,
+    6: 70, 7: 120, 8: 200, 9: 350, 10: 500,
+};
+// ============================================================
 // UTILITY: Tier required successes mapping (mirrors client tiers.dart)
 // ============================================================
 const TIER_REQUIRED_SUCCESSES = {
@@ -625,34 +632,42 @@ exports.verifyGroupUnlock = functions.https.onCall(async (data, context) => {
         if (secret.creatorId && !secret.successCounted) {
             // Mark this secret as already counted BEFORE updating the user
             await secretRef.update({ successCounted: true });
-            const creatorRef = db.collection("users").doc(secret.creatorId);
-            const tierResult = await db.runTransaction(async (tx) => {
-                var _a, _b;
-                const creatorSnap = await tx.get(creatorRef);
-                const oldTierLevel = ((_a = creatorSnap.data()) === null || _a === void 0 ? void 0 : _a.tierLevel) || 1;
-                const oldSuccesses = ((_b = creatorSnap.data()) === null || _b === void 0 ? void 0 : _b.groupSuccesses) || 0;
-                const newSuccesses = oldSuccesses + 1;
-                const newTierLevel = calculateTierLevel(newSuccesses);
-                console.log(`[TIER] Creator ${secret.creatorId}: groupSuccesses ${oldSuccesses} -> ${newSuccesses}, tier ${oldTierLevel} -> ${newTierLevel}`);
-                tx.update(creatorRef, {
-                    groupSuccesses: newSuccesses,
-                    tierLevel: newTierLevel,
+            const creatorTierAtCreation = secret.creatorTierLevel || 1;
+            const requiredToCount = TIER_MAX_GROUP_USERS[creatorTierAtCreation] || 3;
+            // ONLY increment if the secret required the maximum allowed users for the creator's tier at creation
+            if (requiredUsers >= requiredToCount) {
+                const creatorRef = db.collection("users").doc(secret.creatorId);
+                const tierResult = await db.runTransaction(async (tx) => {
+                    var _a, _b;
+                    const creatorSnap = await tx.get(creatorRef);
+                    const oldTierLevel = ((_a = creatorSnap.data()) === null || _a === void 0 ? void 0 : _a.tierLevel) || 1;
+                    const oldSuccesses = ((_b = creatorSnap.data()) === null || _b === void 0 ? void 0 : _b.groupSuccesses) || 0;
+                    const newSuccesses = oldSuccesses + 1;
+                    const newTierLevel = calculateTierLevel(newSuccesses);
+                    console.log(`[TIER] Creator ${secret.creatorId}: groupSuccesses ${oldSuccesses} -> ${newSuccesses}, tier ${oldTierLevel} -> ${newTierLevel}`);
+                    tx.update(creatorRef, {
+                        groupSuccesses: newSuccesses,
+                        tierLevel: newTierLevel,
+                    });
+                    return { oldTier: oldTierLevel, newTier: newTierLevel };
                 });
-                return { oldTier: oldTierLevel, newTier: newTierLevel };
-            });
-            // Send tier-up notification if level changed
-            if (tierResult.newTier > tierResult.oldTier) {
-                const tierName = TIER_NAMES[tierResult.newTier] || {
-                    en: `Tier ${tierResult.newTier}`,
-                    he: `דרגה ${tierResult.newTier}`,
-                };
-                await sendPushToUser(secret.creatorId, {
-                    en: `You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
-                    he: `הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
-                }, {
-                    en: "Your Group Hushhh successes earned you a promotion!",
-                    he: "הצלחות ה-Hushhh הקבוצתי שלך הזכו אותך בעלייה!",
-                }, { type: "tier_up", newTier: String(tierResult.newTier) });
+                // Send tier-up notification if level changed
+                if (tierResult && tierResult.newTier > tierResult.oldTier) {
+                    const tierName = TIER_NAMES[tierResult.newTier] || {
+                        en: `Tier ${tierResult.newTier}`,
+                        he: `דרגה ${tierResult.newTier}`,
+                    };
+                    await sendPushToUser(secret.creatorId, {
+                        en: `You reached ${tierName.en}! (Tier ${tierResult.newTier})`,
+                        he: `הגעת לדרגת ${tierName.he}! (דרגה ${tierResult.newTier})`,
+                    }, {
+                        en: "Your Group Hushhh successes earned you a promotion!",
+                        he: "הצלחות ה-Hushhh הקבוצתי שלך הזכו אותך בעלייה!",
+                    }, { type: "tier_up", newTier: String(tierResult.newTier) });
+                }
+            }
+            else {
+                console.log(`[TIER] Secret ${secretId} opened by ${requiredUsers} people, but creator tier ${creatorTierAtCreation} requires ${requiredToCount} to count as a tier success.`);
             }
         }
         else if (secret.successCounted) {
