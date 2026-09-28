@@ -150,17 +150,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       return;
     }
 
+    final currentTierDef = HushTiers.tiers.firstWhere((t) => t.level == user.tierLevel);
     final nextTierDef = HushTiers.tiers.firstWhere((t) => t.level == user.tierLevel + 1);
     final requiredTotal = nextTierDef.requiredSuccesses;
     final currentSuccesses = user.groupSuccesses;
     final missingSuccesses = (requiredTotal - currentSuccesses) > 0 ? (requiredTotal - currentSuccesses) : 0;
     
     final nextTierName = _getTierName(context, nextTierDef.level);
+    final requiredUsersForSuccess = currentTierDef.maxGroupUsers;
     final isHe = Localizations.localeOf(context).languageCode == 'he';
     
     final message = isHe
-      ? 'הדרגה הבאה היא $nextTierName! כדי להגיע אליה ולהיות מזוהים כיוצרי Hushhh מובילים - צריך שיפתחו עוד $missingSuccesses Hushhh קבוצתיים שהשארת - כשכל אחד מהם יפתח על ידי 3 אנשים לפחות.'
-      : 'Your next tier is $nextTierName! To reach it and be recognized as a top Hushhh creator, you need $missingSuccesses more of your Group Hushhhs to be opened - with each being opened by at least 3 people.';
+      ? 'הדרגה הבאה היא $nextTierName! כדי להגיע אליה ולהיות מזוהים כיוצרי Hushhh מובילים - צריך שיפתחו עוד $missingSuccesses Hushhh קבוצתיים שהשארת - כשכל אחד מהם יפתח על ידי $requiredUsersForSuccess אנשים לפחות.'
+      : 'Your next tier is $nextTierName! To reach it and be recognized as a top Hushhh creator, you need $missingSuccesses more of your Group Hushhhs to be opened - with each being opened by at least $requiredUsersForSuccess people.';
 
     showDialog(
       context: context,

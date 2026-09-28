@@ -584,6 +584,14 @@ function getRevealRadius(tierLevel: number, isGroup: boolean): number {
 }
 
 // ============================================================
+// UTILITY: Tier max group users mapping (mirrors client tiers.dart)
+// ============================================================
+const TIER_MAX_GROUP_USERS: Record<number, number> = {
+  1: 3, 2: 8, 3: 15, 4: 25, 5: 40,
+  6: 70, 7: 120, 8: 200, 9: 350, 10: 500,
+};
+
+// ============================================================
 // UTILITY: Tier required successes mapping (mirrors client tiers.dart)
 // ============================================================
 const TIER_REQUIRED_SUCCESSES: Record<number, number> = {
@@ -769,11 +777,16 @@ export const verifyGroupUnlock = functions.https.onCall(
         // Mark this secret as already counted BEFORE updating the user
         await secretRef.update({ successCounted: true });
 
-        const creatorRef = db.collection("users").doc(secret.creatorId);
-        const tierResult = await db.runTransaction(async (tx) => {
-          const creatorSnap = await tx.get(creatorRef);
-          const oldTierLevel = creatorSnap.data()?.tierLevel || 1;
-          const oldSuccesses = creatorSnap.data()?.groupSuccesses || 0;
+        const creatorTierAtCreation = secret.creatorTierLevel || 1;
+        const requiredToCount = TIER_MAX_GROUP_USERS[creatorTierAtCreation] || 3;
+
+        // ONLY increment if the secret required the maximum allowed users for the creator's tier at creation
+        if (requiredUsers >= requiredToCount) {
+          const creatorRef = db.collection("users").doc(secret.creatorId);
+          const tierResult = await db.runTransaction(async (tx) => {
+            const creatorSnap = await tx.get(creatorRef);
+            const oldTierLevel = creatorSnap.data()?.tierLevel || 1;
+            const oldSuccesses = creatorSnap.data()?.groupSuccesses || 0;
           const newSuccesses = oldSuccesses + 1;
           const newTierLevel = calculateTierLevel(newSuccesses);
 
@@ -788,7 +801,7 @@ export const verifyGroupUnlock = functions.https.onCall(
         });
 
         // Send tier-up notification if level changed
-        if (tierResult.newTier > tierResult.oldTier) {
+        if (tierResult && tierResult.newTier > tierResult.oldTier) {
           const tierName = TIER_NAMES[tierResult.newTier] || {
             en: `Tier ${tierResult.newTier}`,
             he: `דרגה ${tierResult.newTier}`,
@@ -806,9 +819,12 @@ export const verifyGroupUnlock = functions.https.onCall(
             {type: "tier_up", newTier: String(tierResult.newTier)}
           );
         }
-      } else if (secret.successCounted) {
-        console.log(`[TIER] Secret ${secretId} already counted — skipping groupSuccesses increment for creator ${secret.creatorId}`);
+      } else {
+        console.log(`[TIER] Secret ${secretId} opened by ${requiredUsers} people, but creator tier ${creatorTierAtCreation} requires ${requiredToCount} to count as a tier success.`);
       }
+    } else if (secret.successCounted) {
+      console.log(`[TIER] Secret ${secretId} already counted — skipping groupSuccesses increment for creator ${secret.creatorId}`);
+    }
 
       return { success: true, message: "Group secret unlocked!" };
     }
