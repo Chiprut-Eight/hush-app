@@ -27,6 +27,7 @@ class DefaultFirebaseOptions {
     projectId: 'hush-7bab0',
     authDomain: 'hush-7bab0.web.app',
     storageBucket: 'hush-7bab0.firebasestorage.app',
+    databaseURL: 'https://hush-7bab0-default-rtdb.firebaseio.com',
   );
 
   /// Android configuration
@@ -39,6 +40,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '187237532355',
     projectId: 'hush-7bab0',
     storageBucket: 'hush-7bab0.firebasestorage.app',
+    databaseURL: 'https://hush-7bab0-default-rtdb.firebaseio.com',
   );
 
   /// iOS configuration (from GoogleService-Info.plist)
@@ -48,6 +50,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '187237532355',
     projectId: 'hush-7bab0',
     storageBucket: 'hush-7bab0.firebasestorage.app',
+    databaseURL: 'https://hush-7bab0-default-rtdb.firebaseio.com',
     iosBundleId: 'com.chiprut.hushhh',
     iosClientId: '187237532355-kkfh74c6ja7fr32bqjgi1drkac6teqdl.apps.googleusercontent.com',
   );
