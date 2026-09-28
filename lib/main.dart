@@ -32,9 +32,11 @@ const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  }
 
   // Register FCM background handler (must be top-level)
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
