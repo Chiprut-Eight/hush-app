@@ -76,13 +76,18 @@ class AnalyticsService {
   Future<void> logSecretCreated({
     required String contentType,
     required String secretType,
+    int? requiredUsers,
   }) async {
+    final parameters = <String, Object>{
+      'content_type': contentType, // 'text' or 'voice'
+      'secret_type': secretType, // 'regular' or 'group'
+    };
+    if (requiredUsers != null) {
+      parameters['required_users'] = requiredUsers;
+    }
     await _analytics.logEvent(
       name: 'secret_created',
-      parameters: {
-        'content_type': contentType, // 'text' or 'voice'
-        'secret_type': secretType, // 'regular' or 'group'
-      },
+      parameters: parameters,
     );
   }
 

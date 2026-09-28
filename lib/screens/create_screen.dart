@@ -330,7 +330,11 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           timeWindowMinutes: timeWindowMinutes,
         );
       }
-      AnalyticsService().logSecretCreated(contentType: contentType, secretType: secretType);
+      AnalyticsService().logSecretCreated(
+        contentType: contentType, 
+        secretType: secretType,
+        requiredUsers: isGroup ? requiredUsers : null,
+      );
       debugPrint('Secret published successfully in background');
     } catch (e) {
       debugPrint('Background publish failed: $e');
