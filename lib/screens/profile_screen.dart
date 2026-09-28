@@ -173,7 +173,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Icon(Icons.auto_graph, color: nextTierDef.color),
             const SizedBox(width: 8),
             Text(
-              isHe ? 'הדרך לדרגה הבאה' : 'Path to Next Tier',
+              isHe ? 'אתם בדרך הנכונה' : 'You are on the right track',
               style: const TextStyle(color: Colors.white, fontSize: 18),
             ),
           ],
