@@ -54,8 +54,8 @@ class HushDrawer extends StatelessWidget {
                     child: Align(
                       alignment: localeProvider.isHebrew ? Alignment.centerRight : Alignment.centerLeft,
                       child: Image.asset(
-                        'assets/images/logo_hushhh3.png',
-                        height: isLandscape ? 50 : 80,
+                        'assets/images/top_menu_no_bg.png',
+                        height: isLandscape ? 60 : 90, // bump height slightly for vertical logo
                         fit: BoxFit.contain,
                       ),
                     ),
