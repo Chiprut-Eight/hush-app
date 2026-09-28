@@ -1823,7 +1823,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
           });
         }
       } catch (e) {
-        print('RTDB error: $e');
+        debugPrint('RTDB error: $e');
         // Fallback to 0 if RTDB is not setup yet
       }
 
