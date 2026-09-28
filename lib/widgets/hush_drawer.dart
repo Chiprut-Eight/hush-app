@@ -38,8 +38,8 @@ class HushDrawer extends StatelessWidget {
           children: [
             // Drawer Header — adaptive height for landscape
             Container(
-              padding: EdgeInsets.symmetric(
-                vertical: isLandscape ? 8 : 16,
+              padding: const EdgeInsets.symmetric(
+                vertical: 0,
                 horizontal: 16,
               ),
               decoration: BoxDecoration(
@@ -55,7 +55,7 @@ class HushDrawer extends StatelessWidget {
                       alignment: localeProvider.isHebrew ? Alignment.centerRight : Alignment.centerLeft,
                       child: Image.asset(
                         'assets/images/logo_hushhh3.png',
-                        height: isLandscape ? 60 : 100,
+                        height: isLandscape ? 50 : 80,
                         fit: BoxFit.contain,
                       ),
                     ),
