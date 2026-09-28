@@ -32,10 +32,14 @@ const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  if (Firebase.apps.isEmpty) {
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+  try {
+    if (Firebase.apps.isEmpty) {
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
+    }
+  } catch (e) {
+    debugPrint("Firebase already initialized: $e");
   }
 
   // Register FCM background handler (must be top-level)
