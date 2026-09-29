@@ -204,7 +204,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
 
     if (user == null) {
-      return Scaffold(appBar: AppBar(), body: const Center(child: Text('User not found')));
+      return Scaffold(
+        appBar: AppBar(),
+        backgroundColor: HushColors.bgPrimary,
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.person_off_outlined, size: 64, color: HushColors.textSecondary.withValues(alpha: 0.5)),
+              const SizedBox(height: 16),
+              Text(
+                l10n.noUsersFound,
+                style: const TextStyle(color: HushColors.textSecondary, fontSize: 18),
+              ),
+            ],
+          ),
+        ),
+      );
     }
 
     final bool isMe = widget.targetUserId == null || widget.targetUserId == currentUser?.uid;

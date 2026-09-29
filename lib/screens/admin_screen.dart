@@ -55,43 +55,140 @@ class _AdminScreenState extends State<AdminScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+
     return TitleSetter(
       title: l10n.adminTitle,
-      child: DefaultTabController(
-        length: 5,
-        child: Scaffold(
-          backgroundColor: HushColors.bgPrimary,
-          body: Column(
-            children: [
-              SizedBox(height: MediaQuery.of(context).padding.top + 50), // Spacing for AnimatedAppBar
-              TabBar(
-                indicatorColor: HushColors.textAccent,
-                labelStyle: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13),
-                unselectedLabelStyle: const TextStyle(fontWeight: FontWeight.normal, fontSize: 13),
-                labelPadding: const EdgeInsets.symmetric(horizontal: 6),
-                tabs: [
-                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.appeals))),
-                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.reports))),
-                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(l10n.maintenanceTitle))),
-                  const Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text('Push'))),
-                  Tab(child: FittedBox(fit: BoxFit.scaleDown, child: Text(Localizations.localeOf(context).languageCode == 'he' ? 'סטטיסטיקות' : 'Stats'))),
-                ],
+      child: Scaffold(
+        backgroundColor: HushColors.bgPrimary,
+        appBar: AppBar(
+          title: Text(l10n.adminTitle),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: ListView(
+          padding: const EdgeInsets.all(16),
+          children: [
+            _buildAdminButton(
+              context,
+              icon: Icons.notifications_active,
+              label: isHe ? 'הודעות פוש לכולם' : 'Global Push',
+              color: HushColors.gradientPurple,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _PushNotificationScreen())),
+            ),
+            const SizedBox(height: 16),
+            _buildAdminButton(
+              context,
+              icon: Icons.report_problem,
+              label: isHe ? 'דיווחים וערעורים' : 'Reports & Appeals',
+              color: HushColors.tierRed,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _ReportsAppealsScreen())),
+            ),
+            const SizedBox(height: 16),
+            _buildAdminButton(
+              context,
+              icon: Icons.build_circle,
+              label: l10n.maintenanceTitle,
+              color: HushColors.textAccent,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _MaintenanceScreen())),
+            ),
+            const SizedBox(height: 16),
+            _buildAdminButton(
+              context,
+              icon: Icons.bar_chart,
+              label: isHe ? 'סטטיסטיקות' : 'Statistics',
+              color: Colors.amber.shade700,
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _StatisticsScreen())),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildAdminButton(BuildContext context, {required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
+        decoration: BoxDecoration(
+          color: HushColors.bgCard,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: color.withValues(alpha: 0.5), width: 2),
+        ),
+        child: Row(
+          children: [
+            Icon(icon, size: 36, color: color),
+            const SizedBox(width: 16),
+            Expanded(
+              child: Text(
+                label,
+                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
               ),
-              const Expanded(
-                child: TabBarView(
-                  children: [
-                    _AppealsList(),
-                    _ReportsList(),
-                    _MaintenanceView(),
-                    _PushNotificationView(),
-                    _StatisticsView(),
-                  ],
-                ),
-              ),
+            ),
+            Icon(Icons.arrow_forward_ios, color: Colors.white.withValues(alpha: 0.5)),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ReportsAppealsScreen extends StatelessWidget {
+  const _ReportsAppealsScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(isHe ? 'דיווחים וערעורים' : 'Reports & Appeals'),
+          bottom: TabBar(
+            indicatorColor: HushColors.textAccent,
+            tabs: [
+              Tab(text: l10n.reports),
+              Tab(text: l10n.appeals),
             ],
           ),
         ),
+        body: const TabBarView(
+          children: [
+            _ReportsList(),
+            _AppealsList(),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class _PushNotificationScreen extends StatelessWidget {
+  const _PushNotificationScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    return Scaffold(
+      appBar: AppBar(title: Text(isHe ? 'הודעות פוש לכלל המשתמשים' : 'Global Push Notifications')),
+      body: const _PushNotificationView(),
+    );
+  }
+}
+
+class _StatisticsScreen extends StatelessWidget {
+  const _StatisticsScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    return Scaffold(
+      appBar: AppBar(title: Text(isHe ? 'סטטיסטיקות מנהל' : 'Admin Statistics')),
+      body: const _StatisticsView(),
     );
   }
 }
@@ -1150,16 +1247,8 @@ class _ReportCardItem extends StatelessWidget {
 // ============================================================================
 // 3. MAINTENANCE VIEW
 // ============================================================================
-class _MaintenanceView extends StatefulWidget {
-  const _MaintenanceView();
-
-  @override
-  State<_MaintenanceView> createState() => _MaintenanceViewState();
-}
-
-class _MaintenanceViewState extends State<_MaintenanceView> {
-  bool _isMigrating = false;
-  String? _status;
+class _MaintenanceScreen extends StatelessWidget {
+  const _MaintenanceScreen();
 
   Future<void> _sendTestNotification(BuildContext context) async {
     final l10n = AppLocalizations.of(context)!;
@@ -1203,238 +1292,48 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
     }
   }
 
-  String _getStatus(AppLocalizations l10n) {
-    if (_status == null) return l10n.migrationReady;
-    return _status!;
-  }
-
-  Future<void> _migrateSearchNames(AppLocalizations l10n) async {
-    setState(() {
-      _isMigrating = true;
-      _status = l10n.migrationFetching;
-    });
-
-    try {
-      final query = await FirebaseFirestore.instance
-          .collection('users')
-          .where('searchName', isEqualTo: '')
-          .limit(100)
-          .get();
-
-      if (query.docs.isEmpty) {
-        final queryMissing = await FirebaseFirestore.instance
-            .collection('users')
-            .orderBy('uid')
-            .limit(100)
-            .get();
-
-        final docsToUpdate = queryMissing.docs.where((doc) {
-          final data = doc.data();
-          return !data.containsKey('searchName');
-        }).toList();
-
-        if (docsToUpdate.isEmpty) {
-          setState(() {
-            _isMigrating = false;
-            _status = l10n.migrationAllDone;
-          });
-          return;
-        }
-
-        await _performBatchUpdate(docsToUpdate);
-      } else {
-        await _performBatchUpdate(query.docs);
-      }
-
-      AnalyticsService().logAdminMaintenanceAction('migrate_search_names', details: 'success');
-
-      setState(() {
-        _isMigrating = false;
-        _status = l10n.migrationBatchDone;
-      });
-    } catch (e) {
-      setState(() {
-        _isMigrating = false;
-        _status = l10n.migrationError(e.toString());
-      });
-    }
-  }
-
-  Future<void> _performBatchUpdate(List<QueryDocumentSnapshot> docs) async {
-    final batch = FirebaseFirestore.instance.batch();
-    int count = 0;
-
-    for (var doc in docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      final firstName = data['firstName'] ?? '';
-      final lastName = data['lastName'] ?? '';
-      final displayName = data['displayName'] ?? '';
-
-      String searchName = '';
-      if (firstName.isNotEmpty || lastName.isNotEmpty) {
-        searchName = '$firstName $lastName'.trim().toLowerCase();
-      } else if (displayName.isNotEmpty) {
-        searchName = displayName.toLowerCase();
-      }
-
-      batch.update(doc.reference, {'searchName': searchName});
-      count++;
-    }
-
-    if (count > 0) {
-      await batch.commit();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final isHe = Localizations.localeOf(context).languageCode == 'he';
 
-    return ListView(
-      padding: const EdgeInsets.all(20.0),
-      children: [
-        // === Tier Color Preview Section ===
-        Text(
-          isHe ? '🎨 תצוגה מקדימה של צבעי הדרגות' : '🎨 Tier Color Preview',
-          style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 6),
-        Text(
-          isHe
-              ? 'הדמיית כרטיסיות האשש עבור כל דרגה עם צבע ההילה הייחודי שלה'
-              : 'Simulated Hushhh cards showing each tier\'s halo color',
-          textAlign: TextAlign.center,
-          style: const TextStyle(color: Colors.white54, fontSize: 13),
-        ),
-        const SizedBox(height: 18),
-        ...List.generate(10, (i) {
-          final tier = i + 1;
-          final color = HushColors.tierColor(tier);
-          final tierNamesHe = [
-            'בסיסי (Default)', 'מתחיל (Novice)', 'שוליה (Apprentice)',
-            'מיומן (Adept)', 'מומחה (Expert)', 'מאסטר (Master)',
-            'רב-אמן עליון (Grandmaster)', 'אגדה (Legend)',
-            'מיתולוגי (Mythic)', 'דרגת אל (God Tier)',
-          ];
-          final tierNamesEn = [
-            'Default', 'Novice', 'Apprentice',
-            'Adept', 'Expert', 'Master',
-            'Grandmaster', 'Legend',
-            'Mythic', 'God Tier',
-          ];
-          final requiredSuccesses = [0, 5, 15, 30, 50, 75, 105, 140, 180, 230];
-
-          return Container(
-            margin: const EdgeInsets.only(bottom: 12),
-            padding: const EdgeInsets.all(14),
-            decoration: BoxDecoration(
-              color: HushColors.bgCard,
-              borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
-              boxShadow: [
-                BoxShadow(
-                  color: color.withValues(alpha: 0.25),
-                  blurRadius: 10,
-                  spreadRadius: 1,
-                ),
-              ],
-            ),
-            child: Row(
-              children: [
-                Container(
-                  width: 48,
-                  height: 48,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    border: Border.all(color: color, width: 3),
-                    boxShadow: [
-                      BoxShadow(
-                        color: color.withValues(alpha: 0.5),
-                        blurRadius: 8,
-                        spreadRadius: 2,
-                      ),
-                    ],
-                  ),
-                  child: Center(
-                    child: Text(
-                      '$tier',
-                      style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 14),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        '${isHe ? 'דרגה' : 'Tier'} $tier — ${isHe ? tierNamesHe[i] : tierNamesEn[i]}',
-                        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15),
-                      ),
-                      const SizedBox(height: 3),
-                      Text(
-                        isHe
-                            ? 'נדרשות ${requiredSuccesses[i]} הצלחות קבוצתיות'
-                            : '${requiredSuccesses[i]} group successes required',
-                        style: const TextStyle(color: Colors.white54, fontSize: 12),
-                      ),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: 26,
-                  height: 26,
-                  decoration: BoxDecoration(
-                    color: color,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }),
-
-        const Divider(height: 48, color: Colors.white10),
-
-        // === Migration & Test Tools ===
-        Text(
-          isHe ? '🛠️ כלי תחזוקה ובדיקות' : '🛠️ Maintenance & Testing Tools',
-          style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.maintenanceTitle)),
+      body: ListView(
+        padding: const EdgeInsets.all(20.0),
+        children: [
+          Text(
+            isHe ? '🛠️ כלי תחזוקה ובדיקות' : '🛠️ Maintenance & Testing Tools',
+            style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: 24),
+          _buildMaintenanceButton(
+            context,
+            icon: Icons.palette,
+            label: isHe ? 'תצוגה מקדימה של צבעי דרגות' : 'Tier Colors Preview',
+            color: Colors.blueAccent,
+            onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => const _TierPreviewScreen())),
+          ),
+          const SizedBox(height: 12),
+          _buildMaintenanceButton(
+            context,
+            icon: Icons.celebration,
+            label: l10n.testConfetti,
+            color: Colors.amber.shade800,
+            onTap: () {
               AnalyticsService().logAdminMaintenanceAction('test_confetti');
               final isMuted = context.read<AuthProvider>().hushUser?.appSoundsMuted ?? false;
               context.read<UIProvider>().triggerConfetti(muteSound: isMuted);
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.amber.shade800,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.celebration),
-                  const SizedBox(width: 8),
-                  Text(l10n.testConfetti),
-                ],
-              ),
-            ),
           ),
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
+          const SizedBox(height: 12),
+          _buildMaintenanceButton(
+            context,
+            icon: Icons.restart_alt,
+            label: isHe ? 'איפוס כל המדריכים' : 'Reset All Tutorials',
+            color: Colors.redAccent,
+            onTap: () {
               final user = context.read<AuthProvider>().firebaseUser;
               if (user != null) {
                 FirebaseFirestore.instance
@@ -1444,55 +1343,25 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
                   'hasSeenTutorial': false,
                   'hasSeenFollowingTutorialV6': false,
                 });
-                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Tutorials reset! Restart app.")));
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isHe ? 'המדריכים אופסו! הפעל מחדש את האפליקציה.' : "Tutorials reset! Restart app.")));
               }
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.redAccent,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            child: const FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Icon(Icons.restart_alt),
-                  SizedBox(width: 8),
-                  Text('Reset All Tutorials'),
-                ],
-              ),
-            ),
           ),
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: ElevatedButton(
-            onPressed: () => _sendTestNotification(context),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: HushColors.gradientPurple,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.notifications_active),
-                  const SizedBox(width: 8),
-                  Text(l10n.testPushNotification),
-                ],
-              ),
-            ),
+          const SizedBox(height: 12),
+          _buildMaintenanceButton(
+            context,
+            icon: Icons.notifications_active,
+            label: l10n.testPushNotification,
+            color: HushColors.gradientPurple,
+            onTap: () => _sendTestNotification(context),
           ),
-        ),
-        const SizedBox(height: 12),
-        Center(
-          child: ElevatedButton(
-            onPressed: () {
+          const SizedBox(height: 12),
+          _buildMaintenanceButton(
+            context,
+            icon: Icons.add_location_alt,
+            label: isHe ? 'יצירת האשש עבור הטסטר' : 'Create Hush for Tester',
+            color: Colors.green.shade700,
+            onTap: () {
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -1506,55 +1375,141 @@ class _MaintenanceViewState extends State<_MaintenanceView> {
                 ),
               );
             },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
-              foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            ),
-            child: FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.add_location_alt),
-                  const SizedBox(width: 8),
-                  Text(isHe ? 'יצירת האשש עבור הטסטר' : 'Create Hush for Tester'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildMaintenanceButton(BuildContext context, {required IconData icon, required String label, required Color color, required VoidCallback onTap}) {
+    return ElevatedButton(
+      onPressed: onTap,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: color,
+        foregroundColor: Colors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon),
+          const SizedBox(width: 8),
+          Flexible(child: Text(label, style: const TextStyle(fontSize: 16))),
+        ],
+      ),
+    );
+  }
+}
+
+class _TierPreviewScreen extends StatelessWidget {
+  const _TierPreviewScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    return Scaffold(
+      appBar: AppBar(title: Text(isHe ? '🎨 צבעי הדרגות' : '🎨 Tier Colors')),
+      body: ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          Text(
+            isHe
+                ? 'הדמיית כרטיסיות האשש עבור כל דרגה עם צבע ההילה הייחודי שלה'
+                : 'Simulated Hushhh cards showing each tier\'s halo color',
+            textAlign: TextAlign.center,
+            style: const TextStyle(color: Colors.white54, fontSize: 14),
+          ),
+          const SizedBox(height: 24),
+          ...List.generate(10, (i) {
+            final tier = i + 1;
+            final color = HushColors.tierColor(tier);
+            final tierNamesHe = [
+              'בסיסי (Default)', 'מתחיל (Novice)', 'שוליה (Apprentice)',
+              'מיומן (Adept)', 'מומחה (Expert)', 'מאסטר (Master)',
+              'רב-אמן עליון (Grandmaster)', 'אגדה (Legend)',
+              'מיתולוגי (Mythic)', 'דרגת אל (God Tier)',
+            ];
+            final tierNamesEn = [
+              'Default', 'Novice', 'Apprentice',
+              'Adept', 'Expert', 'Master',
+              'Grandmaster', 'Legend',
+              'Mythic', 'God Tier',
+            ];
+            final requiredSuccesses = [0, 5, 15, 30, 50, 75, 105, 140, 180, 230];
+
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(14),
+              decoration: BoxDecoration(
+                color: HushColors.bgCard,
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: color.withValues(alpha: 0.5), width: 1.5),
+                boxShadow: [
+                  BoxShadow(
+                    color: color.withValues(alpha: 0.25),
+                    blurRadius: 10,
+                    spreadRadius: 1,
+                  ),
                 ],
               ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 24),
-        const Divider(height: 32, color: Colors.white10),
-        Text(
-          l10n.migrationSearchTitle,
-          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
-          textAlign: TextAlign.center,
-        ),
-        const SizedBox(height: 6),
-        Text(
-          l10n.migrationSearchDesc,
-          textAlign: TextAlign.center,
-          style: TextStyle(color: Colors.white.withValues(alpha: 0.7), fontSize: 13),
-        ),
-        const SizedBox(height: 16),
-        Center(
-          child: _isMigrating
-              ? const CircularProgressIndicator(color: HushColors.textAccent)
-              : ElevatedButton(
-                  onPressed: () => _migrateSearchNames(l10n),
-                  style: ElevatedButton.styleFrom(
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              child: Row(
+                children: [
+                  Container(
+                    width: 48,
+                    height: 48,
+                    decoration: BoxDecoration(
+                      shape: BoxShape.circle,
+                      border: Border.all(color: color, width: 3),
+                      boxShadow: [
+                        BoxShadow(
+                          color: color.withValues(alpha: 0.5),
+                          blurRadius: 8,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Center(
+                      child: Text(
+                        '$tier',
+                        style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 18),
+                      ),
+                    ),
                   ),
-                  child: Text(l10n.migrateUsers),
-                ),
-        ),
-        const SizedBox(height: 12),
-        Center(child: Text(_getStatus(l10n), style: const TextStyle(color: Colors.white54, fontSize: 12))),
-        const SizedBox(height: 24),
-      ],
+                  const SizedBox(width: 14),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          '${isHe ? 'דרגה' : 'Tier'} $tier — ${isHe ? tierNamesHe[i] : tierNamesEn[i]}',
+                          style: TextStyle(color: color, fontWeight: FontWeight.bold, fontSize: 15),
+                        ),
+                        const SizedBox(height: 3),
+                        Text(
+                          isHe
+                              ? 'נדרשות ${requiredSuccesses[i]} הצלחות קבוצתיות'
+                              : '${requiredSuccesses[i]} group successes required',
+                          style: const TextStyle(color: Colors.white54, fontSize: 12),
+                        ),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: 26,
+                    height: 26,
+                    decoration: BoxDecoration(
+                      color: color,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }),
+        ],
+      ),
     );
   }
 }

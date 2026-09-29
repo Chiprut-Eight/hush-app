@@ -1429,6 +1429,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Got it, thanks'**
   String get tutorialGotIt;
+
+  /// No description provided for @secretDeletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This Hushhh was removed, save Hushhh that interest you and in the meantime'**
+  String get secretDeletedMessage;
+
+  /// No description provided for @discoverMoreHushhh.
+  ///
+  /// In en, this message translates to:
+  /// **'Discover more Hushhh'**
+  String get discoverMoreHushhh;
+
+  /// No description provided for @networkError.
+  ///
+  /// In en, this message translates to:
+  /// **'Network error, please try again.'**
+  String get networkError;
 }
 
 class _AppLocalizationsDelegate

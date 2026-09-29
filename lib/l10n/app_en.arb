@@ -307,5 +307,8 @@
   "clickAvatarToProfile": "Click profile to view user",
   "clickHereToViewMap": "Click here to view on map",
   "tutorialContinue": "Continue",
-  "tutorialGotIt": "Got it, thanks"
+  "tutorialGotIt": "Got it, thanks",
+  "secretDeletedMessage": "This Hushhh was removed, save Hushhh that interest you and in the meantime",
+  "discoverMoreHushhh": "Discover more Hushhh",
+  "networkError": "Network error, please try again."
 }

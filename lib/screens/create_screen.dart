@@ -80,6 +80,36 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
 
     _textController.addListener(() => setState(() {}));
 
+    _audioService.onRecordingInterrupted = (message) {
+      if (mounted && _isRecording) {
+        _toggleRecording();
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: HushColors.bgCard,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                const Icon(Icons.info_outline, color: HushColors.tierRed),
+                const SizedBox(width: 8),
+                Text(Localizations.localeOf(context).languageCode == 'he' ? 'הקלטה הופסקה' : 'Recording Stopped', style: const TextStyle(color: Colors.white)),
+              ],
+            ),
+            content: Text(
+              Localizations.localeOf(context).languageCode == 'he' ? message : 'Recording stopped due to an incoming call',
+              style: const TextStyle(color: Colors.white70),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(Localizations.localeOf(context).languageCode == 'he' ? 'הבנתי' : 'Got it', style: const TextStyle(color: HushColors.textAccent)),
+              ),
+            ],
+          ),
+        );
+      }
+    };
+
     // Start GPS accuracy stream
     _startGpsStream();
   }
@@ -187,9 +217,29 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         if (!mounted) return;
         final isHe = Localizations.localeOf(context).languageCode == 'he';
         final message = isHe
-            ? 'לא ניתן להקליט בזמן שיחה'
-            : 'Cannot record during a phone call';
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+            ? 'לא ניתן להקליט בזמן שיחה.'
+            : 'Cannot record during a phone call.';
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            backgroundColor: HushColors.bgCard,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            title: Row(
+              children: [
+                const Icon(Icons.mic_off, color: HushColors.tierRed),
+                const SizedBox(width: 8),
+                Text(isHe ? 'שגיאת הקלטה' : 'Recording Error', style: const TextStyle(color: Colors.white)),
+              ],
+            ),
+            content: Text(message, style: const TextStyle(color: Colors.white70)),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(isHe ? 'הבנתי' : 'Got it', style: const TextStyle(color: HushColors.textAccent)),
+              ),
+            ],
+          ),
+        );
       }
     }
   }

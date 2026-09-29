@@ -738,4 +738,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorialGotIt => 'Got it, thanks';
+
+  @override
+  String get secretDeletedMessage =>
+      'This Hushhh was removed, save Hushhh that interest you and in the meantime';
+
+  @override
+  String get discoverMoreHushhh => 'Discover more Hushhh';
+
+  @override
+  String get networkError => 'Network error, please try again.';
 }

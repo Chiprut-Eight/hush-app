@@ -366,7 +366,10 @@
   "tier9Name": "מיתולוגי",
   "tier10Name": "דרגת אל",
   "clickAvatarToProfile": "לחץ על הפרופיל למעבר למשתמש",
-  "clickHereToViewMap": "לחץ כאן כדי לצפות בהאששים במפה",
+  "clickHereToViewMap": "לחץ כאן כדי לצפות ב-Hushhh במפה",
   "tutorialContinue": "המשך",
-  "tutorialGotIt": "הבנתי, תודה"
+  "tutorialGotIt": "הבנתי, תודה",
+  "secretDeletedMessage": "ה-Hushhh הזה הוסר, שמור Hushhh שמעניינים אותך ובינתיים",
+  "discoverMoreHushhh": "גלו Hushhh נוספים",
+  "networkError": "שגיאת תקשורת, אנא נסה שוב."
 }

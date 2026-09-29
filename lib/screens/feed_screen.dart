@@ -225,7 +225,16 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
       debugPrint('[FeedScreen] Error fetching secrets: $e');
       if (mounted) {
         setState(() {
-          _error = e.toString().replaceAll('Exception: ', '');
+          final errorStr = e.toString().toLowerCase();
+          if (errorStr.contains('network') || 
+              errorStr.contains('offline') || 
+              errorStr.contains('failed host lookup') || 
+              errorStr.contains('unavailable') ||
+              errorStr.contains('socket')) {
+            _error = AppLocalizations.of(context)?.networkError ?? 'Network error';
+          } else {
+            _error = e.toString().replaceAll('Exception: ', '');
+          }
           _isLoading = false;
         });
       }

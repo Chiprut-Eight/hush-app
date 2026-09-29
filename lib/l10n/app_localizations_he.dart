@@ -728,11 +728,21 @@ class AppLocalizationsHe extends AppLocalizations {
   String get clickAvatarToProfile => 'לחץ על הפרופיל למעבר למשתמש';
 
   @override
-  String get clickHereToViewMap => 'לחץ כאן כדי לצפות בהאששים במפה';
+  String get clickHereToViewMap => 'לחץ כאן כדי לצפות ב-Hushhh במפה';
 
   @override
   String get tutorialContinue => 'המשך';
 
   @override
   String get tutorialGotIt => 'הבנתי, תודה';
+
+  @override
+  String get secretDeletedMessage =>
+      'ה-Hushhh הזה הוסר, שמור Hushhh שמעניינים אותך ובינתיים';
+
+  @override
+  String get discoverMoreHushhh => 'גלו Hushhh נוספים';
+
+  @override
+  String get networkError => 'שגיאת תקשורת, אנא נסה שוב.';
 }

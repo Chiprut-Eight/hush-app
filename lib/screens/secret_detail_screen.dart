@@ -28,6 +28,8 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
   Secret? _secret;
   bool _isLoading = true;
   String? _error;
+  bool _isDeleted = false;
+  bool _isNetworkError = false;
   Position? _userPosition;
 
   @override
@@ -40,6 +42,8 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     setState(() {
       _isLoading = true;
       _error = null;
+      _isDeleted = false;
+      _isNetworkError = false;
     });
 
     try {
@@ -54,7 +58,13 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
 
       final secret = await _secretService.getSecret(widget.secretId);
       if (secret == null) {
-        throw Exception('Secret not found or deleted.');
+        if (mounted) {
+          setState(() {
+            _isDeleted = true;
+            _isLoading = false;
+          });
+        }
+        return;
       }
 
       if (mounted) {
@@ -66,7 +76,16 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     } catch (e) {
       if (mounted) {
         setState(() {
-          _error = e.toString();
+          final errorStr = e.toString().toLowerCase();
+          if (errorStr.contains('network') || 
+              errorStr.contains('offline') || 
+              errorStr.contains('failed host lookup') || 
+              errorStr.contains('unavailable') ||
+              errorStr.contains('socket')) {
+            _isNetworkError = true;
+          } else {
+            _error = e.toString();
+          }
           _isLoading = false;
         });
       }
@@ -106,16 +125,32 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
       return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
     }
 
+    if (_isNetworkError) {
+      return _buildErrorState(
+        icon: Icons.wifi_off_rounded,
+        message: l10n.networkError,
+        buttonText: l10n.retry,
+        onButtonPressed: _fetchSecretDetails,
+      );
+    }
+
+    if (_isDeleted) {
+      return _buildErrorState(
+        icon: Icons.auto_awesome_outlined,
+        message: l10n.secretDeletedMessage,
+        buttonText: l10n.discoverMoreHushhh,
+        onButtonPressed: () {
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
+      );
+    }
+
     if (_error != null || _secret == null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32.0),
-          child: Text(
-            _error ?? 'Secret not found',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 16),
-          ),
-        ),
+      return _buildErrorState(
+        icon: Icons.error_outline,
+        message: _error ?? 'Something went wrong',
+        buttonText: l10n.retry,
+        onButtonPressed: _fetchSecretDetails,
       );
     }
 
@@ -128,20 +163,54 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     );
   }
 
-  Widget _buildContent() {
-    if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
-    }
-    if (_error != null) {
-      return Center(
-        child: Text(
-          _error!,
-          style: const TextStyle(color: Colors.red, fontSize: 16),
+  Widget _buildErrorState({
+    required IconData icon,
+    required String message,
+    required String buttonText,
+    required VoidCallback onButtonPressed,
+  }) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 32.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, size: 64, color: HushColors.textAccent.withValues(alpha: 0.5)),
+            const SizedBox(height: 24),
+            Text(
+              message,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                fontSize: 16,
+                height: 1.5,
+              ),
+            ),
+            const SizedBox(height: 32),
+            ElevatedButton(
+              onPressed: onButtonPressed,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: HushColors.textAccent,
+                foregroundColor: HushColors.bgPrimary,
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30),
+                ),
+              ),
+              child: Text(
+                buttonText,
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+              ),
+            ),
+          ],
         ),
-      );
-    }
+      ),
+    );
+  }
+
+  Widget _buildContent() {
     if (_secret == null) {
-      return const Center(child: Text('Secret not found'));
+      return const SizedBox.shrink();
     }
 
     return Padding(

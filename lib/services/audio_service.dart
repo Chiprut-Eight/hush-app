@@ -15,6 +15,8 @@ class AudioService {
   
   List<double> recordedAmplitudes = [];
   StreamSubscription<Amplitude>? _amplitudeSub;
+  StreamSubscription<AudioInterruptionEvent>? _interruptionSub;
+  Function(String)? onRecordingInterrupted;
 
   bool get isRecording => _isRecording;
 
@@ -44,6 +46,9 @@ class AudioService {
       androidWillPauseWhenDucked: true,
     ));
 
+    // Force deactivate before trying to acquire to reset the internal state and ensure a clean focus request
+    await session.setActive(false);
+    
     final success = await session.setActive(true);
     if (!success) {
       throw Exception('Could not acquire audio focus. Are you in a call?');
@@ -55,6 +60,13 @@ class AudioService {
 
     recordedAmplitudes.clear();
     await _amplitudeSub?.cancel();
+    
+    await _interruptionSub?.cancel();
+    _interruptionSub = session.interruptionEventStream.listen((event) {
+      if (event.begin && _isRecording) {
+        onRecordingInterrupted?.call('ההקלטה הופסקה עקב שיחה נכנסת');
+      }
+    });
 
     await _recorder.start(
       const RecordConfig(
@@ -80,8 +92,14 @@ class AudioService {
     if (!_isRecording) return null;
 
     await _amplitudeSub?.cancel();
+    await _interruptionSub?.cancel();
     final path = await _recorder.stop();
     _isRecording = false;
+    
+    // Deactivate session to release focus completely
+    final session = await AudioSession.instance;
+    await session.setActive(false);
+    
     return path;
   }
 
@@ -110,8 +128,9 @@ class AudioService {
 
   /// Dispose resources
   Future<void> dispose() async {
+    await _interruptionSub?.cancel();
     if (_isRecording) {
-      await _recorder.stop();
+      await stopRecording();
     }
     _recorder.dispose();
   }
