@@ -6,7 +6,7 @@
 האפליקציה בנויה בארכיטקטורת Serverless המבוססת על Flutter בצד הלקוח (Client) ו-Firebase בצד השרת (Backend).
 
 *   **Frontend:** פותח באמצעות תשתית (Framework) **Flutter** (בשפת Dart). מאפשר בניית קוד יחיד (Single Codebase) המתקמפל ל-iOS ו-Android ברמת ביצועים של Native.
-*   **State Management:** ניהול המצב בצד הלקוח מתבצע באמצעות חבילת ה-**Provider**. הפרויקט משתמש במספר Providers נפרדים (למשל `AuthService`, `SecretService`, `UiProvider`) כדי להפריד בין הלוגיקה העסקית לתצוגה (UI).
+*   **State Management:** ניהול המצב בצד הלקוח מתבצע באמצעות חבילת ה-**Provider**. הפרויקט משתמש במספר Providers נפרדים (למשל `AuthProvider`, `UiProvider`, `LocationProvider`) כדי להפריד בין הלוגיקה העסקית לתצוגה (UI).
 *   **Backend as a Service (BaaS):** שימוש נרחב ב-**Firebase** המעניק ניהול משתמשים, מסד נתונים, אחסון קבצים, והרצת קוד צד-שרת מנוהל (Cloud Functions).
 
 ## 2. שירותי Firebase והטמעתם
