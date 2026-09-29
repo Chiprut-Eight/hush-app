@@ -10,17 +10,17 @@
 *   **Backend as a Service (BaaS):** שימוש נרחב ב-**Firebase** המעניק ניהול משתמשים, מסד נתונים, אחסון קבצים, והרצת קוד צד-שרת מנוהל (Cloud Functions).
 
 ## 2. שירותי Firebase והטמעתם
-*   **Firebase Authentication:** מנהל את תהליך ההזדהות. תומך ב-Google Sign-In, Apple Sign-In, כניסה באימייל וסיסמה, וכניסה אנונימית (Anonymous Auth).
+*   **Firebase Authentication:** מנהל את תהליך ההזדהות. תומך ב-Google Sign-In וב-Apple Sign-In בלבד.
 *   **Cloud Firestore:** מסד הנתונים הראשי (NoSQL). מכיל קולקשנים (Collections) עבור:
     *   `users`: נתוני פרופיל, דרגות (Tiers), מוניטין ומצב רפאים (Ghost Mode).
     *   `secrets`: מיקומי הסודות, תוכן, נתונים גיאוגרפיים, כמות משתמשים דרושה וזמני תפוגה.
     *   `comments`: תגובות של משתמשים על סודות (מבנה תת-קולקשן).
     *   `reports` & `appeals`: מערכת הדיווחים והערעורים.
-*   **Firebase Storage:** אחסון מבוסס ענן המשמש לאחסון קבצי אודיו (סודות קוליים, נשמרים בפורמט m4a) ותמונות פרופיל של משתמשים.
+*   **Firebase Storage:** אחסון מבוסס ענן המשמש לאחסון קבצי אודיו בלבד (סודות קוליים, נשמרים בפורמט m4a).
 *   **Firebase Realtime Database (RTDB):** משמש כמנגנון Presence (נוכחות) קל משקל. מנהל רישום בזמן אמת של משתמשים המחוברים לאפליקציה על ידי האזנה ל-`.info/connected` ושימוש ב-`onDisconnect()`. פאנל הניהול שואב משם נתונים בזמן אמת בלי להעמיס קריאות על ה-Firestore.
 *   **Firebase Cloud Functions:** קוד צד-שרת (Node.js & TypeScript) האחראי על אכיפת חוקים עסקיים קריטיים, ביניהם:
     *   `verifyGroupUnlock`: פונקציה טרנזקציונלית המוודאת שיש מספיק משתמשים ברדיוס של סוד קבוצתי לפני שהיא פותחת אותו. היא גם מנהלת את קידום הדרגות (Tier Upgrades) של יוצר הסוד.
-    *   `deleteExpiredSecrets` (Cron Job): תהליך מתוזמן למחיקת סודות שתוקפם פג.
+    *   `decaySecretsJob` (Cron Job): תהליך מתוזמן למחיקת סודות שתוקפם פג (60 יום מקסימום) או סודות לא פופולריים שקיבלו מעט מאוד האזנות.
     *   ניהול Ghost Mode ואכיפת עונשים עקב דיווחים.
 *   **Firebase Cloud Messaging (FCM):** ניהול ושליחת Push Notifications במערכת (התראות רקע וחזית) באמצעות חבילת `firebase_messaging`.
 
