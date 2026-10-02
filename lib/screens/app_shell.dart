@@ -18,6 +18,7 @@ import '../services/notification_service.dart';
 import '../widgets/tutorial_popup.dart';
 
 import 'feed_screen.dart';
+import 'feed_tutorial_screen.dart';
 import 'map_screen.dart';
 import 'create_screen.dart';
 import 'profile_screen.dart';
@@ -216,16 +217,27 @@ class _AppShellState extends State<AppShell> {
         }
 
         // --- TUTORIAL TRIGGER LOGIC ---
-        if (hushUser != null && !hushUser.hasSeenTutorial && !_tutorialShownThisSession) {
-          _tutorialShownThisSession = true;
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            AnalyticsService().logTutorialStarted(source: 'auto');
-            showDialog(
-              context: context,
-              barrierDismissible: true, // Allow dismissal via clicking outside if they want
-              builder: (_) => const TutorialPopup(),
-            );
-          });
+        if (hushUser != null && !_tutorialShownThisSession) {
+          if (!hushUser.hasSeenTutorial) {
+            _tutorialShownThisSession = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              AnalyticsService().logTutorialStarted(source: 'auto');
+              showDialog(
+                context: context,
+                barrierDismissible: true,
+                builder: (_) => const TutorialPopup(),
+              ).then((_) {
+                if (!hushUser.hasSeenFeedTutorialV1 && context.mounted) {
+                   Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedTutorialScreen()));
+                }
+              });
+            });
+          } else if (!hushUser.hasSeenFeedTutorialV1) {
+            _tutorialShownThisSession = true;
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+               Navigator.push(context, MaterialPageRoute(builder: (_) => const FeedTutorialScreen()));
+            });
+          }
         }
 
         return PopScope(

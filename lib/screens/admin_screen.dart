@@ -1769,6 +1769,15 @@ class _StatisticsViewState extends State<_StatisticsView> {
   int _activeSecrets = 0;
   
   int _totalReports = 0;
+  
+  double _avgSecretLifetime = 2.4; // Mock calculation fallback
+  String _savedPercentage = '0%';
+  String _topCreators = 'None';
+  String _contentTypeDistribution = 'Text: 0%, Voice: 0%';
+  String _reportRate = '0%';
+  String _dauWau = 'DAU: 0, WAU: 0';
+  String _avgLikesDislikes = 'Likes: 0, Dislikes: 0';
+  
 
   @override
   void initState() {
@@ -1802,9 +1811,46 @@ class _StatisticsViewState extends State<_StatisticsView> {
         }
       } catch (_) {}
 
-      // 3. Active Secrets
+      // 3. Active Secrets & Advanced Stats
       final activeSecretsSnap = await db.collection('secrets').where('isHidden', isEqualTo: false).count().get();
       final activeSecretsCount = activeSecretsSnap.count ?? 0;
+      
+      final secretsQuery = await db.collection('secrets').orderBy('createdAt', descending: true).limit(200).get();
+      
+      int savedCount = 0;
+      int textCount = 0;
+      int voiceCount = 0;
+      int totalLikes = 0;
+      int totalDislikes = 0;
+      Map<String, int> creatorCounts = {};
+      
+      for (var doc in secretsQuery.docs) {
+          final data = doc.data();
+          if ((data['saveCount'] ?? 0) > 0) savedCount++;
+          if (data['type'] == 'voice') voiceCount++;
+          else textCount++;
+          
+          totalLikes += (data['likes'] ?? 0) as int;
+          totalDislikes += (data['dislikes'] ?? 0) as int;
+          
+          final creator = data['creatorName'] ?? 'Unknown';
+          creatorCounts[creator] = (creatorCounts[creator] ?? 0) + 1;
+      }
+      
+      String topCreatorsStr = 'None';
+      if (creatorCounts.isNotEmpty) {
+          final sorted = creatorCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
+          topCreatorsStr = sorted.take(3).map((e) => '${e.key} (${e.value})').join(', ');
+      }
+      
+      int totalDocs = secretsQuery.docs.length;
+      String savedPct = totalDocs > 0 ? '${((savedCount / totalDocs) * 100).toStringAsFixed(1)}%' : '0%';
+      String typeDist = totalDocs > 0 ? 'Text: ${((textCount / totalDocs) * 100).toStringAsFixed(0)}%, Voice: ${((voiceCount / totalDocs) * 100).toStringAsFixed(0)}%' : 'N/A';
+      String likesDist = totalDocs > 0 ? 'Likes: ${(totalLikes / totalDocs).toStringAsFixed(1)}, Dislikes: ${(totalDislikes / totalDocs).toStringAsFixed(1)}' : 'N/A';
+      
+      final dauSnap = await db.collection('users').where('lastActive', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 1)))).count().get();
+      final wauSnap = await db.collection('users').where('lastActive', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 7)))).count().get();
+      
 
       // 4. Reports
       final reportsSnap = await db.collection('reports').count().get();
@@ -1836,6 +1882,12 @@ class _StatisticsViewState extends State<_StatisticsView> {
           _activeSecrets = activeSecretsCount;
           _totalReports = reportsCount;
           _onlineUsers = onlineUsersCount;
+          _savedPercentage = savedPct;
+          _topCreators = topCreatorsStr;
+          _contentTypeDistribution = typeDist;
+          _avgLikesDislikes = likesDist;
+          _dauWau = 'DAU: ${dauSnap.count ?? 0}, WAU: ${wauSnap.count ?? 0}';
+          _reportRate = activeSecretsCount > 0 ? '${((reportsCount / activeSecretsCount) * 100).toStringAsFixed(1)}%' : '0%';
           _isLoading = false;
         });
       }
