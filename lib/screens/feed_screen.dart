@@ -14,6 +14,9 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_service.dart';
+import 'following_screen.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
@@ -25,9 +28,15 @@ class FeedScreen extends StatefulWidget {
   State<FeedScreen> createState() => FeedScreenState();
 }
 
+enum FeedTab { nearby, following, saved }
+
 class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
+  final GlobalKey _tabsRowKey = GlobalKey();
+  bool _tutorialShown = false;
+  TutorialCoachMark? _tutorial;
   final SecretService _secretService = SecretService();
   List<Secret> _secrets = [];
+  FeedTab _selectedTab = FeedTab.nearby;
   bool _isLoading = true;
   String? _error;
   Position? _userPosition;
@@ -189,12 +198,19 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         });
       }
 
-      final secrets = await _secretService.getNearbySecrets(
-        position.latitude,
-        position.longitude,
-        userId: uid,
-        savedSecretIds: savedIds,
-      );
+      List<Secret> secrets = [];
+      if (_selectedTab == FeedTab.saved) {
+        if (savedIds.isNotEmpty) {
+          secrets = await _secretService.getSavedSecrets(savedIds);
+        }
+      } else {
+        secrets = await _secretService.getNearbySecrets(
+          position.latitude,
+          position.longitude,
+          userId: uid,
+          savedSecretIds: savedIds,
+        );
+      }
 
       if (mounted) {
         setState(() {
@@ -220,6 +236,13 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           _userPosition = position;
           _isLoading = false;
         });
+
+        final user = context.read<AuthProvider>().hushUser;
+        if (user != null && !user.hasSeenFeedTutorialV1) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            _showTutorial();
+          });
+        }
       }
     } catch (e) {
       debugPrint('[FeedScreen] Error fetching secrets: $e');
@@ -267,16 +290,146 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     );
   }
 
+  void _showTutorial() {
+    if (_tutorialShown) return;
+    
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      
+      final l10n = AppLocalizations.of(context)!;
+      final targets = <TargetFocus>[];
+      
+      if (_tabsRowKey.currentContext != null) {
+        targets.add(
+          TargetFocus(
+            identify: "TabsTarget",
+            keyTarget: _tabsRowKey,
+            alignSkip: Alignment.topRight,
+            contents: [
+              TargetContent(
+                align: ContentAlign.bottom,
+                builder: (context, controller) {
+                  return Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        'New Tabs! \nEasily switch between Nearby secrets, users you are Following, and your Saved secrets.',
+                        style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () => _tutorial?.skip(),
+                        style: ElevatedButton.styleFrom(backgroundColor: HushColors.textAccent, foregroundColor: Colors.black),
+                        child: Text('Got it!'),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ],
+          )
+        );
+      }
+      
+      if (targets.isEmpty) return;
+      _tutorialShown = true;
+
+      _tutorial = TutorialCoachMark(
+        targets: targets,
+        colorShadow: HushColors.bgPrimary,
+        hideSkip: true,
+        paddingFocus: 10,
+        opacityShadow: 0.8,
+        onFinish: () async {
+          _tutorial = null;
+          final auth = context.read<AuthProvider>();
+          if (auth.firebaseUser != null) {
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFeedTutorialV1': true});
+          }
+        },
+        onSkip: () {
+          _tutorial = null;
+          final auth = context.read<AuthProvider>();
+          if (auth.firebaseUser != null) {
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFeedTutorialV1': true});
+          }
+          return true;
+        },
+      )..show(context: context);
+    });
+  }
+
   Widget _buildBody(AppLocalizations l10n) {
-    return RefreshIndicator(
-      onRefresh: () async {
-        AnalyticsService().logFeedRefresh();
-        await _fetchSecrets(silent: _secrets.isNotEmpty);
-        _startAutoRefresh(); // Reset 45s timer on manual refresh
+    return Column(
+      children: [
+        _buildTabs(l10n),
+        Expanded(
+          child: _selectedTab == FeedTab.following
+              ? const FollowingScreen(isActive: true)
+              : RefreshIndicator(
+                  onRefresh: () async {
+                    AnalyticsService().logFeedRefresh();
+                    await _fetchSecrets(silent: _secrets.isNotEmpty);
+                    _startAutoRefresh(); // Reset 45s timer on manual refresh
+                  },
+                  color: HushColors.textAccent,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  child: _buildBodyContent(l10n),
+                ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTabs(AppLocalizations l10n) {
+    return Container(
+      key: _tabsRowKey,
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          _buildTabItem('Nearby Hushhh', FeedTab.nearby),
+          const SizedBox(width: 24),
+          _buildTabItem(l10n.followingTabTitle, FeedTab.following),
+          const SizedBox(width: 24),
+          _buildTabItem('Saved', FeedTab.saved),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTabItem(String title, FeedTab tab) {
+    final isSelected = _selectedTab == tab;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTab = tab;
+          if (tab != FeedTab.following) {
+             _isLoading = true;
+             _fetchSecrets();
+          }
+        });
       },
-      color: HushColors.textAccent,
-      backgroundColor: Theme.of(context).colorScheme.surface,
-      child: _buildBodyContent(l10n),
+      child: Column(
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              color: isSelected ? Colors.white : Colors.white38,
+              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              fontSize: 16,
+            ),
+          ),
+          if (isSelected)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 2,
+              width: 30,
+              color: Colors.white,
+            ),
+        ],
+      ),
     );
   }
 

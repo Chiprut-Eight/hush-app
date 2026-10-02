@@ -1131,13 +1131,31 @@ class _ReportCardItem extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        isHe ? '📣 פרטי המדווח:' : '📣 Reporter Details:',
-                        style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              isHe ? '📣 פרטי המדווח:' : '📣 Reporter Details:',
+                              style: const TextStyle(color: Colors.white70, fontSize: 12, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          if (reportData['reportCount'] != null && reportData['reportCount'] > 1)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                              decoration: BoxDecoration(
+                                color: HushColors.tierRed.withValues(alpha: 0.2),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                isHe ? '${reportData['reportCount']} דיווחים' : '${reportData['reportCount']} Reports',
+                                style: const TextStyle(color: HushColors.tierRed, fontSize: 12, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${isHe ? 'מדווח על ידי:' : 'Reported by:'} $reporterDisplayName',
+                        '${isHe ? 'מדווח על ידי:' : 'Reported by:'} ${(reportData['reporterNames'] as List<dynamic>?)?.join(', ') ?? reporterDisplayName}',
                         style: const TextStyle(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600),
                       ),
                       Text(

@@ -60,7 +60,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authProvider = context.read<AuthProvider>();
-      if (authProvider.currentUser?.defaultCreateMode == 'voice') {
+      if (authProvider.hushUser?.defaultCreateMode == 'voice') {
         setState(() {
           _activeTab = 1;
         });

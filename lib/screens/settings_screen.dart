@@ -53,14 +53,14 @@ class SettingsScreen extends StatelessWidget {
                           .update({'defaultCreateMode': newSelection.first});
                     },
                     style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                        if (states.contains(MaterialState.selected)) {
-                          return HushColors.textAccent.withOpacity(0.2);
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                        if (states.contains(WidgetState.selected)) {
+                          return HushColors.textAccent.withValues(alpha: 0.2);
                         }
                         return Colors.transparent;
                       }),
-                      foregroundColor: MaterialStateProperty.resolveWith<Color>((states) {
-                        if (states.contains(MaterialState.selected)) {
+                      foregroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+                        if (states.contains(WidgetState.selected)) {
                           return HushColors.textAccent;
                         }
                         return HushColors.textSecondary;

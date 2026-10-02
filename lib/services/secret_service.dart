@@ -193,13 +193,15 @@ class SecretService {
     required String secretId,
     double? lat,
     double? lng,
+    bool bypassDistance = false,
   }) async {
     try {
       final callable = FirebaseFunctions.instance.httpsCallable('revealSecret');
       final result = await callable.call({
         'secretId': secretId,
-        'userLat': ?lat,
-        'userLng': ?lng,
+        'userLat': lat,
+        'userLng': lng,
+        'bypassDistance': bypassDistance,
       });
       final data = Map<String, dynamic>.from(result.data);
       if (data['success'] == true) {
@@ -442,21 +444,41 @@ class SecretService {
         }
       }
     } catch (_) {}
-    final docId = '${secretId}_${user.uid}';
+    final docId = secretId;
 
-    // Create a comprehensive report document using deterministic ID to prevent duplicates
-    await _firestore.collection('reports').doc(docId).set({
-      'secretId': secretId,
-      'reporterId': user.uid,
-      'reporterName': reporterName ?? 'Anonymous',
-      'reporterEmail': reporterEmail ?? '',
-      'creatorId': creatorId ?? '',
-      'creatorName': creatorName ?? 'Unknown Creator',
-      'secretType': secretType ?? 'text',
-      'reportedContent': textContent ?? '',
-      'reason': reason,
-      'status': 'pending',
-      'createdAt': FieldValue.serverTimestamp(),
+    // Create or update a comprehensive report document using deterministic ID to prevent duplicates
+    final reportRef = _firestore.collection('reports').doc(docId);
+    await _firestore.runTransaction((transaction) async {
+      final snapshot = await transaction.get(reportRef);
+      if (!snapshot.exists) {
+        transaction.set(reportRef, {
+          'secretId': secretId,
+          'reportCount': 1,
+          'reporterIds': [user.uid],
+          'reporterId': user.uid, // For backwards compatibility
+          'reporterName': reporterName ?? 'Anonymous',
+          'reporterEmail': reporterEmail ?? '',
+          'creatorId': creatorId ?? '',
+          'creatorName': creatorName ?? 'Unknown Creator',
+          'secretType': secretType ?? 'text',
+          'reportedContent': textContent ?? '',
+          'reason': reason,
+          'status': 'pending',
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      } else {
+        final data = snapshot.data()!;
+        final reporters = List<String>.from(data['reporterIds'] ?? [data['reporterId']]);
+        if (!reporters.contains(user.uid)) {
+          reporters.add(user.uid);
+          transaction.update(reportRef, {
+            'reportCount': FieldValue.increment(1),
+            'reporterIds': reporters,
+            'reason': reason, // update to latest reason
+            'updatedAt': FieldValue.serverTimestamp(),
+          });
+        }
+      }
     });
   }
 

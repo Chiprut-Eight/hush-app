@@ -11,7 +11,7 @@ import '../models/secret.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
-import '../mocks/secret_service_mock.dart';
+import '../services/secret_service.dart';
 import '../services/audio_service.dart';
 import '../utils/time_ago_util.dart';
 import '../widgets/hush_icon_widget.dart';
@@ -30,6 +30,7 @@ class SecretCard extends StatefulWidget {
   final VoidCallback? onInteractionEnd;
   final bool autoOpenComments;
   final String? highlightCommentId;
+  final bool bypassDistance;
 
   const SecretCard({
     super.key, 
@@ -41,6 +42,7 @@ class SecretCard extends StatefulWidget {
     this.onInteractionEnd,
     this.autoOpenComments = false,
     this.highlightCommentId,
+    this.bypassDistance = false,
   });
 
   @override
@@ -173,6 +175,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
         secretId: _currentSecret.id,
         lat: widget.userPosition?.latitude,
         lng: widget.userPosition?.longitude,
+        bypassDistance: widget.bypassDistance,
       );
       
       if (result['success'] == true && mounted) {

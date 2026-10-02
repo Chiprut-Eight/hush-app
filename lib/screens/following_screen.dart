@@ -249,7 +249,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
     final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
-      backgroundColor: HushColors.bgPrimary,
+      backgroundColor: Colors.transparent,
       body: Column(
         children: [
           Padding(

@@ -679,7 +679,7 @@ export const verifyGroupUnlock = functions.https.onCall(
         "User must be logged in"
       );
 
-    const { secretId, userLat, userLng } = data;
+    const { secretId, userLat, userLng, bypassDistance } = data;
     const uid = context.auth.uid;
 
     if (!secretId || userLat == null || userLng == null) {
@@ -852,7 +852,7 @@ export const revealSecret = functions.https.onCall(
     if (!context.auth)
       throw new functions.https.HttpsError("unauthenticated", "Login required");
 
-    const { secretId, userLat, userLng } = data;
+    const { secretId, userLat, userLng, bypassDistance } = data;
     const uid = context.auth.uid;
 
     if (!secretId) {
@@ -902,6 +902,14 @@ export const revealSecret = functions.https.onCall(
     if (!allowed && secret.isGroup) {
       const unlockedBy: string[] = secret.unlockedBy || [];
       if (unlockedBy.includes(uid)) {
+        allowed = true;
+      }
+    }
+
+    // 4. Bypass distance if user participated in discussion
+    if (!allowed && bypassDistance === true) {
+      const commentsQuery = await secretRef.collection('comments').where('userId', '==', uid).limit(1).get();
+      if (!commentsQuery.empty) {
         allowed = true;
       }
     }

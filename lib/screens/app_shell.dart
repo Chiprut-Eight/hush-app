@@ -194,8 +194,7 @@ class _AppShellState extends State<AppShell> {
             case 0: title = l10n.feedTitle; break;
             case 1: title = l10n.mapTitle; break;
             case 2: title = l10n.createTitle; break;
-            case 3: title = l10n.followingTabTitle; break;
-            case 4: title = l10n.profileTitle; break;
+            case 3: title = l10n.profileTitle; break;
           }
           context.read<UIProvider>().setCurrentTitle(title);
         });
@@ -259,7 +258,6 @@ class _AppShellState extends State<AppShell> {
                   setState(() => _currentIndex = 0);
                   _feedScreenKey.currentState?.refreshFeed();
                 }),
-                FollowingScreen(isActive: _currentIndex == 3),
                 const ProfileScreen(),
               ],
             ),
@@ -276,7 +274,7 @@ class _AppShellState extends State<AppShell> {
                     HapticFeedback.lightImpact();
                   }
                   setState(() => _currentIndex = index);
-                  const tabNames = ['feed', 'map', 'create', 'following', 'profile'];
+                  const tabNames = ['feed', 'map', 'create', 'profile'];
                   AnalyticsService().logTabChanged(tabNames[index]);
                 },
                 backgroundColor: HushColors.bgPrimary,
@@ -324,14 +322,7 @@ class _AppShellState extends State<AppShell> {
                   BottomNavigationBarItem(
                     icon: Padding(
                       padding: const EdgeInsets.only(bottom: 4.0),
-                      child: HushIcon(HushIcons.users, size: 22, color: _currentIndex == 3 ? HushColors.textAccent : HushColors.textSecondary),
-                    ),
-                    label: l10n.followingTabTitle,
-                  ),
-                  BottomNavigationBarItem(
-                    icon: Padding(
-                      padding: const EdgeInsets.only(bottom: 4.0),
-                      child: HushIcon(HushIcons.userCircle, size: 22, color: _currentIndex == 4 ? HushColors.textAccent : HushColors.textSecondary),
+                      child: HushIcon(HushIcons.userCircle, size: 22, color: _currentIndex == 3 ? HushColors.textAccent : HushColors.textSecondary),
                     ),
                     label: l10n.profileTitle,
                   ),
