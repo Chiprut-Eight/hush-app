@@ -701,10 +701,10 @@ class AppLocalizationsHe extends AppLocalizations {
   String get tier2Name => 'מתחיל';
 
   @override
-  String get tier3Name => 'שוליה';
+  String get tier3Name => 'חבר';
 
   @override
-  String get tier4Name => 'מיומן';
+  String get tier4Name => 'מקצוען';
 
   @override
   String get tier5Name => 'מומחה';
@@ -745,4 +745,13 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get networkError => 'שגיאת תקשורת, אנא נסה שוב.';
+
+  @override
+  String get defaultCreateMode => 'ברירת מחדל ליצירת Hushhh';
+
+  @override
+  String get textMode => 'טקסט';
+
+  @override
+  String get voiceMode => 'קול';
 }

@@ -606,8 +606,8 @@ const TIER_REQUIRED_SUCCESSES: Record<number, number> = {
 const TIER_NAMES: Record<number, {en: string; he: string}> = {
   1: {en: "Default", he: "בסיסי"},
   2: {en: "Novice", he: "מתחיל"},
-  3: {en: "Apprentice", he: "שוליה"},
-  4: {en: "Adept", he: "מיומן"},
+  3: {en: "Member", he: "חבר"},
+  4: {en: "Pro", he: "מקצוען"},
   5: {en: "Expert", he: "מומחה"},
   6: {en: "Master", he: "מאסטר"},
   7: {en: "Grandmaster", he: "רב-אמן עליון"},
@@ -724,7 +724,7 @@ export const verifyGroupUnlock = functions.https.onCall(
     const revealRadius = getRevealRadius(tierLevel, true);
     const dist = distanceInMeters(userLat, userLng, secretLat, secretLng);
 
-    if (dist > revealRadius) {
+    if (dist > revealRadius && !bypassDistance) {
       return {
         success: false,
         message: `Too far from the secret (${Math.round(dist)}m). Need to be within ${revealRadius}m.`,

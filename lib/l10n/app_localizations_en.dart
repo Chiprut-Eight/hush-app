@@ -704,10 +704,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get tier2Name => 'Novice';
 
   @override
-  String get tier3Name => 'Apprentice';
+  String get tier3Name => 'Member';
 
   @override
-  String get tier4Name => 'Adept';
+  String get tier4Name => 'Pro';
 
   @override
   String get tier5Name => 'Expert';
@@ -748,4 +748,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get networkError => 'Network error, please try again.';
+
+  @override
+  String get defaultCreateMode => 'Default Create Mode';
+
+  @override
+  String get textMode => 'Text';
+
+  @override
+  String get voiceMode => 'Voice';
 }

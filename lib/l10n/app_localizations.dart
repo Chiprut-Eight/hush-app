@@ -1361,13 +1361,13 @@ abstract class AppLocalizations {
   /// No description provided for @tier3Name.
   ///
   /// In en, this message translates to:
-  /// **'Apprentice'**
+  /// **'Member'**
   String get tier3Name;
 
   /// No description provided for @tier4Name.
   ///
   /// In en, this message translates to:
-  /// **'Adept'**
+  /// **'Pro'**
   String get tier4Name;
 
   /// No description provided for @tier5Name.
@@ -1447,6 +1447,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Network error, please try again.'**
   String get networkError;
+
+  /// No description provided for @defaultCreateMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Create Mode'**
+  String get defaultCreateMode;
+
+  /// No description provided for @textMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Text'**
+  String get textMode;
+
+  /// No description provided for @voiceMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice'**
+  String get voiceMode;
 }
 
 class _AppLocalizationsDelegate
