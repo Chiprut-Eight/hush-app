@@ -183,7 +183,9 @@ class HushDrawer extends StatelessWidget {
                 children: [
                   if (user != null && !isLandscape) ...[
                     Text(
-                      '${user.firstName} ${user.lastName}',
+                      user.firstName != null && user.lastName != null 
+                        ? '${user.firstName} ${user.lastName}' 
+                        : (user.displayName ?? 'Guest'),
                       style: const TextStyle(color: Colors.white70, fontSize: 14),
                     ),
                     const SizedBox(height: 16),
