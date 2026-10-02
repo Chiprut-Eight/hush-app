@@ -9,7 +9,7 @@ import 'package:audio_session/audio_session.dart';
 /// Audio recording and upload service — matches web audioService.ts
 class AudioService {
   final AudioRecorder _recorder = AudioRecorder();
-  final FirebaseStorage _storage = FirebaseStorage.instance;
+  FirebaseStorage get _storage => FirebaseStorage.instance;
   bool _isRecording = false;
   String? _currentPath;
   

@@ -19,7 +19,7 @@ dependencies:
   firebase_storage: ^12.4.2
   firebase_messaging: ^15.2.2
   cloud_functions: ^5.2.0
-  firebase_analytics: ^11.4.2
+  # firebase_analytics: ^11.4.2
 
   # Authentication
   google_sign_in: ^6.3.0
@@ -27,7 +27,7 @@ dependencies:
   crypto: ^3.0.6
 
   # Location & Maps
-  geolocator: ^14.0.0
+  # geolocator: ^14.0.0
   flutter_map: ^7.0.2
   latlong2: ^0.9.1
 
@@ -100,4 +100,3 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/images/logo_hushhh2.jpeg"
-  min_sdk_android: 23

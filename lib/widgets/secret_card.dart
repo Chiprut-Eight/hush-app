@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:hush_app/mocks/geolocator_mock.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'dart:async';
 import '../models/secret.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../providers/auth_provider.dart';
-import '../services/secret_service.dart';
+import '../mocks/secret_service_mock.dart';
 import '../services/audio_service.dart';
 import '../utils/time_ago_util.dart';
 import '../widgets/hush_icon_widget.dart';
@@ -23,7 +23,7 @@ import '../services/analytics_service.dart';
 
 class SecretCard extends StatefulWidget {
   final Secret secret;
-  final Position? userPosition;
+  final dynamic userPosition;
   final VoidCallback? onReveal;
   final VoidCallback? onDelete;
   final VoidCallback? onInteractionStart;

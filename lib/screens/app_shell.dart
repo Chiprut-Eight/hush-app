@@ -25,14 +25,15 @@ import 'following_screen.dart';
 
 /// Main app shell with bottom navigation — matches the web AppShell component
 class AppShell extends StatefulWidget {
-  const AppShell({super.key});
+  final int initialIndex;
+  const AppShell({super.key, this.initialIndex = 0});
 
   @override
   State<AppShell> createState() => _AppShellState();
 }
 
 class _AppShellState extends State<AppShell> {
-  int _currentIndex = 0;
+  late int _currentIndex;
   int? _lastTier; // Tracks the user's tier to detect level-up events
   bool _tutorialShownThisSession = false; // Prevents tutorial from popping up repeatedly
 
@@ -46,6 +47,7 @@ class _AppShellState extends State<AppShell> {
   @override
   void initState() {
     super.initState();
+    _currentIndex = widget.initialIndex;
     _startInviteTimer();
     _homeSub = context.read<UIProvider>().homeStream.listen((_) {
       // Pop any pushed routes (settings, privacy, etc.) back to AppShell

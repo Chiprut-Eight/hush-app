@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:hush_app/mocks/geolocator_mock.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';

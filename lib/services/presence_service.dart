@@ -8,8 +8,8 @@ class PresenceService with WidgetsBindingObserver {
 
   PresenceService._internal();
 
-  final FirebaseDatabase _db = FirebaseDatabase.instance;
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  FirebaseDatabase get _db => FirebaseDatabase.instance;
+  FirebaseAuth get _auth => FirebaseAuth.instance;
   
   bool _initialized = false;
 

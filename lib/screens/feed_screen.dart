@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:geolocator/geolocator.dart';
+import 'package:hush_app/mocks/geolocator_mock.dart';
 import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';

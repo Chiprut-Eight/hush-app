@@ -729,8 +729,8 @@
       5: {
         id: 'record_plant',
         activeTab: 2,
-        he: { badge: 'יצירה והטמנה', title: 'הטמן Hushhh', subtitle: 'הקלט Hushhh והטמן במיקום מדויק במרחב' },
-        en: { badge: 'Create & Plant', title: 'Plant a Hushhh', subtitle: 'Record a Hushhh & drop it at an exact spatial coordinate' }
+        he: { badge: 'יצירה והשארה', title: 'השאר Hushhh', subtitle: 'הקלט Hushhh והשאר במיקום מדויק במרחב' },
+        en: { badge: 'Create & Drop', title: 'Drop a Hushhh', subtitle: 'Record a Hushhh & drop it at an exact spatial coordinate' }
       },
       6: {
         id: 'group_hushhh',
@@ -1486,7 +1486,7 @@
         'nearby_feed': isHe ? 'פיד Hushhh' : 'Hushhh Feed',
         'interactive_map': isHe ? 'מפת Hushhh' : 'Hushhh Map',
         'audio_player': isHe ? 'האזנה ל-Hushhh' : 'Audio Player',
-        'record_plant': isHe ? 'הטמן Hushhh' : 'Plant Secret',
+        'record_plant': isHe ? 'השאר Hushhh' : 'Drop Hushhh',
         'group_hushhh': isHe ? 'Hushhh קבוצתי' : 'Group Secret',
         'clout_tiers': isHe ? 'פרופיל ודרגות' : 'Profile & Tiers',
         'following_feed': isHe ? 'עוקבים' : 'Following',
@@ -1531,7 +1531,7 @@
             <svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor">
               <path d="M104,40H56A16,16,0,0,0,40,56v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,104,40ZM104,136H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136ZM200,40H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40ZM200,136H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Z"/>
             </svg>
-            <span>${isHe ? 'פיד' : 'Feed'}</span>
+            <span>${isHe ? 'בקרבתך' : 'Nearby'}</span>
           </div>
 
           <!-- Map Tab -->
@@ -1539,7 +1539,7 @@
             <svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor">
               <path d="M228.92,49.69a8,8,0,0,0-6.86-1.45L160.93,63.51,99.94,48.26a8,8,0,0,0-3.88,0L34.06,63.76A8,8,0,0,0,28,71.52V207.4a8,8,0,0,0,10,7.76l61.07-15.27,61,15.25a8.05,8.05,0,0,0,3.88,0l62-15.5A8,8,0,0,0,232,187V51.12A8,8,0,0,0,228.92,49.69ZM92,62.88l56,14V193.12l-56-14ZM44,77.34l32-8V195.46l-32,8ZM216,178.66l-32,8V60.54l32-8Z"/>
             </svg>
-            <span>${isHe ? 'מפה' : 'Map'}</span>
+            <span>${isHe ? 'בסביבה' : 'Map'}</span>
           </div>
 
           <!-- Center Plant Floating Circle Button -->
@@ -1554,7 +1554,7 @@
             <svg width="28" height="28" viewBox="0 0 256 256" fill="currentColor">
               <path d="M117.25,157.92a60,60,0,1,0-66.5,0A95.83,95.83,0,0,0,3.53,195.63a8,8,0,1,0,13.4,8.74,80,80,0,0,1,134.14,0,8,8,0,0,0,13.4-8.74A95.83,95.83,0,0,0,117.25,157.92ZM40,108a44,44,0,1,1,44,44A44.05,44.05,0,0,1,40,108Zm210.14,98.74a8,8,0,0,1-11.07-2.33A79.83,79.83,0,0,0,172,168a8,8,0,0,1,0-16,44,44,0,1,0-16.34-84.87,8,8,0,1,1-5.94-14.85,60,60,0,1,1,25.41,114.77,95.73,95.73,0,0,1,73.14,37.62A8,8,0,0,1,250.14,206.74Z"/>
             </svg>
-            <span>${isHe ? 'עוקבים' : 'Following'}</span>
+            <span>${isHe ? 'במעקב' : 'Following'}</span>
           </div>
 
           <!-- Profile Tab -->

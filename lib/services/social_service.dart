@@ -10,7 +10,7 @@ class FollowedUserFeedItem {
 }
 
 class SocialService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore => FirebaseFirestore.instance;
   
   /// Get user data by ID
   Future<HushUser?> getUserById(String uid) async {
