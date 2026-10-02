@@ -310,5 +310,8 @@
   "tutorialGotIt": "Got it, thanks",
   "secretDeletedMessage": "This Hushhh was removed, save Hushhh that interest you and in the meantime",
   "discoverMoreHushhh": "Discover more Hushhh",
-  "networkError": "Network error, please try again."
+  "networkError": "Network error, please try again.",
+  "defaultCreateMode": "Default Create Mode",
+  "textMode": "Text",
+  "voiceMode": "Voice"
 }

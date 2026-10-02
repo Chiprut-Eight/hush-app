@@ -38,6 +38,37 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
                 ListTile(
+                  title: Text(AppLocalizations.of(context)!.defaultCreateMode),
+                  leading: const Icon(Icons.mode_edit_outline, color: HushColors.textAccent),
+                  trailing: SegmentedButton<String>(
+                    segments: [
+                      ButtonSegment(value: 'text', label: Text(AppLocalizations.of(context)!.textMode)),
+                      ButtonSegment(value: 'voice', label: Text(AppLocalizations.of(context)!.voiceMode)),
+                    ],
+                    selected: {user.defaultCreateMode},
+                    onSelectionChanged: (Set<String> newSelection) {
+                      FirebaseFirestore.instance
+                          .collection('users')
+                          .doc(user.uid)
+                          .update({'defaultCreateMode': newSelection.first});
+                    },
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return HushColors.textAccent.withOpacity(0.2);
+                        }
+                        return Colors.transparent;
+                      }),
+                      foregroundColor: MaterialStateProperty.resolveWith<Color>((states) {
+                        if (states.contains(MaterialState.selected)) {
+                          return HushColors.textAccent;
+                        }
+                        return HushColors.textSecondary;
+                      }),
+                    ),
+                  ),
+                ),
+                ListTile(
                   title: Text(AppLocalizations.of(context)!.notificationsSettingsTitle),
                   subtitle: Text(AppLocalizations.of(context)!.notificationsSettingsSub, style: const TextStyle(fontSize: 12)),
                   leading: const Icon(Icons.notifications_active_outlined, color: HushColors.textAccent),

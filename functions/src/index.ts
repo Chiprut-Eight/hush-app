@@ -199,11 +199,11 @@ export const testPush = functions.https.onCall(async (data, context) => {
 });
 
 // ============================================================
-// 1. DECAY CRON JOB — Runs every night at 2:00 AM
+// 1. DECAY CRON JOB — Runs every day at 4:00 PM
 //    Respects Immunity (saveCount > 0) and sends notifications
 // ============================================================
 export const decaySecretsJob = functions.pubsub
-  .schedule("0 2 * * *")
+  .schedule("0 16 * * *")
   .timeZone("Asia/Jerusalem")
   .onRun(async () => {
     const now = new Date();
@@ -296,6 +296,10 @@ export const decaySecretsJob = functions.pubsub
     }
 
     if (deleteCount > 0) {
+      const statsRef = db.collection("stats").doc("global");
+      batch.set(statsRef, {
+        totalSecretsDecayed: admin.firestore.FieldValue.increment(deleteCount)
+      }, { merge: true });
       await batch.commit();
       console.log(`Decayed ${deleteCount} secrets.`);
     } else {
@@ -479,7 +483,7 @@ export const onNewSecret = functions.firestore
 //    the detection range between daily cron runs.
 // ============================================================
 export const onSecretExpiringSoon = functions.pubsub
-  .schedule("0 0 * * *")
+  .schedule("0 10 * * *")
   .timeZone("Asia/Jerusalem")
   .onRun(async () => {
     const now = new Date();
@@ -1397,4 +1401,53 @@ export const onAdminBroadcast = functions.firestore
         error: error.message,
       });
     }
+  });
+
+// ============================================================
+// AUTO-SYNC: Update creator name/photo on all secrets when user profile changes
+// ============================================================
+export const onUserProfileUpdate = functions.firestore
+  .document("users/{userId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const userId = context.params.userId;
+
+    const beforeName = `${before.firstName || ""} ${before.lastName || ""}`.trim() || before.displayName || "";
+    const afterName = `${after.firstName || ""} ${after.lastName || ""}`.trim() || after.displayName || "";
+    const beforePhoto = before.profileImageURL || "";
+    const afterPhoto = after.profileImageURL || "";
+
+    // Only proceed if name or photo actually changed
+    if (beforeName === afterName && beforePhoto === afterPhoto) return;
+
+    const secrets = await db.collection("secrets")
+      .where("creatorId", "==", userId)
+      .get();
+
+    if (secrets.empty) return;
+
+    const batch = db.batch();
+    const updateData: Record<string, string> = {};
+    if (beforeName !== afterName) updateData.creatorName = afterName;
+    if (beforePhoto !== afterPhoto) updateData.creatorPhotoURL = afterPhoto;
+
+    secrets.docs.forEach((doc) => {
+      batch.update(doc.ref, updateData);
+    });
+
+    await batch.commit();
+    console.log(`Updated ${secrets.size} secrets for user ${userId} — name: "${afterName}", photo changed: ${beforePhoto !== afterPhoto}`);
+  });
+
+// ============================================================
+// ADMIN STATS: Track total secrets created globally
+// ============================================================
+export const onSecretCreated = functions.firestore
+  .document("secrets/{secretId}")
+  .onCreate(async (snap, context) => {
+    const statsRef = db.collection("stats").doc("global");
+    await statsRef.set({
+      totalSecretsCreated: admin.firestore.FieldValue.increment(1)
+    }, { merge: true });
   });

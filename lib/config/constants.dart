@@ -21,6 +21,9 @@ class AppConstants {
   /// Minimum distance (meters) user must move before position state updates
   static const double minMoveThreshold = 5.0;
 
+  /// Time in hours that a revealed secret stays open locally
+  static const int revealCacheDurationHours = 24;
+
   /// Maximum number of viewed secret IDs to store locally
   static const int maxViewedSecrets = 500;
 

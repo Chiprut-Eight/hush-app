@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onAdminBroadcast = exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
+exports.onSecretCreated = exports.onUserProfileUpdate = exports.onAdminBroadcast = exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
@@ -174,11 +174,11 @@ exports.testPush = functions.https.onCall(async (data, context) => {
     return diagnostics;
 });
 // ============================================================
-// 1. DECAY CRON JOB — Runs every night at 2:00 AM
+// 1. DECAY CRON JOB — Runs every day at 4:00 PM
 //    Respects Immunity (saveCount > 0) and sends notifications
 // ============================================================
 exports.decaySecretsJob = functions.pubsub
-    .schedule("0 2 * * *")
+    .schedule("0 16 * * *")
     .timeZone("Asia/Jerusalem")
     .onRun(async () => {
     var _a;
@@ -258,6 +258,10 @@ exports.decaySecretsJob = functions.pubsub
         }
     }
     if (deleteCount > 0) {
+        const statsRef = db.collection("stats").doc("global");
+        batch.set(statsRef, {
+            totalSecretsDecayed: admin.firestore.FieldValue.increment(deleteCount)
+        }, { merge: true });
         await batch.commit();
         console.log(`Decayed ${deleteCount} secrets.`);
     }
@@ -395,7 +399,7 @@ exports.onNewSecret = functions.firestore
 //    the detection range between daily cron runs.
 // ============================================================
 exports.onSecretExpiringSoon = functions.pubsub
-    .schedule("0 0 * * *")
+    .schedule("0 10 * * *")
     .timeZone("Asia/Jerusalem")
     .onRun(async () => {
     var _a;
@@ -1151,5 +1155,49 @@ exports.onAdminBroadcast = functions.firestore
             error: error.message,
         });
     }
+});
+// ============================================================
+// AUTO-SYNC: Update creator name/photo on all secrets when user profile changes
+// ============================================================
+exports.onUserProfileUpdate = functions.firestore
+    .document("users/{userId}")
+    .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const userId = context.params.userId;
+    const beforeName = `${before.firstName || ""} ${before.lastName || ""}`.trim() || before.displayName || "";
+    const afterName = `${after.firstName || ""} ${after.lastName || ""}`.trim() || after.displayName || "";
+    const beforePhoto = before.profileImageURL || "";
+    const afterPhoto = after.profileImageURL || "";
+    // Only proceed if name or photo actually changed
+    if (beforeName === afterName && beforePhoto === afterPhoto)
+        return;
+    const secrets = await db.collection("secrets")
+        .where("creatorId", "==", userId)
+        .get();
+    if (secrets.empty)
+        return;
+    const batch = db.batch();
+    const updateData = {};
+    if (beforeName !== afterName)
+        updateData.creatorName = afterName;
+    if (beforePhoto !== afterPhoto)
+        updateData.creatorPhotoURL = afterPhoto;
+    secrets.docs.forEach((doc) => {
+        batch.update(doc.ref, updateData);
+    });
+    await batch.commit();
+    console.log(`Updated ${secrets.size} secrets for user ${userId} — name: "${afterName}", photo changed: ${beforePhoto !== afterPhoto}`);
+});
+// ============================================================
+// ADMIN STATS: Track total secrets created globally
+// ============================================================
+exports.onSecretCreated = functions.firestore
+    .document("secrets/{secretId}")
+    .onCreate(async (snap, context) => {
+    const statsRef = db.collection("stats").doc("global");
+    await statsRef.set({
+        totalSecretsCreated: admin.firestore.FieldValue.increment(1)
+    }, { merge: true });
 });
 //# sourceMappingURL=index.js.map

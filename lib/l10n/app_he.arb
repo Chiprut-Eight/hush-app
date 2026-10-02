@@ -371,5 +371,8 @@
   "tutorialGotIt": "הבנתי, תודה",
   "secretDeletedMessage": "ה-Hushhh הזה הוסר, שמור Hushhh שמעניינים אותך ובינתיים",
   "discoverMoreHushhh": "גלו Hushhh נוספים",
-  "networkError": "שגיאת תקשורת, אנא נסה שוב."
+  "networkError": "שגיאת תקשורת, אנא נסה שוב.",
+  "defaultCreateMode": "ברירת מחדל ליצירת Hushhh",
+  "textMode": "טקסט",
+  "voiceMode": "קול"
 }

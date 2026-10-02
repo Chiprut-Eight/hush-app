@@ -49,6 +49,7 @@ class HushUser {
   
   // Settings - Profile
   final DateTime? lastUsernameChange;
+  final String defaultCreateMode;
 
   HushUser({
     required this.uid,
@@ -84,6 +85,7 @@ class HushUser {
     this.notifyNewFollower = true,
     this.notifyInteractions = true,
     this.lastUsernameChange,
+    this.defaultCreateMode = 'text',
     DateTime? createdAt,
   }) : createdAt = createdAt ?? DateTime.now();
 
@@ -124,6 +126,7 @@ class HushUser {
       notifyNewFollower: data['notifyNewFollower'] ?? true,
       notifyInteractions: data['notifyInteractions'] ?? true,
       lastUsernameChange: (data['lastUsernameChange'] as Timestamp?)?.toDate(),
+      defaultCreateMode: data['defaultCreateMode'] ?? 'text',
     );
   }
 
@@ -162,5 +165,6 @@ class HushUser {
     'notifyNewFollower': notifyNewFollower,
     'notifyInteractions': notifyInteractions,
     'lastUsernameChange': lastUsernameChange != null ? Timestamp.fromDate(lastUsernameChange!) : null,
+    'defaultCreateMode': defaultCreateMode,
   };
 }

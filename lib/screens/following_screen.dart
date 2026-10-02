@@ -136,7 +136,7 @@ class _FollowingScreenState extends State<FollowingScreen> {
             radius: 8,
             contents: [
               TargetContent(
-                align: ContentAlign.bottom,
+                align: ContentAlign.top,
                 builder: (context, controller) {
                   return Column(
                     mainAxisSize: MainAxisSize.min,

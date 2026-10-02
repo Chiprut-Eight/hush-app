@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/secret.dart';
 import '../config/constants.dart';
 import 'geo_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 /// Service for Firestore secret CRUD operations — matches web secretService.ts
 class SecretService {
@@ -200,10 +201,52 @@ class SecretService {
         'userLat': ?lat,
         'userLng': ?lng,
       });
-      return Map<String, dynamic>.from(result.data);
+      final data = Map<String, dynamic>.from(result.data);
+      if (data['success'] == true) {
+        await _cacheRevealedSecret(secretId);
+      }
+      return data;
     } catch (e) {
       debugPrint('revealSecret error: $e');
       return {'success': false, 'error': e.toString()};
+    }
+  }
+
+  // ============================================================
+  // REVEAL CACHE (24h Persistence)
+  // ============================================================
+
+  /// Save secret as revealed with current timestamp
+  Future<void> _cacheRevealedSecret(String secretId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'revealed_$secretId';
+      final now = DateTime.now().millisecondsSinceEpoch;
+      await prefs.setInt(key, now);
+    } catch (e) {
+      debugPrint('Error caching revealed secret: $e');
+    }
+  }
+
+  /// Check if a secret was revealed within the last 24h
+  Future<bool> isSecretRecentlyRevealed(String secretId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final key = 'revealed_$secretId';
+      final timestamp = prefs.getInt(key);
+      if (timestamp == null) return false;
+
+      final revealTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+      final expirationTime = revealTime.add(const Duration(hours: AppConstants.revealCacheDurationHours));
+      
+      if (DateTime.now().isAfter(expirationTime)) {
+        await prefs.remove(key);
+        return false;
+      }
+      return true;
+    } catch (e) {
+      debugPrint('Error checking revealed secret cache: $e');
+      return false;
     }
   }
 

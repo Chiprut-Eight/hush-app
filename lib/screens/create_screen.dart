@@ -37,7 +37,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
 
-  int _activeTab = 1; // 0 = text, 1 = voice
+  int _activeTab = 0; // 0 = text, 1 = voice
   String _secretType = 'regular'; // 'regular' or 'group'
   double _requiredUsers = 3;
 
@@ -58,6 +58,14 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authProvider = context.read<AuthProvider>();
+      if (authProvider.currentUser?.defaultCreateMode == 'voice') {
+        setState(() {
+          _activeTab = 1;
+        });
+      }
+    });
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 1000),

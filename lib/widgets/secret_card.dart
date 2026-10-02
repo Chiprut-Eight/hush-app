@@ -111,6 +111,13 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
       if (!_revealed && !_isRevealLoading) {
         _fetchContentFromServer();
       }
+    } else {
+      // Check if recently revealed (24h cache)
+      _secretService.isSecretRecentlyRevealed(_currentSecret.id).then((recentlyRevealed) {
+        if (recentlyRevealed && mounted && !_revealed && !_isRevealLoading) {
+          _fetchContentFromServer();
+        }
+      });
     }
 
     // Start live secret data stream

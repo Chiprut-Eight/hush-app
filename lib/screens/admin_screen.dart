@@ -1740,9 +1740,17 @@ class _StatisticsView extends StatefulWidget {
 
 class _StatisticsViewState extends State<_StatisticsView> {
   bool _isLoading = true;
+  
+  // Stats variables
   int _totalUsers = 0;
-  int _totalSecrets = 0;
   int _onlineUsers = 0;
+  int _newUsers7Days = 0;
+  
+  int _totalSecretsCreated = 0;
+  int _totalSecretsDecayed = 0;
+  int _activeSecrets = 0;
+  
+  int _totalReports = 0;
 
   @override
   void initState() {
@@ -1755,16 +1763,36 @@ class _StatisticsViewState extends State<_StatisticsView> {
     try {
       final authProvider = Provider.of<AuthProvider>(context, listen: false);
       final adminUid = authProvider.firebaseUser?.uid;
-
       final db = FirebaseFirestore.instance;
-      // Get users count
-      final usersSnap = await db.collection('users').count().get();
-      // Get secrets count
-      final secretsSnap = adminUid != null
-          ? await db.collection('secrets').where('creatorId', isNotEqualTo: adminUid).count().get()
-          : await db.collection('secrets').count().get();
       
-      // Get online users from RTDB
+      // 1. Users Stats
+      final usersSnap = await db.collection('users').count().get();
+      final usersCount = usersSnap.count ?? 0;
+      
+      final sevenDaysAgo = DateTime.now().subtract(const Duration(days: 7));
+      final newUsersSnap = await db.collection('users').where('createdAt', isGreaterThanOrEqualTo: Timestamp.fromDate(sevenDaysAgo)).count().get();
+      final newUsersCount = newUsersSnap.count ?? 0;
+      
+      // 2. Global Secrets Stats (All time)
+      int secretsCreated = 0;
+      int secretsDecayed = 0;
+      try {
+        final globalStats = await db.collection('stats').doc('global').get();
+        if (globalStats.exists) {
+          secretsCreated = globalStats.data()?['totalSecretsCreated'] ?? 0;
+          secretsDecayed = globalStats.data()?['totalSecretsDecayed'] ?? 0;
+        }
+      } catch (_) {}
+
+      // 3. Active Secrets
+      final activeSecretsSnap = await db.collection('secrets').where('isHidden', isEqualTo: false).count().get();
+      final activeSecretsCount = activeSecretsSnap.count ?? 0;
+
+      // 4. Reports
+      final reportsSnap = await db.collection('reports').count().get();
+      final reportsCount = reportsSnap.count ?? 0;
+      
+      // 5. Online users RTDB
       int onlineUsersCount = 0;
       try {
         final rtdb = FirebaseDatabase.instance;
@@ -1779,17 +1807,16 @@ class _StatisticsViewState extends State<_StatisticsView> {
         }
       } catch (e) {
         debugPrint('RTDB error: $e');
-        // Fallback to 0 if RTDB is not setup yet
       }
-
-      // Assume 1 admin exists, so we subtract 1 if > 0
-      final usersCount = usersSnap.count ?? 0;
-      final secretsCount = secretsSnap.count ?? 0;
 
       if (mounted) {
         setState(() {
           _totalUsers = usersCount > 0 ? usersCount - 1 : 0; 
-          _totalSecrets = secretsCount; 
+          _newUsers7Days = newUsersCount;
+          _totalSecretsCreated = secretsCreated > 0 ? secretsCreated : activeSecretsCount;
+          _totalSecretsDecayed = secretsDecayed;
+          _activeSecrets = activeSecretsCount;
+          _totalReports = reportsCount;
           _onlineUsers = onlineUsersCount;
           _isLoading = false;
         });
@@ -1822,10 +1849,10 @@ class _StatisticsViewState extends State<_StatisticsView> {
           ),
           const SizedBox(height: 16),
           _StatCard(
-            title: isHe ? 'סה"כ Hushhh באפליקציה' : 'Total Secrets',
-            subtitle: isHe ? 'מכל הזמנים (לא כולל מחיקות אוטומטיות)' : 'All time (excluding auto-deleted)',
-            value: _totalSecrets.toString(),
-            icon: Icons.speaker_notes,
+            title: isHe ? 'משתמשים חדשים (7 ימים)' : 'New Users (7 Days)',
+            subtitle: isHe ? 'הצטרפו בשבוע האחרון' : 'Joined in the last week',
+            value: _newUsers7Days.toString(),
+            icon: Icons.person_add,
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -1833,6 +1860,34 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'לא כולל אדמין' : 'Excluding admin',
             value: _onlineUsers.toString(),
             icon: Icons.wifi,
+          ),
+          const SizedBox(height: 32),
+          _StatCard(
+            title: isHe ? 'סה"כ Hushhh שנוצרו' : 'Total Secrets Created',
+            subtitle: isHe ? 'מכל הזמנים (כולל מחוקים)' : 'All time (including deleted)',
+            value: _totalSecretsCreated.toString(),
+            icon: Icons.speaker_notes,
+          ),
+          const SizedBox(height: 16),
+          _StatCard(
+            title: isHe ? 'Hushhh פעילים כרגע' : 'Active Secrets',
+            subtitle: isHe ? 'זמינים כרגע במפה/פיד' : 'Currently available on map/feed',
+            value: _activeSecrets.toString(),
+            icon: Icons.visibility,
+          ),
+          const SizedBox(height: 16),
+          _StatCard(
+            title: isHe ? 'Hushhh שנמחקו בדעיכה' : 'Decayed Secrets',
+            subtitle: isHe ? 'נמחקו אוטומטית עקב חוסר עניין' : 'Auto-deleted due to inactivity',
+            value: _totalSecretsDecayed.toString(),
+            icon: Icons.delete_sweep,
+          ),
+          const SizedBox(height: 32),
+          _StatCard(
+            title: isHe ? 'סה"כ דיווחים' : 'Total Reports',
+            subtitle: isHe ? 'דיווחים שהוגשו על ידי משתמשים' : 'Reports submitted by users',
+            value: _totalReports.toString(),
+            icon: Icons.report_problem,
           ),
         ],
       ),
