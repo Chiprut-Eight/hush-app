@@ -254,9 +254,9 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         });
 
         final user = context.read<AuthProvider>().hushUser;
-        if (false) { // Disabled in favor of mock cards tutorial
+        if (user != null && !user.hasSeenFeedTutorialV1) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            _showTutorial();
+            if (mounted) _showTutorial();
           });
         }
       }

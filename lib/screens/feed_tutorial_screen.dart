@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:hush_app/l10n/app_localizations.dart';
 
 import '../config/theme.dart';
 import '../models/secret.dart';
@@ -156,8 +156,8 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
     // Provide translated mock content
     final translatedMocks = List<Secret>.from(mockSecrets);
     if (isHe) {
-      translatedMocks[0] = translatedMocks[0].copyWith(textContent: 'ברוכים הבאים ל-Hushhh! 🎉 לחץ כדי לקרוא.');
-      translatedMocks[2] = translatedMocks[2].copyWith(textContent: 'סוד קבוצתי! דורש 3 אנשים סביבך.');
+      translatedMocks[0] = Secret(id: translatedMocks[0].id, creatorId: translatedMocks[0].creatorId, creatorName: translatedMocks[0].creatorName, creatorTierLevel: translatedMocks[0].creatorTierLevel, creatorTierColor: translatedMocks[0].creatorTierColor, type: translatedMocks[0].type, textContent: 'ברוכים הבאים ל-Hushhh! 🎉 לחץ כדי לקרוא.', likes: translatedMocks[0].likes, commentCount: translatedMocks[0].commentCount, lat: translatedMocks[0].lat, lng: translatedMocks[0].lng, createdAt: translatedMocks[0].createdAt);
+      translatedMocks[2] = Secret(id: translatedMocks[2].id, creatorId: translatedMocks[2].creatorId, creatorName: translatedMocks[2].creatorName, creatorTierLevel: translatedMocks[2].creatorTierLevel, creatorTierColor: translatedMocks[2].creatorTierColor, type: translatedMocks[2].type, isGroup: translatedMocks[2].isGroup, requiredUsers: translatedMocks[2].requiredUsers, textContent: 'סוד קבוצתי! דורש 3 אנשים סביבך.', likes: translatedMocks[2].likes, commentCount: translatedMocks[2].commentCount, lat: translatedMocks[2].lat, lng: translatedMocks[2].lng, createdAt: translatedMocks[2].createdAt);
     }
 
     return Scaffold(
@@ -171,11 +171,11 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
-            Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], isMock: true)),
+            Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], )),
             const SizedBox(height: 16),
-            Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], isMock: true)),
+            Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], )),
             const SizedBox(height: 16),
-            Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], isMock: true)),
+            Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], )),
           ],
         ),
       ),
