@@ -38,12 +38,12 @@ class SettingsScreen extends StatelessWidget {
                   },
                 ),
                 ListTile(
-                  title: Text(AppLocalizations.of(context)!.defaultCreateMode),
+                  title: const Text('Default Create Mode'),
                   leading: const Icon(Icons.mode_edit_outline, color: HushColors.textAccent),
                   trailing: SegmentedButton<String>(
                     segments: [
-                      ButtonSegment(value: 'text', label: Text(AppLocalizations.of(context)!.textMode)),
-                      ButtonSegment(value: 'voice', label: Text(AppLocalizations.of(context)!.voiceMode)),
+                      ButtonSegment(value: 'text', label: const Text('Text')),
+                      ButtonSegment(value: 'voice', label: const Text('Voice')),
                     ],
                     selected: {user.defaultCreateMode},
                     onSelectionChanged: (Set<String> newSelection) {

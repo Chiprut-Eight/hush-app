@@ -14,6 +14,7 @@ import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_service.dart';
+import '../services/social_service.dart';
 import 'following_screen.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -203,6 +204,22 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         if (savedIds.isNotEmpty) {
           secrets = await _secretService.getSavedSecrets(savedIds);
         }
+      } else if (_selectedTab == FeedTab.following) {
+        final followingIds = authProvider.hushUser?.followingIds ?? [];
+        if (followingIds.isNotEmpty) {
+          final feedItems = await SocialService().getFollowedUsersFeed(followingIds);
+          for (var item in feedItems) {
+            if (item.latestSecret != null) {
+              secrets.add(item.latestSecret!);
+            }
+          }
+          // Sort by distance
+          secrets.sort((a, b) {
+            final distA = GeoService.calculateDistance(position.latitude, position.longitude, a.lat, a.lng);
+            final distB = GeoService.calculateDistance(position.latitude, position.longitude, b.lat, b.lng);
+            return distA.compareTo(distB);
+          });
+        }
       } else {
         secrets = await _secretService.getNearbySecrets(
           position.latitude,
@@ -296,7 +313,6 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     Future.delayed(const Duration(milliseconds: 500), () {
       if (!mounted) return;
       
-      final l10n = AppLocalizations.of(context)!;
       final targets = <TargetFocus>[];
       
       if (_tabsRowKey.currentContext != null) {
@@ -321,7 +337,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
                       ElevatedButton(
                         onPressed: () => _tutorial?.skip(),
                         style: ElevatedButton.styleFrom(backgroundColor: HushColors.textAccent, foregroundColor: Colors.black),
-                        child: Text('Got it!'),
+                        child: const Text('Got it!'),
                       ),
                     ],
                   );
@@ -365,9 +381,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
       children: [
         _buildTabs(l10n),
         Expanded(
-          child: _selectedTab == FeedTab.following
-              ? const FollowingScreen(isActive: true)
-              : RefreshIndicator(
+          child: RefreshIndicator(
                   onRefresh: () async {
                     AnalyticsService().logFeedRefresh();
                     await _fetchSecrets(silent: _secrets.isNotEmpty);
@@ -375,8 +389,8 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
                   },
                   color: HushColors.textAccent,
                   backgroundColor: Theme.of(context).colorScheme.surface,
-                  child: _buildBodyContent(l10n),
-                ),
+            child: _buildBodyContent(l10n),
+          ),
         ),
       ],
     );
