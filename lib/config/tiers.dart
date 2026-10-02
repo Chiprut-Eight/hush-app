@@ -48,7 +48,7 @@ class HushTiers {
     ),
     TierDef(
       level: 3,
-      name: 'Apprentice',
+      name: 'Member',
       colorHex: '#4CAF50',
       color: Colors.green,
       requiredSuccesses: 15,
@@ -58,7 +58,7 @@ class HushTiers {
     ),
     TierDef(
       level: 4,
-      name: 'Adept',
+      name: 'Pro',
       colorHex: '#FFEB3B',
       color: Colors.yellow,
       requiredSuccesses: 30,

@@ -1444,14 +1444,14 @@ class _TierPreviewScreen extends StatelessWidget {
             final tier = i + 1;
             final color = HushColors.tierColor(tier);
             final tierNamesHe = [
-              'בסיסי (Default)', 'מתחיל (Novice)', 'שוליה (Apprentice)',
-              'מיומן (Adept)', 'מומחה (Expert)', 'מאסטר (Master)',
+              'בסיסי (Default)', 'מתחיל (Novice)', 'חבר (Member)',
+              'מקצוען (Pro)', 'מומחה (Expert)', 'מאסטר (Master)',
               'רב-אמן עליון (Grandmaster)', 'אגדה (Legend)',
               'מיתולוגי (Mythic)', 'דרגת אל (God Tier)',
             ];
             final tierNamesEn = [
-              'Default', 'Novice', 'Apprentice',
-              'Adept', 'Expert', 'Master',
+              'Default', 'Novice', 'Member',
+              'Pro', 'Expert', 'Master',
               'Grandmaster', 'Legend',
               'Mythic', 'God Tier',
             ];
