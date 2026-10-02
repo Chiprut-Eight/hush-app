@@ -15,7 +15,6 @@ import '../widgets/hush_icon_widget.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_service.dart';
 import '../services/social_service.dart';
-import 'following_screen.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -215,8 +214,8 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           }
           // Sort by distance
           secrets.sort((a, b) {
-            final distA = GeoService.calculateDistance(position.latitude, position.longitude, a.lat, a.lng);
-            final distB = GeoService.calculateDistance(position.latitude, position.longitude, b.lat, b.lng);
+            final distA = GeoService.distanceInMeters(position.latitude, position.longitude, a.lat, a.lng);
+            final distB = GeoService.distanceInMeters(position.latitude, position.longitude, b.lat, b.lng);
             return distA.compareTo(distB);
           });
         }
