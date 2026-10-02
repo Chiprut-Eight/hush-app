@@ -18,10 +18,12 @@ class AuthProvider extends ChangeNotifier {
   bool _loading = true;
   StreamSubscription<DocumentSnapshot>? _userSubscription;
 
-  User? get firebaseUser => null;
-  HushUser? get hushUser => HushUser(uid: "mock_uid", email: "test@test.com", displayName: "Hushhh_Fan", tierLevel: 5, totalPublished: 12, followingIds: ["1", "2", "3"], followerIds: ["1", "2", "3", "4"]);
+  bool _isAuthenticated = false;
+
+  User? get firebaseUser => _firebaseUser;
+  HushUser? get hushUser => _hushUser;
   bool get loading => _loading;
-  bool get isAuthenticated => true;
+  bool get isAuthenticated => _isAuthenticated;
 
   static const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
@@ -57,6 +59,7 @@ class AuthProvider extends ChangeNotifier {
 
   Future<void> _onAuthStateChanged(User? user) async {
     _firebaseUser = user;
+    _isAuthenticated = user != null;
     
     // Notify immediately so the UI can show a spinner if user is non-null
     // rather than getting stuck on the LoginScreen if Firestore hangs
