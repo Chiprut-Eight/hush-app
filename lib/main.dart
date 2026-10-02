@@ -167,7 +167,7 @@ class _HushAppState extends State<HushApp> {
                       body: Center(child: CircularProgressIndicator()),
                     );
                   }
-                  if (!auth.hushUser!.isOnboarded) {
+                  if (!auth.hushUser!.isOnboarded && !auth.hushUser!.isAdmin) {
                     return const OnboardingScreen();
                   }
                   return const AppShell();
