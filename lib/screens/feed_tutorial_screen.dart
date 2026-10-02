@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hush_app/l10n/app_localizations.dart';
 
 import '../config/theme.dart';
 import '../models/secret.dart';

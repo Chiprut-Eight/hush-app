@@ -1770,7 +1770,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
   
   int _totalReports = 0;
   
-  double _avgSecretLifetime = 2.4; // Mock calculation fallback
+  final double _avgSecretLifetime = 2.4; // Mock calculation fallback
   String _savedPercentage = '0%';
   String _topCreators = 'None';
   String _contentTypeDistribution = 'Text: 0%, Voice: 0%';
@@ -1827,8 +1827,11 @@ class _StatisticsViewState extends State<_StatisticsView> {
       for (var doc in secretsQuery.docs) {
           final data = doc.data();
           if ((data['saveCount'] ?? 0) > 0) savedCount++;
-          if (data['type'] == 'voice') voiceCount++;
-          else textCount++;
+          if (data['type'] == 'voice') {
+            voiceCount++;
+          } else {
+            textCount++;
+          }
           
           totalLikes += (data['likes'] ?? 0) as int;
           totalDislikes += (data['dislikes'] ?? 0) as int;
@@ -1963,7 +1966,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
           _StatCard(
             title: isHe ? 'תוחלת חיים של האשש' : 'Avg Secret Lifetime',
             subtitle: isHe ? 'ממוצע' : 'Average',
-            value: _avgSecretLifetime,
+            value: '${_avgSecretLifetime.toStringAsFixed(1)} h',
             icon: Icons.hourglass_bottom,
           ),
           const SizedBox(height: 16),
