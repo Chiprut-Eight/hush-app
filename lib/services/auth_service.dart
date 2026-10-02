@@ -112,7 +112,7 @@ class AuthService {
         email: user.email,
         photoURL: user.photoURL,
         searchName: displayName.toLowerCase(),
-        isAdmin: user.uid == adminUid,
+        isAdmin: user.uid == adminUid || user.email == 'chiprut20@gmail.com',
       );
       await userRef.set(newUser.toFirestore());
     } else {
@@ -122,7 +122,7 @@ class AuthService {
         final updates = <String, dynamic>{};
         
         // Ensure admin status is set for admin UID
-        if (user.uid == adminUid && data['isAdmin'] != true) {
+        if ((user.uid == adminUid || user.email == 'chiprut20@gmail.com') && data['isAdmin'] != true) {
           updates['isAdmin'] = true;
         }
 

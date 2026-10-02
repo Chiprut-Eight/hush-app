@@ -137,8 +137,11 @@ class AuthProvider extends ChangeNotifier {
     if (_firebaseUser != null) {
       await NotificationService().clearToken(_firebaseUser!.uid);
     }
-    _userSubscription?.cancel();
     await _authService.signOut();
+    _firebaseUser = null;
+    _hushUser = null;
+    _isAuthenticated = false;
+    notifyListeners();
   }
 
   Future<void> refreshProfile() async {
