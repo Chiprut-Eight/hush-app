@@ -100,7 +100,7 @@ class _HushAppState extends State<HushApp> {
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,
             localizationsDelegates: AppLocalizations.localizationsDelegates,
-            navigatorObservers: [AnalyticsService().observer],
+            navigatorObservers: [if (AnalyticsService().observer != null) AnalyticsService().observer],
             builder: (context, child) {
               return Scaffold(
                 backgroundColor: Colors.transparent,
