@@ -253,8 +253,8 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           _isLoading = false;
         });
 
-        final user = context.read<AuthProvider>().hushUser;
-        if (user != null && !user.hasSeenFeedTutorialV1) {
+        // The bubble tutorial is now handled in FeedTutorialScreen.
+        if (false) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (mounted) _showTutorial();
           });

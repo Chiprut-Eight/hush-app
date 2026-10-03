@@ -1770,6 +1770,15 @@ class _StatisticsViewState extends State<_StatisticsView> {
   
   int _totalReports = 0;
   
+  double _avgSecretLifetime = 2.4; // Mock calculation fallback
+  String _savedPercentage = '0%';
+  String _topCreators = 'None';
+  String _contentTypeDistribution = 'Text: 0%, Voice: 0%';
+  String _reportRate = '0%';
+  String _dauWau = 'DAU: 0, WAU: 0';
+  String _avgLikesDislikes = 'Likes: 0, Dislikes: 0';
+  
+  
   final double _avgSecretLifetime = 2.4; // Mock calculation fallback
   String _savedPercentage = '0%';
   String _topCreators = 'None';

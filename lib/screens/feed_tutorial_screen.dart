@@ -75,7 +75,7 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
       ),
     ];
 
-    Future.delayed(const Duration(milliseconds: 500), _showTutorial);
+    Future.delayed(const Duration(milliseconds: 800), _showTutorial);
   }
 
   void _showTutorial() {
@@ -166,7 +166,7 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
       ),
-      body: IgnorePointer( // Prevent actual clicks during tutorial
+      body: AbsorbPointer( // Prevent actual clicks during tutorial, but allow hit testing
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
