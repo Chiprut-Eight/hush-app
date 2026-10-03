@@ -2021,6 +2021,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
           ),
         ],
       ),
+      ),
     );
   }
 }
