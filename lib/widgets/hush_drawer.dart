@@ -86,6 +86,7 @@ class HushDrawer extends StatelessWidget {
                       localeProvider.toggleLocale();
                       AnalyticsService().logLanguageChanged(localeProvider.isHebrew ? 'he' : 'en');
                       AnalyticsService().logDrawerAction('language');
+                      Scaffold.of(context).closeDrawer();
                     },
                   ),
 

@@ -1779,7 +1779,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
   
   final double _avgSecretLifetime = 2.4; // Mock calculation fallback
   String _savedPercentage = '0%';
-  String _topCreators = 'None';
+  List<String> _topCreatorsList = [];
   String _contentTypeDistribution = 'Text: 0%, Voice: 0%';
   String _reportRate = '0%';
   String _dauWau = 'DAU: 0, WAU: 0';
@@ -1848,10 +1848,10 @@ class _StatisticsViewState extends State<_StatisticsView> {
           creatorCounts[creator] = (creatorCounts[creator] ?? 0) + 1;
       }
       
-      String topCreatorsStr = 'None';
+      List<String> topCreatorsTemp = [];
       if (creatorCounts.isNotEmpty) {
           final sorted = creatorCounts.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
-          topCreatorsStr = sorted.take(3).map((e) => '${e.key} (${e.value})').join(', ');
+          topCreatorsTemp = sorted.take(10).map((e) => '${e.key} (${e.value})').toList();
       }
       
       int totalDocs = secretsQuery.docs.length;
@@ -1894,7 +1894,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
           _totalReports = reportsCount;
           _onlineUsers = onlineUsersCount;
           _savedPercentage = savedPct;
-          _topCreators = topCreatorsStr;
+          _topCreatorsList = topCreatorsTemp;
           _contentTypeDistribution = typeDist;
           _avgLikesDislikes = likesDist;
           _dauWau = 'DAU: ${dauSnap.count ?? 0}, WAU: ${wauSnap.count ?? 0}';
@@ -1935,6 +1935,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'הצטרפו בשבוע האחרון' : 'Joined in the last week',
             value: _newUsers7Days.toString(),
             icon: Icons.person_add,
+            infoText: isHe ? 'משתמשים חדשים שנוצרו ב-7 הימים האחרונים. מדד לבחינת צמיחת האפליקציה.' : 'Users registered in the last 7 days. Measures app growth.',
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -1949,6 +1950,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'מכל הזמנים (כולל מחוקים)' : 'All time (including deleted)',
             value: _totalSecretsCreated.toString(),
             icon: Icons.speaker_notes,
+            infoText: isHe ? 'הנפח הכולל של הפעילות באפליקציה.' : 'Total volume of activity on the app.',
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -1963,6 +1965,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'נמחקו אוטומטית עקב חוסר עניין' : 'Auto-deleted due to inactivity',
             value: _totalSecretsDecayed.toString(),
             icon: Icons.delete_sweep,
+            infoText: isHe ? 'מדד לאיכות התוכן. מספר ההאששים שנמחקו כי לא זכו למספיק אינטראקציה.' : 'Measures content quality. Secrets auto-deleted due to low engagement.',
           ),
           const SizedBox(height: 32),
           _StatCard(
@@ -1977,6 +1980,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'ממוצע' : 'Average',
             value: '${_avgSecretLifetime.toStringAsFixed(1)} h',
             icon: Icons.hourglass_bottom,
+            infoText: isHe ? 'הזמן הממוצע (בשעות) שהאשש נמצא באוויר לפני שהוא נמחק ידנית או אוטומטית.' : 'Average time (hours) a secret is live before deletion.',
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -1984,13 +1988,17 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'מתוך סך ההאששים' : 'Of all secrets',
             value: _savedPercentage,
             icon: Icons.bookmark_border,
+            infoText: isHe ? 'אחוז ההאששים שנשמרו על ידי משתמש לפחות פעם אחת מתוך סך ההאששים הקיימים.' : 'Percentage of active secrets that were saved at least once.',
           ),
           const SizedBox(height: 16),
           _StatCard(
-            title: isHe ? 'יוצרים מובילים' : 'Top Creators',
-            subtitle: isHe ? 'טופ 3' : 'Top 3',
-            value: _topCreators,
+            title: isHe ? 'יוצרים מובילים (Top 10)' : 'Top 10 Creators',
+            subtitle: isHe ? 'הקלק לצפייה ברשימה המלאה' : 'Tap to view full list',
+            value: isHe ? 'הצג רשימה' : 'View List',
             icon: Icons.star_border,
+            onTap: () {
+                Navigator.push(context, MaterialPageRoute(builder: (_) => TopCreatorsScreen(creators: _topCreatorsList, isHe: isHe)));
+            },
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -1998,6 +2006,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'יחס' : 'Ratio',
             value: _contentTypeDistribution,
             icon: Icons.pie_chart_outline,
+            infoText: isHe ? 'מראה אילו סוגי תוכן מועדפים על המשתמשים באפליקציה.' : 'Shows what content formats users prefer.',
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -2005,13 +2014,15 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'אחוז האששים מדווחים' : '% of reported secrets',
             value: _reportRate,
             icon: Icons.report_problem_outlined,
+            infoText: isHe ? 'כמה אחוז מכלל ההאששים הם האששים שדווחו. עוזר להבין את רמת הבעייתיות של התוכן.' : 'Percentage of active secrets that were reported.',
           ),
           const SizedBox(height: 16),
           _StatCard(
-            title: isHe ? 'DAU / WAU' : 'DAU / WAU',
+            title: isHe ? 'משתמשים פעילים (DAU/WAU)' : 'Active Users (DAU/WAU)',
             subtitle: isHe ? 'יומי / שבועי' : 'Daily / Weekly',
             value: _dauWau,
             icon: Icons.trending_up,
+            infoText: isHe ? 'מדד השימור של האפליקציה (Retention).\nDAU - כמה משתמשים היו פעילים ביממה האחרונה.\nWAU - כמה משתמשים היו פעילים בשבוע האחרון.' : 'User retention metric.\nDAU = Active in last 24h.\nWAU = Active in last 7 days.',
           ),
           const SizedBox(height: 16),
           _StatCard(
@@ -2019,6 +2030,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
             subtitle: isHe ? 'להאשש' : 'Per secret',
             value: _avgLikesDislikes,
             icon: Icons.thumbs_up_down,
+            infoText: isHe ? 'סנטימנט האפליקציה: האם המשתמשים נוטים יותר לפרגן או להביע חוסר הסכמה.' : 'App sentiment: Do users tend to like or dislike content more?',
           ),
         ],
       ),
@@ -2032,17 +2044,21 @@ class _StatCard extends StatelessWidget {
   final String subtitle;
   final String value;
   final IconData icon;
+  final String? infoText;
+  final VoidCallback? onTap;
 
   const _StatCard({
     required this.title,
     required this.subtitle,
     required this.value,
     required this.icon,
+    this.infoText,
+    this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    Widget cardContent = Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: HushColors.bgCard,
@@ -2065,9 +2081,38 @@ class _StatCard extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        title,
+                        style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                    if (infoText != null)
+                      GestureDetector(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (_) => AlertDialog(
+                              backgroundColor: HushColors.bgCard,
+                              title: Text(title, style: const TextStyle(color: Colors.white)),
+                              content: Text(infoText!, style: const TextStyle(color: Colors.white70)),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: const Text('OK', style: TextStyle(color: HushColors.textAccent)),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 8.0),
+                          child: Icon(Icons.info_outline, color: HushColors.textMuted, size: 20),
+                        ),
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 4),
                 Text(
@@ -2077,6 +2122,7 @@ class _StatCard extends StatelessWidget {
               ],
             ),
           ),
+          const SizedBox(width: 16),
           Flexible(
             child: FittedBox(
               fit: BoxFit.scaleDown,
@@ -2085,14 +2131,65 @@ class _StatCard extends StatelessWidget {
                 value,
                 style: const TextStyle(
                   color: HushColors.textAccent,
-                  fontSize: 28,
+                  fontSize: 22,
                   fontWeight: FontWeight.w900,
                 ),
               ),
             ),
           ),
+          if (onTap != null)
+            const Padding(
+              padding: EdgeInsets.only(left: 8.0, right: 4.0),
+              child: Icon(Icons.arrow_forward_ios, color: HushColors.textAccent, size: 16),
+            ),
         ],
       ),
+    );
+
+    if (onTap != null) {
+      return GestureDetector(
+        onTap: onTap,
+        child: cardContent,
+      );
+    }
+    return cardContent;
+  }
+}
+
+class TopCreatorsScreen extends StatelessWidget {
+  final List<String> creators;
+  final bool isHe;
+
+  const TopCreatorsScreen({super.key, required this.creators, required this.isHe});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: HushColors.bgBase,
+      appBar: AppBar(
+        backgroundColor: HushColors.bgCard,
+        title: Text(isHe ? 'היוצרים המובילים (Top 10)' : 'Top 10 Creators', style: const TextStyle(color: Colors.white)),
+        iconTheme: const IconThemeData(color: Colors.white),
+      ),
+      body: creators.isEmpty
+          ? Center(child: Text(isHe ? 'אין נתונים' : 'No data', style: const TextStyle(color: Colors.white70)))
+          : ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: creators.length,
+              itemBuilder: (context, index) {
+                return Card(
+                  color: HushColors.bgCard,
+                  margin: const EdgeInsets.only(bottom: 8),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundColor: HushColors.textAccent,
+                      child: Text('${index + 1}', style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                    ),
+                    title: Text(creators[index], style: const TextStyle(color: Colors.white, fontSize: 16)),
+                  ),
+                );
+              },
+            ),
     );
   }
 }

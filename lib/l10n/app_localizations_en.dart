@@ -534,7 +534,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get tutorial_p2_content =>
-      'Hushhh in the feed appear in a \'blurred\' state as long as you are far away.\n• Hushhh becomes available for opening only when you are physically within 15 meters.\n• Once you reach the range, the blur will disappear and you can read the text or press Play and listen.\n• On the map, you can look for a pulsating frequency to see interesting activity within a 200m radius.';
+      'Hushhh in the feed appear in a \'blurred\' state as long as you are far away.\n• Hushhh becomes available for opening only when you are physically within 15 meters.\n• Once you reach the range, the blur will disappear and you can read the text or press Play and listen.\n• On the map, you can look for a pulsating frequency to see interesting activity within a 1000m radius.';
 
   @override
   String get tutorial_p3_title => 'Regular or Group Hushhh?';
