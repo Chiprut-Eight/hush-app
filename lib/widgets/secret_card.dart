@@ -1166,6 +1166,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                   });
                                 } : () {},
                               ),
+                              ),
                               const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.thumbsDown,
