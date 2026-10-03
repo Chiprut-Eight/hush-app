@@ -342,11 +342,12 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     final isSelected = _selectedTab == tab;
     return GestureDetector(
       onTap: () {
+        if (_selectedTab == tab) return;
         setState(() {
           _selectedTab = tab;
           _isLoading = true;
-          _fetchSecrets();
         });
+        _fetchSecrets();
       },
       child: Column(
         children: [

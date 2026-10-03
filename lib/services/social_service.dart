@@ -84,7 +84,7 @@ class SocialService {
       
       final usersSnap = await _firestore.collection('users').where(FieldPath.documentId, whereIn: chunk).get();
       
-      for (var userDoc in usersSnap.docs) {
+      final futures = usersSnap.docs.map((userDoc) async {
         final user = HushUser.fromFirestore(userDoc);
         
         // Fetch latest secret for this specific user
@@ -100,8 +100,10 @@ class SocialService {
           latest = Secret.fromFirestore(secretSnap.docs.first);
         }
         
-        feedItems.add(FollowedUserFeedItem(user: user, latestSecret: latest));
-      }
+        return FollowedUserFeedItem(user: user, latestSecret: latest);
+      });
+      
+      feedItems.addAll(await Future.wait(futures));
     }
 
     // Sort by whoever mapped latest secret (if they have none, push to bottom)

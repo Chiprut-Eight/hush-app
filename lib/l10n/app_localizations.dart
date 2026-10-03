@@ -1067,7 +1067,7 @@ abstract class AppLocalizations {
   /// No description provided for @tutorial_p2_content.
   ///
   /// In en, this message translates to:
-  /// **'Hushhh in the feed appear in a \'blurred\' state as long as you are far away.\n• Hushhh becomes available for opening only when you are physically within 15 meters.\n• Once you reach the range, the blur will disappear and you can read the text or press Play and listen.\n• On the map, you can look for a pulsating frequency to see interesting activity within a 1000m radius.'**
+  /// **'Hushhh in the feed appear in a \'blurred\' state as long as you are far away.\n• Hushhh becomes available for opening only when you are physically within 15 meters.\n• Once you reach the range, the blur will disappear and you can read the text or press Play and listen.\n• On the map, you can look for a pulsating frequency to see interesting activity within a 200m radius.'**
   String get tutorial_p2_content;
 
   /// No description provided for @tutorial_p3_title.
