@@ -100,82 +100,74 @@ class _AppShellState extends State<AppShell> {
   void _showInvitePopup() {
     final l10n = AppLocalizations.of(context)!;
     
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      isScrollControlled: true,
-      backgroundColor: Colors.transparent,
-      builder: (ctx) => Container(
-        padding: const EdgeInsets.fromLTRB(24, 12, 24, 32),
-        decoration: const BoxDecoration(
-          color: HushColors.bgCard,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: HushColors.borderSubtle,
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-            Row(
-              children: [
-                const Icon(Icons.favorite, color: HushColors.tierRed, size: 28),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
-                ),
-                IconButton(
-                  icon: const Icon(Icons.close, color: HushColors.textMuted),
-                  onPressed: () {
-                    if (ctx.mounted) Navigator.pop(ctx);
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            Text(
-              l10n.inviteMessage,
-              style: const TextStyle(color: HushColors.textSecondary, fontSize: 16),
-            ),
-            const SizedBox(height: 32),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                TextButton(
-                  onPressed: () async {
-                    final prefs = await SharedPreferences.getInstance();
-                    await prefs.setBool('hasSeenInvitePopup', true);
-                    AnalyticsService().logInvitePopupDismissed();
-                    if (ctx.mounted) Navigator.pop(ctx);
-                  },
-                  child: Text(l10n.dontShowAgain, style: const TextStyle(color: HushColors.textMuted)),
-                ),
-                ElevatedButton(
-                  onPressed: () async {
-                    final box = ctx.findRenderObject() as RenderBox?;
-                    final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
-                    if (ctx.mounted) Navigator.pop(ctx);
-                    AnalyticsService().logInvitePopupAccepted();
-                    AnalyticsService().logShareApp('invite_popup');
-                    Future.delayed(const Duration(milliseconds: 300), () {
-                      Share.share(l10n.shareAppText, sharePositionOrigin: shareOrigin);
-                    });
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: HushColors.textAccent,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      builder: (ctx) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.fromLTRB(24, 24, 24, 24),
+          decoration: BoxDecoration(
+            color: HushColors.bgCard,
+            borderRadius: BorderRadius.circular(24),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.favorite, color: HushColors.tierRed, size: 28),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)),
                   ),
-                  child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
-                ),
-              ],
-            ),
-          ],
+                  IconButton(
+                    icon: const Icon(Icons.close, color: HushColors.textMuted),
+                    onPressed: () {
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Text(
+                l10n.inviteMessage,
+                style: const TextStyle(color: HushColors.textSecondary, fontSize: 16),
+              ),
+              const SizedBox(height: 32),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  TextButton(
+                    onPressed: () async {
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.setBool('hasSeenInvitePopup', true);
+                      AnalyticsService().logInvitePopupDismissed();
+                      if (ctx.mounted) Navigator.pop(ctx);
+                    },
+                    child: Text(l10n.dontShowAgain, style: const TextStyle(color: HushColors.textMuted)),
+                  ),
+                  ElevatedButton(
+                    onPressed: () async {
+                      final box = ctx.findRenderObject() as RenderBox?;
+                      final shareOrigin = box != null ? box.localToGlobal(Offset.zero) & box.size : null;
+                      if (ctx.mounted) Navigator.pop(ctx);
+                      AnalyticsService().logInvitePopupAccepted();
+                      AnalyticsService().logShareApp('invite_popup');
+                      Future.delayed(const Duration(milliseconds: 300), () {
+                        Share.share(l10n.shareAppText, sharePositionOrigin: shareOrigin);
+                      });
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: HushColors.textAccent,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                    ),
+                    child: Text(l10n.inviteFriends, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );
