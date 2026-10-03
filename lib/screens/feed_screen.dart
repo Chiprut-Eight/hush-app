@@ -15,8 +15,6 @@ import '../widgets/hush_icon_widget.dart';
 import '../services/analytics_service.dart';
 import '../services/notification_service.dart';
 import '../services/social_service.dart';
-import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// Feed screen — displays nearby secrets with auto-refresh
 class FeedScreen extends StatefulWidget {
