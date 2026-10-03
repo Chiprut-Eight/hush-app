@@ -7,6 +7,7 @@ import '../models/secret.dart';
 import '../services/secret_service.dart';
 import '../services/geo_service.dart';
 import '../providers/auth_provider.dart';
+import '../providers/ui_provider.dart';
 import '../widgets/secret_card.dart';
 import '../widgets/skeleton_card.dart';
 import '../config/theme.dart';
