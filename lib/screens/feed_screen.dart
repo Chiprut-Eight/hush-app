@@ -324,14 +324,14 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   Widget _buildTabs(AppLocalizations l10n) {
     return Container(
       key: _tabsRowKey,
-      padding: const EdgeInsets.symmetric(vertical: 12),
+      padding: const EdgeInsets.symmetric(vertical: 6),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           _buildTabItem(Localizations.localeOf(context).languageCode == 'he' ? 'בקרבתך' : 'Nearby', FeedTab.nearby),
-          const SizedBox(width: 24),
+          const SizedBox(width: 12),
           _buildTabItem(l10n.followingTabTitle, FeedTab.following),
-          const SizedBox(width: 24),
+          const SizedBox(width: 12),
           _buildTabItem(Localizations.localeOf(context).languageCode == 'he' ? 'שמורים' : 'Saved', FeedTab.saved),
         ],
       ),
@@ -356,12 +356,12 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
             style: TextStyle(
               color: isSelected ? Colors.white : Colors.white38,
               fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              fontSize: 16,
+              fontSize: 14,
             ),
           ),
           if (isSelected)
             Container(
-              margin: const EdgeInsets.only(top: 4),
+              margin: const EdgeInsets.only(top: 2),
               height: 2,
               width: 30,
               color: Colors.white,

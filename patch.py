@@ -1,27 +1,19 @@
 ﻿import re
 
-with open('lib/services/presence_service.dart', 'r', encoding='utf-8') as f:
+with open('lib/screens/feed_screen.dart', 'r', encoding='utf-8') as f:
     content = f.read()
 
-resumed_old = '''    if (state == AppLifecycleState.resumed) {
-      _db.ref('status/').set({
-        'state': 'online',
-        'lastChanged': ServerValue.timestamp,
-      });
-    }'''
+# Replace padding: const EdgeInsets.symmetric(vertical: 12)
+content = re.sub(r'padding: const EdgeInsets\.symmetric\(vertical: 12\),', 'padding: const EdgeInsets.symmetric(vertical: 6),', content)
 
-resumed_new = '''    if (state == AppLifecycleState.resumed) {
-      _db.ref('status/').set({
-        'state': 'online',
-        'lastChanged': ServerValue.timestamp,
-      });
-      // Update lastActive when app is resumed
-      FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'lastActive': FieldValue.serverTimestamp(),
-      }, SetOptions(merge: true)).catchError((_) {});
-    }'''
+# Replace SizedBox(width: 24)
+content = re.sub(r'const SizedBox\(width: 24\),', 'const SizedBox(width: 12),', content)
 
-content = content.replace(resumed_old, resumed_new)
+# Replace fontSize: 16
+content = re.sub(r'fontSize: 16,', 'fontSize: 14,', content)
 
-with open('lib/services/presence_service.dart', 'w', encoding='utf-8') as f:
+# Replace margin: const EdgeInsets.only(top: 4)
+content = re.sub(r'margin: const EdgeInsets\.only\(top: 4\),', 'margin: const EdgeInsets.only(top: 2),', content)
+
+with open('lib/screens/feed_screen.dart', 'w', encoding='utf-8') as f:
     f.write(content)
