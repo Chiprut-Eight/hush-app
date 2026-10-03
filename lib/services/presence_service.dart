@@ -41,11 +41,14 @@ class PresenceService with WidgetsBindingObserver {
           'state': 'offline',
           'lastChanged': ServerValue.timestamp,
         }).then((_) {
-          // Once the onDisconnect is queued up, set the status to online
           userStatusRef.set({
             'state': 'online',
             'lastChanged': ServerValue.timestamp,
           });
+          
+          FirebaseFirestore.instance.collection('users').doc(uid).set({
+            'lastActive': FieldValue.serverTimestamp(),
+          }, SetOptions(merge: true)).catchError((_) {});
         });
       }
     });
@@ -71,6 +74,9 @@ class PresenceService with WidgetsBindingObserver {
         'state': 'online',
         'lastChanged': ServerValue.timestamp,
       });
+      FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'lastActive': FieldValue.serverTimestamp(),
+      }, SetOptions(merge: true)).catchError((_) {});
     } else if (state == AppLifecycleState.paused || state == AppLifecycleState.detached) {
       _setUserOffline();
     }
