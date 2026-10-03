@@ -184,10 +184,11 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     }
 
     try {
-      Position? position = _userPosition;
-      if (_selectedTab == FeedTab.nearby || position == null) {
-        position = await GeoService.getCurrentPositionSafe();
+      Position? tempPosition = _userPosition;
+      if (_selectedTab == FeedTab.nearby || tempPosition == null) {
+        tempPosition = await GeoService.getCurrentPositionSafe();
       }
+      final Position position = tempPosition; // Dart promotes tempPosition to Position here, but if we have issues, we just use a final non-nullable variable
 
       // Only initialize notifications AFTER location permission is resolved
       // to avoid iOS permission prompt collisions (which caused the app to hang on loading)
@@ -213,15 +214,15 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           }
           // Sort by distance
           secrets.sort((a, b) {
-            final distA = GeoService.distanceInMeters(position!.latitude, position!.longitude, a.lat, a.lng);
-            final distB = GeoService.distanceInMeters(position!.latitude, position!.longitude, b.lat, b.lng);
+            final distA = GeoService.distanceInMeters(position.latitude, position.longitude, a.lat, a.lng);
+            final distB = GeoService.distanceInMeters(position.latitude, position.longitude, b.lat, b.lng);
             return distA.compareTo(distB);
           });
         }
       } else {
         secrets = await _secretService.getNearbySecrets(
-          position!.latitude,
-          position!.longitude,
+          position.latitude,
+          position.longitude,
           userId: uid,
           savedSecretIds: savedIds,
         );
