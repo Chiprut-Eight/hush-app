@@ -312,22 +312,29 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       }
     }
 
-    // FIRE AND FORGET - Don't await so the UI navigates immediately
-    _publishInBackground(
-      contentType: contentType,
-      secretType: secretType,
-      textContent: textContent,
-      recordedPath: recordedPath,
-      audioDuration: audioDuration,
-      amplitudes: _audioService.recordedAmplitudes,
-      lat: position.latitude,
-      lng: position.longitude,
-      isGroup: isGroup,
-      requiredUsers: requiredU,
-      timeWindowMinutes: timeWindow,
-    ).catchError((e) {
-      debugPrint("Background publish error: $e");
-    });
+    // Await the publish so it's in the database before we navigate back to feed
+    try {
+      await _publishInBackground(
+        contentType: contentType,
+        secretType: secretType,
+        textContent: textContent,
+        recordedPath: recordedPath,
+        audioDuration: audioDuration,
+        amplitudes: _audioService.recordedAmplitudes,
+        lat: position.latitude,
+        lng: position.longitude,
+        isGroup: isGroup,
+        requiredUsers: requiredU,
+        timeWindowMinutes: timeWindow,
+      );
+    } catch (e) {
+      debugPrint("Publish error: $e");
+      if (mounted) {
+        setState(() => _isPublishing = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+      }
+      return;
+    }
 
     if (!mounted) return;
 
