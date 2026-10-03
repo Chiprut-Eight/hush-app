@@ -34,6 +34,29 @@ class AppShell extends StatefulWidget {
 }
 
 class _AppShellState extends State<AppShell> {
+  void _switchTab(int index) {
+    if (_currentIndex != index) {
+      HapticFeedback.lightImpact();
+    }
+    setState(() => _currentIndex = index);
+    
+    final localL10n = AppLocalizations.of(context)!;
+    String newTitle = '';
+    switch (index) {
+      case 0:
+        newTitle = _feedScreenKey.currentState?.getCurrentTitle(context) ?? localL10n.feedTitle;
+        break;
+      case 1: newTitle = localL10n.mapTitle; break;
+      case 2: newTitle = localL10n.createTitle; break;
+      case 3: newTitle = localL10n.followingTabTitle; break;
+      case 4: newTitle = localL10n.profileTitle; break;
+    }
+    context.read<UIProvider>().setCurrentTitle(newTitle);
+    
+    const tabNames = ['feed', 'map', 'create', 'following', 'profile'];
+    AnalyticsService().logTabChanged(tabNames[index]);
+  }
+
   late int _currentIndex;
   int? _lastTier; // Tracks the user's tier to detect level-up events
   bool _tutorialShownThisSession = false; // Prevents tutorial from popping up repeatedly
@@ -184,19 +207,7 @@ class _AppShellState extends State<AppShell> {
       builder: (context, auth, _) {
         final hushUser = auth.hushUser;
         
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          String title = '';
-          switch (_currentIndex) {
-            case 0:
-              title = _feedScreenKey.currentState?.getCurrentTitle(context) ?? l10n.feedTitle;
-              break;
-            case 1: title = l10n.mapTitle; break;
-            case 2: title = l10n.createTitle; break;
-            case 3: title = l10n.followingTabTitle; break;
-            case 4: title = l10n.profileTitle; break;
-          }
-          context.read<UIProvider>().setCurrentTitle(title);
-        });
+
 
         // --- TIER-UP CELEBRATION LOGIC ---
         if (hushUser != null) {
@@ -252,7 +263,7 @@ class _AppShellState extends State<AppShell> {
             }
             // 2. If not on the first tab, go back to it
             if (_currentIndex != 0) {
-              setState(() => _currentIndex = 0);
+              _switchTab(0);
               return;
             }
             // 3. On tab 0, drawer closed — exit the app
@@ -265,7 +276,7 @@ class _AppShellState extends State<AppShell> {
                 FeedScreen(key: _feedScreenKey, scaffoldKey: _feedScaffoldKey),
                 MapScreen(scaffoldKey: _mapScaffoldKey),
                 CreateScreen(onPublished: () {
-                  setState(() => _currentIndex = 0);
+                  _switchTab(0);
                   _feedScreenKey.currentState?.refreshFeed();
                 }),
                 FollowingScreen(isActive: _currentIndex == 3),
@@ -280,14 +291,7 @@ class _AppShellState extends State<AppShell> {
               ),
               child: BottomNavigationBar(
                 currentIndex: _currentIndex,
-                onTap: (index) {
-                  if (_currentIndex != index) {
-                    HapticFeedback.lightImpact();
-                  }
-                  setState(() => _currentIndex = index);
-                  const tabNames = ['feed', 'map', 'create', 'following', 'profile'];
-                  AnalyticsService().logTabChanged(tabNames[index]);
-                },
+                onTap: _switchTab,
                 backgroundColor: HushColors.bgPrimary,
                 selectedItemColor: HushColors.textAccent,
                 unselectedItemColor: HushColors.textSecondary,
