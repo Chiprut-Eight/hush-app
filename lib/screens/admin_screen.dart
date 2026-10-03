@@ -64,6 +64,7 @@ class _AdminScreenState extends State<AdminScreen> {
         appBar: AppBar(
           title: Text(l10n.adminTitle),
           centerTitle: true,
+          automaticallyImplyLeading: false,
           backgroundColor: Colors.transparent,
           elevation: 0,
         ),
@@ -187,7 +188,12 @@ class _StatisticsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final isHe = Localizations.localeOf(context).languageCode == 'he';
     return Scaffold(
-      appBar: AppBar(title: Text(isHe ? 'סטטיסטיקות מנהל' : 'Admin Statistics')),
+      backgroundColor: HushColors.bgPrimary,
+      appBar: AppBar(
+        title: Text(isHe ? 'סטטיסטיקות מנהל' : 'Admin Statistics'),
+        automaticallyImplyLeading: false,
+        backgroundColor: Colors.transparent,
+      ),
       body: const _StatisticsView(),
     );
   }

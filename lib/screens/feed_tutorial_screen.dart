@@ -165,17 +165,25 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         title: Text(isHe ? 'הדרכה' : 'Tutorial'),
         automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
+        actions: [
+          TextButton(
+            onPressed: _finishTutorial,
+            child: Text(isHe ? 'דלג' : 'Skip', style: const TextStyle(color: HushColors.textAccent)),
+          ),
+        ],
       ),
       body: AbsorbPointer( // Prevent actual clicks during tutorial, but allow hit testing
-        child: ListView(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(16),
-          children: [
-            Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], )),
-            const SizedBox(height: 16),
-            Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], )),
-            const SizedBox(height: 16),
-            Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], )),
-          ],
+          child: Column(
+            children: [
+              Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], )),
+              const SizedBox(height: 16),
+              Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], )),
+              const SizedBox(height: 16),
+              Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], )),
+            ],
+          ),
         ),
       ),
     );
