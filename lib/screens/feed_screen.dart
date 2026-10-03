@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:hush_app/mocks/geolocator_mock.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../models/secret.dart';
@@ -184,7 +184,10 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     }
 
     try {
-      Position position = await GeoService.getCurrentPositionSafe();
+      Position? position = _userPosition;
+      if (_selectedTab == FeedTab.nearby || position == null) {
+        position = await GeoService.getCurrentPositionSafe();
+      }
 
       // Only initialize notifications AFTER location permission is resolved
       // to avoid iOS permission prompt collisions (which caused the app to hang on loading)
@@ -210,15 +213,15 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           }
           // Sort by distance
           secrets.sort((a, b) {
-            final distA = GeoService.distanceInMeters(position.latitude, position.longitude, a.lat, a.lng);
-            final distB = GeoService.distanceInMeters(position.latitude, position.longitude, b.lat, b.lng);
+            final distA = GeoService.distanceInMeters(position!.latitude, position!.longitude, a.lat, a.lng);
+            final distB = GeoService.distanceInMeters(position!.latitude, position!.longitude, b.lat, b.lng);
             return distA.compareTo(distB);
           });
         }
       } else {
         secrets = await _secretService.getNearbySecrets(
-          position.latitude,
-          position.longitude,
+          position!.latitude,
+          position!.longitude,
           userId: uid,
           savedSecretIds: savedIds,
         );
@@ -324,11 +327,11 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _buildTabItem('Nearby Hushhh', FeedTab.nearby),
+          _buildTabItem(Localizations.localeOf(context).languageCode == 'he' ? 'בקרבתך' : 'Nearby', FeedTab.nearby),
           const SizedBox(width: 24),
           _buildTabItem(l10n.followingTabTitle, FeedTab.following),
           const SizedBox(width: 24),
-          _buildTabItem('Saved', FeedTab.saved),
+          _buildTabItem(Localizations.localeOf(context).languageCode == 'he' ? 'שמורים' : 'Saved', FeedTab.saved),
         ],
       ),
     );
@@ -340,10 +343,8 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
       onTap: () {
         setState(() {
           _selectedTab = tab;
-          if (tab != FeedTab.following) {
-             _isLoading = true;
-             _fetchSecrets();
-          }
+          _isLoading = true;
+          _fetchSecrets();
         });
       },
       child: Column(
@@ -409,6 +410,17 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     }
 
     if (_secrets.isEmpty) {
+      String emptyText = l10n.feedEmpty;
+      if (_selectedTab == FeedTab.following) {
+        emptyText = Localizations.localeOf(context).languageCode == 'he'
+            ? 'עקוב אחרי משתמשים בקרבתך כדי לראות את ה-Hushhh שלהם כאן.'
+            : 'Follow users nearby to see their Hushhh here.';
+      } else if (_selectedTab == FeedTab.saved) {
+        emptyText = Localizations.localeOf(context).languageCode == 'he'
+            ? 'אין לך עדיין Hushhh שמורים.'
+            : 'You have no saved Hushhhs yet.';
+      }
+
       return ListView(
         children: [
           SizedBox(
@@ -420,7 +432,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
                   HushIcon(HushIcons.hearingOff, size: 64, color: HushColors.textSecondary.withValues(alpha: 0.5)),
                   const SizedBox(height: 16),
                   Text(
-                    l10n.feedEmpty,
+                    emptyText,
                     style: const TextStyle(color: HushColors.textSecondary, fontSize: 18),
                     textAlign: TextAlign.center,
                   ),

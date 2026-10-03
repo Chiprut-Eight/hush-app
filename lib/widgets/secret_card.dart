@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:hush_app/mocks/geolocator_mock.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:flutter_compass/flutter_compass.dart';
 import 'dart:async';
 import '../models/secret.dart';
@@ -1140,9 +1140,12 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Row(
-                            children: [
-                              Container(
+                          Expanded(
+                            child: SingleChildScrollView(
+                              scrollDirection: Axis.horizontal,
+                              child: Row(
+                                children: [
+                                  Container(
                                 key: widget.likeButtonKey,
                                 child: _InteractionButton(
                                   icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
@@ -1212,6 +1215,8 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                 ],
                               ),
                             ],
+                          ),
+                          ),
                           ),
                           Row(
                             children: [

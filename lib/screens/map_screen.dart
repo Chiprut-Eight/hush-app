@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:hush_app/mocks/geolocator_mock.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:provider/provider.dart';
 import '../models/secret.dart';
@@ -219,7 +219,7 @@ class _MapScreenState extends State<MapScreen> {
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _fetchMapData,
-                child: const Text('Retry'),
+                child: Text(Localizations.localeOf(context).languageCode == 'he' ? 'נסה שוב' : 'Retry'),
               )
             ],
           ),

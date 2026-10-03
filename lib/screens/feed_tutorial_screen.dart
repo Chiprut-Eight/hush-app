@@ -19,7 +19,6 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
   TutorialCoachMark? tutorialCoachMark;
   
   final GlobalKey card1Key = GlobalKey();
-  final GlobalKey likeButtonKey = GlobalKey();
   final GlobalKey saveButtonKey = GlobalKey();
 
   late List<Secret> mockSecrets;
@@ -36,7 +35,7 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         creatorTierLevel: 1,
         creatorTierColor: "#4ADE80",
         type: "text",
-        textContent: "Welcome to Hushhh! 🎉 Tap me to read the full secret.",
+        textContent: "Closed secret.",
         likes: 42,
         commentCount: 5,
         lat: 0,
@@ -49,8 +48,8 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         creatorName: "Hushhh Team",
         creatorTierLevel: 3,
         creatorTierColor: "#FBBF24",
-        type: "voice",
-        audioDuration: 15,
+        type: "text",
+        textContent: "Welcome to Hushhh! 🎉",
         likes: 128,
         commentCount: 12,
         lat: 0,
@@ -90,42 +89,48 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
           contents: [
             TargetContent(
               align: ContentAlign.bottom,
-              builder: (context, controller) => Text(
-                isHe ? 'לחץ על הכרטיסייה כדי לפתוח האשש' : 'Tap on a card to reveal the secret',
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              builder: (context, controller) => Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const SizedBox(height: 70), // Push text much further down from the target
+                  Text(
+                    isHe ? 'כאשר אתה קרוב מספיק, הקש על ה-Hushhh כדי לחשוף את התוכן.' : 'When you are close enough, tap the Hushhh to reveal the content.',
+                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                ],
               ),
             ),
           ],
         ),
         TargetFocus(
           identify: "Target 2",
-          keyTarget: likeButtonKey,
-          contents: [
-            TargetContent(
-              align: ContentAlign.top,
-              builder: (context, controller) => Text(
-                isHe ? '👍 לייק = שווה ללכת | 👎 דיסלייק = אפשר לדלג.\nזה עוזר לאחרים לדעת אם שווה להגיע.' : '👍 Like = Worth it | 👎 Dislike = Skip it.',
-                style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ],
-        ),
-        TargetFocus(
-          identify: "Target 3",
           keyTarget: saveButtonKey,
           contents: [
             TargetContent(
               align: ContentAlign.top,
-              builder: (context, controller) => Text(
-                isHe ? 'שמור Hushhh שאהבת - אפשר לראות אותם מהפרופיל.' : 'Save secrets you love to view them later.',
-                style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+              builder: (context, controller) => Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    isHe ? 'שמרו Hushhh שאהבתם או שתרצו לחזור אליהם בעתיד, תוכלו לגשת אליהם מהפרופיל האישי וממסך בקרבתך.' : 'Save Hushhhes you love or want to revisit later. You can access them from your profile and the nearby screen.',
+                    style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: () => tutorialCoachMark?.skip(),
+                    style: ElevatedButton.styleFrom(backgroundColor: HushColors.gradientBlue, foregroundColor: Colors.white),
+                    child: Text(isHe ? 'הבנתי' : 'Got it'),
+                  ),
+                ],
               ),
             ),
           ],
         ),
       ],
       colorShadow: HushColors.bgPrimary,
-      textSkip: isHe ? "דלג" : "SKIP",
+      hideSkip: true,
       paddingFocus: 10,
       opacityShadow: 0.8,
       onFinish: _finishTutorial,
@@ -155,7 +160,8 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
     // Provide translated mock content
     final translatedMocks = List<Secret>.from(mockSecrets);
     if (isHe) {
-      translatedMocks[0] = Secret(id: translatedMocks[0].id, creatorId: translatedMocks[0].creatorId, creatorName: translatedMocks[0].creatorName, creatorTierLevel: translatedMocks[0].creatorTierLevel, creatorTierColor: translatedMocks[0].creatorTierColor, type: translatedMocks[0].type, textContent: 'ברוכים הבאים ל-Hushhh! 🎉 לחץ כדי לקרוא.', likes: translatedMocks[0].likes, commentCount: translatedMocks[0].commentCount, lat: translatedMocks[0].lat, lng: translatedMocks[0].lng, createdAt: translatedMocks[0].createdAt);
+      translatedMocks[0] = Secret(id: translatedMocks[0].id, creatorId: translatedMocks[0].creatorId, creatorName: translatedMocks[0].creatorName, creatorTierLevel: translatedMocks[0].creatorTierLevel, creatorTierColor: translatedMocks[0].creatorTierColor, type: translatedMocks[0].type, textContent: 'סוד נעול לדוגמה.', likes: translatedMocks[0].likes, commentCount: translatedMocks[0].commentCount, lat: translatedMocks[0].lat, lng: translatedMocks[0].lng, createdAt: translatedMocks[0].createdAt);
+      translatedMocks[1] = Secret(id: translatedMocks[1].id, creatorId: translatedMocks[1].creatorId, creatorName: translatedMocks[1].creatorName, creatorTierLevel: translatedMocks[1].creatorTierLevel, creatorTierColor: translatedMocks[1].creatorTierColor, type: translatedMocks[1].type, textContent: 'ברוכים הבאים ל-Hushhh! 🎉', likes: translatedMocks[1].likes, commentCount: translatedMocks[1].commentCount, lat: translatedMocks[1].lat, lng: translatedMocks[1].lng, createdAt: translatedMocks[1].createdAt);
       translatedMocks[2] = Secret(id: translatedMocks[2].id, creatorId: translatedMocks[2].creatorId, creatorName: translatedMocks[2].creatorName, creatorTierLevel: translatedMocks[2].creatorTierLevel, creatorTierColor: translatedMocks[2].creatorTierColor, type: translatedMocks[2].type, isGroup: translatedMocks[2].isGroup, requiredUsers: translatedMocks[2].requiredUsers, textContent: 'סוד קבוצתי! דורש 3 אנשים סביבך.', likes: translatedMocks[2].likes, commentCount: translatedMocks[2].commentCount, lat: translatedMocks[2].lat, lng: translatedMocks[2].lng, createdAt: translatedMocks[2].createdAt);
     }
 
@@ -181,14 +187,17 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
                 key: card1Key, 
                 child: SecretCard(
                   secret: translatedMocks[0], 
-                  mockReveal: true, 
+                  mockReveal: false, 
                   bypassDistance: true,
-                  likeButtonKey: likeButtonKey,
-                  saveButtonKey: saveButtonKey,
                 )
               ),
               const SizedBox(height: 16),
-              SecretCard(secret: translatedMocks[1], mockReveal: false, bypassDistance: true),
+              SecretCard(
+                secret: translatedMocks[1], 
+                mockReveal: true, 
+                bypassDistance: true,
+                saveButtonKey: saveButtonKey,
+              ),
               const SizedBox(height: 16),
               SecretCard(secret: translatedMocks[2], mockReveal: true, bypassDistance: true),
             ],

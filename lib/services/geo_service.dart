@@ -1,6 +1,6 @@
 import 'dart:math';
 import 'package:flutter/foundation.dart';
-import 'package:hush_app/mocks/geolocator_mock.dart';
+import 'package:geolocator/geolocator.dart';
 
 /// Geographic utility functions — matches web geoService.ts
 class GeoService {
@@ -95,8 +95,10 @@ class GeoService {
         // Last resort: try getLastKnownPosition one more time (it may have updated)
         try {
           final lastResort = await Geolocator.getLastKnownPosition();
-          debugPrint('[GeoService] Using last-resort lastKnown position');
-          return lastResort;
+          if (lastResort != null) {
+            debugPrint('[GeoService] Using last-resort lastKnown position');
+            return lastResort;
+          }
         } catch (_) {}
         throw Exception('Location fetch timed out. Please ensure your GPS/Location services are enabled and try again.');
       }

@@ -42,11 +42,11 @@ class SecretService {
     final now = DateTime.now();
     final snapshot = await _secretsRef
         .where('isHidden', isEqualTo: false)
-        .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
         .get();
 
     final secrets = snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
+        .where((secret) => Secret.isSurvivor(secret, now))
         .where((secret) =>
             secret.creatorId == userId || 
             savedSecretIds.contains(secret.id) ||

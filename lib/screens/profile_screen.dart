@@ -10,7 +10,7 @@ import '../services/social_service.dart';
 import '../widgets/secret_card.dart';
 import '../config/tiers.dart';
 
-import 'package:hush_app/mocks/geolocator_mock.dart';
+import 'package:geolocator/geolocator.dart';
 import '../services/analytics_service.dart';
 import '../widgets/title_setter.dart';
 import 'followers_screen.dart';

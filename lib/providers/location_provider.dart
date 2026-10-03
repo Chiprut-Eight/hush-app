@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:hush_app/mocks/geolocator_mock.dart';
+import 'package:geolocator/geolocator.dart';
 import '../config/constants.dart';
 import '../services/geo_service.dart';
 

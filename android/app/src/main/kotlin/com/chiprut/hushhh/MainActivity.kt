@@ -34,7 +34,6 @@ class MainActivity : FlutterActivity() {
                 result.success(true)
             } else if (call.method == "disableScreenshotPrevention") {
                 window.clearFlags(WindowManager.LayoutParams.FLAG_SECURE)
-                android.widget.Toast.makeText(context, "Screenshot UNLOCKED for Admin", android.widget.Toast.LENGTH_SHORT).show()
                 result.success(true)
             } else {
                 result.notImplemented()
