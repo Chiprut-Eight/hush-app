@@ -32,8 +32,6 @@ enum FeedTab { nearby, following, saved }
 
 class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   final GlobalKey _tabsRowKey = GlobalKey();
-  bool _tutorialShown = false;
-  TutorialCoachMark? _tutorial;
   final SecretService _secretService = SecretService();
   List<Secret> _secrets = [];
   FeedTab _selectedTab = FeedTab.nearby;
@@ -254,11 +252,6 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         });
 
         // The bubble tutorial is now handled in FeedTutorialScreen.
-        if (false) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) _showTutorial();
-          });
-        }
       }
     } catch (e) {
       debugPrint('[FeedScreen] Error fetching secrets: $e');
@@ -304,75 +297,6 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
         ),
       ),
     );
-  }
-
-  void _showTutorial() {
-    if (_tutorialShown) return;
-    
-    Future.delayed(const Duration(milliseconds: 500), () {
-      if (!mounted) return;
-      
-      final targets = <TargetFocus>[];
-      
-      if (_tabsRowKey.currentContext != null) {
-        targets.add(
-          TargetFocus(
-            identify: "TabsTarget",
-            keyTarget: _tabsRowKey,
-            alignSkip: Alignment.topRight,
-            contents: [
-              TargetContent(
-                align: ContentAlign.bottom,
-                builder: (context, controller) {
-                  return Column(
-                    mainAxisSize: MainAxisSize.min,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'New Tabs! \nEasily switch between Nearby secrets, users you are Following, and your Saved secrets.',
-                        style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold)
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => _tutorial?.skip(),
-                        style: ElevatedButton.styleFrom(backgroundColor: HushColors.textAccent, foregroundColor: Colors.black),
-                        child: const Text('Got it!'),
-                      ),
-                    ],
-                  );
-                },
-              ),
-            ],
-          )
-        );
-      }
-      
-      if (targets.isEmpty) return;
-      _tutorialShown = true;
-
-      _tutorial = TutorialCoachMark(
-        targets: targets,
-        colorShadow: HushColors.bgPrimary,
-        hideSkip: true,
-        paddingFocus: 10,
-        opacityShadow: 0.8,
-        onFinish: () async {
-          _tutorial = null;
-          final auth = context.read<AuthProvider>();
-          if (auth.firebaseUser != null) {
-            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFeedTutorialV1': true});
-          }
-        },
-        onSkip: () {
-          _tutorial = null;
-          final auth = context.read<AuthProvider>();
-          if (auth.firebaseUser != null) {
-            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenFeedTutorialV1': true});
-          }
-          return true;
-        },
-      )..show(context: context);
-    });
   }
 
   Widget _buildBody(AppLocalizations l10n) {
