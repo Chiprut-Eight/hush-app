@@ -2165,7 +2165,7 @@ class TopCreatorsScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: HushColors.bgBase,
+      backgroundColor: HushColors.bgPrimary,
       appBar: AppBar(
         backgroundColor: HushColors.bgCard,
         title: Text(isHe ? 'היוצרים המובילים (Top 10)' : 'Top 10 Creators', style: const TextStyle(color: Colors.white)),
