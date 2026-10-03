@@ -277,6 +277,19 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   }
 
 
+
+  String getCurrentTitle(BuildContext context) {
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    if (_selectedTab == FeedTab.nearby) {
+      return isHe ? 'Hushhh בקרבתך' : 'Hushhh Nearby';
+    } else if (_selectedTab == FeedTab.following) {
+      return isHe ? 'Hushhh במעקב' : 'Hushhh Following';
+    } else if (_selectedTab == FeedTab.saved) {
+      return isHe ? 'Hushhh שמורים' : 'Hushhh Saved';
+    }
+    return '';
+  }
+
   void _updateAppBarTitle() {
     final isHe = Localizations.localeOf(context).languageCode == 'he';
     String title = '';

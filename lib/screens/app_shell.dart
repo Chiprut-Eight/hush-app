@@ -187,7 +187,9 @@ class _AppShellState extends State<AppShell> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           String title = '';
           switch (_currentIndex) {
-            case 0: /* handled by FeedScreen */ return;
+            case 0:
+              title = _feedScreenKey.currentState?.getCurrentTitle(context) ?? l10n.feedTitle;
+              break;
             case 1: title = l10n.mapTitle; break;
             case 2: title = l10n.createTitle; break;
             case 3: title = l10n.followingTabTitle; break;
