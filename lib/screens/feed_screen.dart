@@ -275,8 +275,28 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     }
   }
 
+
+  void _updateAppBarTitle() {
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    String title = '';
+    if (_selectedTab == FeedTab.nearby) {
+      title = isHe ? 'Hushhh בקרבתך' : 'Hushhh Nearby';
+    } else if (_selectedTab == FeedTab.following) {
+      title = isHe ? 'Hushhh במעקב' : 'Hushhh Following';
+    } else if (_selectedTab == FeedTab.saved) {
+      title = isHe ? 'Hushhh שמורים' : 'Hushhh Saved';
+    }
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<UIProvider>().setCurrentTitle(title);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    _updateAppBarTitle();
     final l10n = AppLocalizations.of(context)!;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;

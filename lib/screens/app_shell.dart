@@ -134,8 +134,11 @@ class _AppShellState extends State<AppShell> {
                 style: const TextStyle(color: HushColors.textSecondary, fontSize: 16),
               ),
               const SizedBox(height: 32),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              OverflowBar(
+                alignment: MainAxisAlignment.spaceBetween,
+                overflowAlignment: OverflowBarAlignment.end,
+                spacing: 8,
+                overflowSpacing: 16,
                 children: [
                   TextButton(
                     onPressed: () async {
@@ -184,7 +187,7 @@ class _AppShellState extends State<AppShell> {
         WidgetsBinding.instance.addPostFrameCallback((_) {
           String title = '';
           switch (_currentIndex) {
-            case 0: title = l10n.feedTitle; break;
+            case 0: /* handled by FeedScreen */ return;
             case 1: title = l10n.mapTitle; break;
             case 2: title = l10n.createTitle; break;
             case 3: title = l10n.followingTabTitle; break;
