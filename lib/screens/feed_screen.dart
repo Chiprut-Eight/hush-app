@@ -277,7 +277,6 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   }
 
 
-
   String getCurrentTitle(BuildContext context) {
     final isHe = Localizations.localeOf(context).languageCode == 'he';
     if (_selectedTab == FeedTab.nearby) {
@@ -310,7 +309,6 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-
     final l10n = AppLocalizations.of(context)!;
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -381,6 +379,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
           _selectedTab = tab;
           _isLoading = true;
         });
+        _updateAppBarTitle();
         _fetchSecrets();
       },
       child: Column(
