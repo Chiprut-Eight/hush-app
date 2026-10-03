@@ -31,6 +31,7 @@ class SecretCard extends StatefulWidget {
   final bool autoOpenComments;
   final String? highlightCommentId;
   final bool bypassDistance;
+  final bool mockReveal;
 
   const SecretCard({
     super.key, 
@@ -43,6 +44,7 @@ class SecretCard extends StatefulWidget {
     this.autoOpenComments = false,
     this.highlightCommentId,
     this.bypassDistance = false,
+    this.mockReveal = false,
   });
 
   @override
@@ -109,7 +111,12 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
     
     // Auto-reveal immediately for creators OR if already unlocked OR if saved
     bool isSavedInitial = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
-    if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSavedInitial) {
+    
+    if (widget.mockReveal) {
+      _revealed = true;
+      _revealedTextContent = _currentSecret.textContent;
+      _revealedAudioURL = 'mock'; // Just to make it non-null for UI
+    } else if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSavedInitial) {
       if (!_revealed && !_isRevealLoading) {
         _fetchContentFromServer();
       }
@@ -121,6 +128,8 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
         }
       });
     }
+
+    if (widget.mockReveal) return; // Skip streams for mock cards
 
     // Start live secret data stream
     _secretDocSubscription = _secretService

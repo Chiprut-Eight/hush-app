@@ -499,8 +499,8 @@ const TIER_REQUIRED_SUCCESSES = {
 const TIER_NAMES = {
     1: { en: "Default", he: "בסיסי" },
     2: { en: "Novice", he: "מתחיל" },
-    3: { en: "Apprentice", he: "שוליה" },
-    4: { en: "Adept", he: "מיומן" },
+    3: { en: "Member", he: "חבר" },
+    4: { en: "Pro", he: "מקצוען" },
     5: { en: "Expert", he: "מומחה" },
     6: { en: "Master", he: "מאסטר" },
     7: { en: "Grandmaster", he: "רב-אמן עליון" },
@@ -561,7 +561,7 @@ exports.verifyGroupUnlock = functions.https.onCall(async (data, context) => {
     var _a, _b, _c, _d, _e;
     if (!context.auth)
         throw new functions.https.HttpsError("unauthenticated", "User must be logged in");
-    const { secretId, userLat, userLng } = data;
+    const { secretId, userLat, userLng, bypassDistance } = data;
     const uid = context.auth.uid;
     if (!secretId || userLat == null || userLng == null) {
         throw new functions.https.HttpsError("invalid-argument", "Missing required parameters");
@@ -589,7 +589,7 @@ exports.verifyGroupUnlock = functions.https.onCall(async (data, context) => {
     const tierLevel = secret.creatorTierLevel || 1;
     const revealRadius = getRevealRadius(tierLevel, true);
     const dist = distanceInMeters(userLat, userLng, secretLat, secretLng);
-    if (dist > revealRadius) {
+    if (dist > revealRadius && !bypassDistance) {
         return {
             success: false,
             message: `Too far from the secret (${Math.round(dist)}m). Need to be within ${revealRadius}m.`,
@@ -693,7 +693,7 @@ exports.revealSecret = functions.https.onCall(async (data, context) => {
     var _a;
     if (!context.auth)
         throw new functions.https.HttpsError("unauthenticated", "Login required");
-    const { secretId, userLat, userLng } = data;
+    const { secretId, userLat, userLng, bypassDistance } = data;
     const uid = context.auth.uid;
     if (!secretId) {
         throw new functions.https.HttpsError("invalid-argument", "Missing secretId");
@@ -733,6 +733,13 @@ exports.revealSecret = functions.https.onCall(async (data, context) => {
     if (!allowed && secret.isGroup) {
         const unlockedBy = secret.unlockedBy || [];
         if (unlockedBy.includes(uid)) {
+            allowed = true;
+        }
+    }
+    // 4. Bypass distance if user participated in discussion
+    if (!allowed && bypassDistance === true) {
+        const commentsQuery = await secretRef.collection('comments').where('userId', '==', uid).limit(1).get();
+        if (!commentsQuery.empty) {
             allowed = true;
         }
     }

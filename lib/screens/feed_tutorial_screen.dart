@@ -139,7 +139,7 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
   void _finishTutorial() async {
     final auth = context.read<AuthProvider>();
     if (auth.firebaseUser != null) {
-      await FirebaseFirestore.instance
+      FirebaseFirestore.instance
           .collection('users')
           .doc(auth.firebaseUser!.uid)
           .update({'hasSeenFeedTutorialV1': true});
@@ -177,11 +177,11 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], )),
+              Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], mockReveal: true, bypassDistance: true)),
               const SizedBox(height: 16),
-              Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], )),
+              Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], mockReveal: false, bypassDistance: true)),
               const SizedBox(height: 16),
-              Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], )),
+              Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], mockReveal: true, bypassDistance: true)),
             ],
           ),
         ),
