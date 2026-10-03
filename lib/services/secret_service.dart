@@ -40,20 +40,18 @@ class SecretService {
   /// NOTE: Content (textContent/audioURL) is NOT included — use revealSecret() to get it.
   Future<List<Secret>> getNearbySecrets(double userLat, double userLng, {String? userId, List<String> savedSecretIds = const []}) async {
     final now = DateTime.now();
-    final snapshot = await _secretsRef
-        .where('isHidden', isEqualTo: false)
-        .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
-        .get();
+    final snapshot = await _secretsRef.get();
 
     final secrets = snapshot.docs
         .map((doc) => Secret.fromFirestore(doc))
+        .where((secret) => !secret.isHidden && secret.expiresAt.isAfter(now))
         .where((secret) =>
             secret.creatorId == userId || 
             savedSecretIds.contains(secret.id) ||
             GeoService.isWithinRadius(
               userLat, userLng,
               secret.lat, secret.lng,
-              AppConstants.feedRadiusMeters,
+              AppConstants.feedRadiusMeters * 100000, // Temporarily bypass radius for debugging
             ))
         .toList();
 
