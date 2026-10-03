@@ -289,6 +289,19 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     return '';
   }
 
+  bool handleBackPress() {
+    if (_selectedTab != FeedTab.nearby) {
+      setState(() {
+        _selectedTab = FeedTab.nearby;
+        _isLoading = true;
+      });
+      _updateAppBarTitle();
+      _fetchSecrets();
+      return true;
+    }
+    return false;
+  }
+
   void _updateAppBarTitle() {
     final isHe = Localizations.localeOf(context).languageCode == 'he';
     String title = '';

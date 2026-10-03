@@ -274,9 +274,14 @@ class _AppShellState extends State<AppShell> {
             // 2. If not on the first tab, go back to it
             if (_currentIndex != 0) {
               setState(() => _currentIndex = 0);
+              _updateTitle(context, 0);
               return;
             }
-            // 3. On tab 0, drawer closed — exit the app
+            // 3. If on the first tab, check if inner feed tabs can pop
+            if (_feedScreenKey.currentState?.handleBackPress() == true) {
+              return;
+            }
+            // 4. On tab 0, drawer closed, on nearby feed — exit the app
             SystemNavigator.pop();
           },
           child: Scaffold(
