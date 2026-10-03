@@ -1914,13 +1914,14 @@ class _StatisticsViewState extends State<_StatisticsView> {
       return const Center(child: CircularProgressIndicator(color: HushColors.textAccent));
     }
 
-    return RefreshIndicator(
-      onRefresh: _fetchStats,
-      color: HushColors.textAccent,
-      backgroundColor: HushColors.bgCard,
-      child: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
+    return SafeArea(
+      child: RefreshIndicator(
+        onRefresh: _fetchStats,
+        color: HushColors.textAccent,
+        backgroundColor: HushColors.bgCard,
+        child: ListView(
+          padding: const EdgeInsets.fromLTRB(16, 16, 16, 100), // Added bottom padding to ensure scrollability
+          children: [
           _StatCard(
             title: isHe ? 'סה"כ משתמשים רשומים' : 'Total Registered Users',
             subtitle: isHe ? 'לא כולל אדמין' : 'Excluding admin',

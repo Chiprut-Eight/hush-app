@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
@@ -37,51 +38,29 @@ class SecretService {
   /// Fetch all non-hidden, non-expired secrets and filter by proximity.
   /// User's own secrets and saved secrets always appear regardless of distance.
   /// NOTE: Content (textContent/audioURL) is NOT included — use revealSecret() to get it.
-  Future<List<Secret>> getNearbySecrets(double a, double b, {String? userId, List<String> savedSecretIds = const []}) async {
-    return [
-      Secret(
-        id: "mock_sec_1",
-        creatorId: "mock_c1",
-        creatorName: "DanLevi",
-        creatorTierLevel: 4,
-        creatorTierColor: "#67E8F9",
-        type: "voice",
-        audioDuration: 34,
-        likes: 42,
-        commentCount: 8,
-        lat: 32.0853,
-        lng: 34.7818,
-      ),
-      Secret(
-        id: "mock_sec_2",
-        creatorId: "mock_c2",
-        creatorName: "MayaCohen",
-        creatorTierLevel: 2,
-        creatorTierColor: "#A855F7",
-        type: "text",
-        textContent: "גיליתי היום בית קפה מדהים שמוחבא בסמטה הזאת. האקוסטיקה פה משגעת! ☕✨",
-        likes: 125,
-        commentCount: 14,
-        lat: 32.0860,
-        lng: 34.7825,
-      ),
-      Secret(
-        id: "mock_sec_3",
-        creatorId: "mock_c3",
-        creatorName: "SoundSeeker",
-        creatorTierLevel: 6,
-        creatorTierColor: "#FF69B4",
-        type: "voice",
-        isGroup: true,
-        requiredUsers: 3,
-        audioDuration: 45,
-        likes: 89,
-        commentCount: 6,
-        lat: 32.0870,
-        lng: 34.7830,
-      ),
-    ];
-}
+  Future<List<Secret>> getNearbySecrets(double userLat, double userLng, {String? userId, List<String> savedSecretIds = const []}) async {
+    final now = DateTime.now();
+    final snapshot = await _secretsRef
+        .where('isHidden', isEqualTo: false)
+        .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
+        .orderBy('expiresAt')
+        .orderBy('createdAt', descending: true)
+        .get();
+
+    final secrets = snapshot.docs
+        .map((doc) => Secret.fromFirestore(doc))
+        .where((secret) =>
+            secret.creatorId == userId || 
+            savedSecretIds.contains(secret.id) ||
+            GeoService.isWithinRadius(
+              userLat, userLng,
+              secret.lat, secret.lng,
+              AppConstants.feedRadiusMeters,
+            ))
+        .toList();
+
+    return secrets;
+  }
 
   /// Fetch a single secret by ID
   Future<Secret?> getSecret(String secretId) async {
@@ -92,97 +71,25 @@ class SecretService {
 
   /// Fetch all secrets created by a specific user
   Future<List<Secret>> getUserSecrets(String userId) async {
-    return [
-      Secret(
-        id: "mock_sec_1",
-        creatorId: "mock_c1",
-        creatorName: "DanLevi",
-        creatorTierLevel: 4,
-        creatorTierColor: "#67E8F9",
-        type: "voice",
-        audioDuration: 34,
-        likes: 42,
-        commentCount: 8,
-        lat: 32.0853,
-        lng: 34.7818,
-      ),
-      Secret(
-        id: "mock_sec_2",
-        creatorId: "mock_c2",
-        creatorName: "MayaCohen",
-        creatorTierLevel: 2,
-        creatorTierColor: "#A855F7",
-        type: "text",
-        textContent: "גיליתי היום בית קפה מדהים שמוחבא בסמטה הזאת. האקוסטיקה פה משגעת! ☕✨",
-        likes: 125,
-        commentCount: 14,
-        lat: 32.0860,
-        lng: 34.7825,
-      ),
-      Secret(
-        id: "mock_sec_3",
-        creatorId: "mock_c3",
-        creatorName: "SoundSeeker",
-        creatorTierLevel: 6,
-        creatorTierColor: "#FF69B4",
-        type: "voice",
-        isGroup: true,
-        requiredUsers: 3,
-        audioDuration: 45,
-        likes: 89,
-        commentCount: 6,
-        lat: 32.0870,
-        lng: 34.7830,
-      ),
-    ];
-}
+    final snapshot = await _secretsRef
+        .where('creatorId', isEqualTo: userId)
+        .orderBy('createdAt', descending: true)
+        .get();
+    return snapshot.docs.map((doc) => Secret.fromFirestore(doc)).toList();
+  }
 
   /// Fetch saved secrets by ID list
   Future<List<Secret>> getSavedSecrets(List<String> secretIds) async {
-    return [
-      Secret(
-        id: "mock_sec_1",
-        creatorId: "mock_c1",
-        creatorName: "DanLevi",
-        creatorTierLevel: 4,
-        creatorTierColor: "#67E8F9",
-        type: "voice",
-        audioDuration: 34,
-        likes: 42,
-        commentCount: 8,
-        lat: 32.0853,
-        lng: 34.7818,
-      ),
-      Secret(
-        id: "mock_sec_2",
-        creatorId: "mock_c2",
-        creatorName: "MayaCohen",
-        creatorTierLevel: 2,
-        creatorTierColor: "#A855F7",
-        type: "text",
-        textContent: "גיליתי היום בית קפה מדהים שמוחבא בסמטה הזאת. האקוסטיקה פה משגעת! ☕✨",
-        likes: 125,
-        commentCount: 14,
-        lat: 32.0860,
-        lng: 34.7825,
-      ),
-      Secret(
-        id: "mock_sec_3",
-        creatorId: "mock_c3",
-        creatorName: "SoundSeeker",
-        creatorTierLevel: 6,
-        creatorTierColor: "#FF69B4",
-        type: "voice",
-        isGroup: true,
-        requiredUsers: 3,
-        audioDuration: 45,
-        likes: 89,
-        commentCount: 6,
-        lat: 32.0870,
-        lng: 34.7830,
-      ),
-    ];
-}
+    if (secretIds.isEmpty) return [];
+    List<Secret> results = [];
+    for (var i = 0; i < secretIds.length; i += 10) {
+      final chunk = secretIds.sublist(i, min(i + 10, secretIds.length));
+      final snapshot = await _secretsRef.where(FieldPath.documentId, whereIn: chunk).get();
+      results.addAll(snapshot.docs.map((doc) => Secret.fromFirestore(doc)));
+    }
+    results.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return results;
+  }
 
   // ============================================================
   // SECURE: Reveal secret content via Cloud Function
