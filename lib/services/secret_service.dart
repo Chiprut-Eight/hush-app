@@ -43,8 +43,6 @@ class SecretService {
     final snapshot = await _secretsRef
         .where('isHidden', isEqualTo: false)
         .where('expiresAt', isGreaterThan: Timestamp.fromDate(now))
-        .orderBy('expiresAt')
-        .orderBy('createdAt', descending: true)
         .get();
 
     final secrets = snapshot.docs
@@ -59,6 +57,7 @@ class SecretService {
             ))
         .toList();
 
+    secrets.sort((a, b) => b.createdAt.compareTo(a.createdAt));
     return secrets;
   }
 
@@ -73,9 +72,10 @@ class SecretService {
   Future<List<Secret>> getUserSecrets(String userId) async {
     final snapshot = await _secretsRef
         .where('creatorId', isEqualTo: userId)
-        .orderBy('createdAt', descending: true)
         .get();
-    return snapshot.docs.map((doc) => Secret.fromFirestore(doc)).toList();
+    var secrets = snapshot.docs.map((doc) => Secret.fromFirestore(doc)).toList();
+    secrets.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    return secrets;
   }
 
   /// Fetch saved secrets by ID list
