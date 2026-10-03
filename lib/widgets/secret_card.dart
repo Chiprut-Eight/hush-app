@@ -32,6 +32,8 @@ class SecretCard extends StatefulWidget {
   final String? highlightCommentId;
   final bool bypassDistance;
   final bool mockReveal;
+  final GlobalKey? likeButtonKey;
+  final GlobalKey? saveButtonKey;
 
   const SecretCard({
     super.key, 
@@ -45,6 +47,8 @@ class SecretCard extends StatefulWidget {
     this.highlightCommentId,
     this.bypassDistance = false,
     this.mockReveal = false,
+    this.likeButtonKey,
+    this.saveButtonKey,
   });
 
   @override
@@ -1138,12 +1142,14 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                         children: [
                           Row(
                             children: [
-                              _InteractionButton(
-                                icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
-                                count: _currentSecret.likes,
-                                isActive: _userLiked,
-                                color: _userLiked ? Colors.pink : HushColors.textSecondary,
-                                onTap: _revealed && !isOwner ? () {
+                              Container(
+                                key: widget.likeButtonKey,
+                                child: _InteractionButton(
+                                  icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
+                                  count: _currentSecret.likes,
+                                  isActive: _userLiked,
+                                  color: _userLiked ? Colors.pink : HushColors.textSecondary,
+                                  onTap: _revealed && !isOwner ? () {
                                   setState(() {
                                     if (_userDisliked) {
                                       _userDisliked = false;
@@ -1221,6 +1227,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                               if (!isOwner)
                               const SizedBox(width: 16),
                               GestureDetector(
+                                key: widget.saveButtonKey,
                                 onTap: (_revealed && !_savingInProgress) ? () async {
                                   if (currentUser == null) return;
                                   if (!userSaved && (hushUser?.savedSecretIds.length ?? 0) >= 50) {

@@ -2074,12 +2074,18 @@ class _StatCard extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            value,
-            style: const TextStyle(
-              color: HushColors.textAccent,
-              fontSize: 28,
-              fontWeight: FontWeight.w900,
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: Text(
+                value,
+                style: const TextStyle(
+                  color: HushColors.textAccent,
+                  fontSize: 28,
+                  fontWeight: FontWeight.w900,
+                ),
+              ),
             ),
           ),
         ],

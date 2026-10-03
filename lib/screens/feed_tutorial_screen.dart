@@ -19,8 +19,8 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
   TutorialCoachMark? tutorialCoachMark;
   
   final GlobalKey card1Key = GlobalKey();
-  final GlobalKey card2Key = GlobalKey();
-  final GlobalKey card3Key = GlobalKey();
+  final GlobalKey likeButtonKey = GlobalKey();
+  final GlobalKey saveButtonKey = GlobalKey();
 
   late List<Secret> mockSecrets;
 
@@ -99,10 +99,10 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         ),
         TargetFocus(
           identify: "Target 2",
-          keyTarget: card2Key,
+          keyTarget: likeButtonKey,
           contents: [
             TargetContent(
-              align: ContentAlign.bottom,
+              align: ContentAlign.top,
               builder: (context, controller) => Text(
                 isHe ? '👍 לייק = שווה ללכת | 👎 דיסלייק = אפשר לדלג.\nזה עוזר לאחרים לדעת אם שווה להגיע.' : '👍 Like = Worth it | 👎 Dislike = Skip it.',
                 style: const TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
@@ -112,7 +112,7 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
         ),
         TargetFocus(
           identify: "Target 3",
-          keyTarget: card3Key,
+          keyTarget: saveButtonKey,
           contents: [
             TargetContent(
               align: ContentAlign.top,
@@ -177,11 +177,20 @@ class _FeedTutorialScreenState extends State<FeedTutorialScreen> {
           padding: const EdgeInsets.all(16),
           child: Column(
             children: [
-              Container(key: card1Key, child: SecretCard(secret: translatedMocks[0], mockReveal: true, bypassDistance: true)),
+              Container(
+                key: card1Key, 
+                child: SecretCard(
+                  secret: translatedMocks[0], 
+                  mockReveal: true, 
+                  bypassDistance: true,
+                  likeButtonKey: likeButtonKey,
+                  saveButtonKey: saveButtonKey,
+                )
+              ),
               const SizedBox(height: 16),
-              Container(key: card2Key, child: SecretCard(secret: translatedMocks[1], mockReveal: false, bypassDistance: true)),
+              SecretCard(secret: translatedMocks[1], mockReveal: false, bypassDistance: true),
               const SizedBox(height: 16),
-              Container(key: card3Key, child: SecretCard(secret: translatedMocks[2], mockReveal: true, bypassDistance: true)),
+              SecretCard(secret: translatedMocks[2], mockReveal: true, bypassDistance: true),
             ],
           ),
         ),
