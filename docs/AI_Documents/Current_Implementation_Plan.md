@@ -23,23 +23,25 @@
 
 ## 2. ⏰ שעות שליחת נוטיפיקציות מערכת
 
-**מצב נוכחי:**
-- `decaySecretsJob` — רץ ב-**02:00** בלילה ([index.ts:206](file:///c:/Dev/hush-app/functions/src/index.ts#L206))
-- `onSecretExpiringSoon` — רץ ב-**00:00** בחצות ([index.ts:482](file:///c:/Dev/hush-app/functions/src/index.ts#L482))
+**מצב קודם (לפני השינוי):**
+- `decaySecretsJob` — רץ ב-**02:00** בלילה
+- `onSecretExpiringSoon` — רץ ב-**00:00** בחצות
 
-שני התפקידים שולחים הודעות push ברגע שהם רצים — כלומר בחצות וב-2 בלילה.
+**מצב מוגדר בקוד (סופי, שעון ישראל `Asia/Jerusalem`):**
 
-**שינויים נדרשים:**
+| פונקציה | תפקיד | Schedule | שעה |
+|---------|-------|----------|-----|
+| `onSecretExpiringSoon` ([index.ts:485](file:///c:/Dev/hush-app/functions/src/index.ts#L485)) | אזהרה לפני מחיקה | `"0 10 * * *"` | **10:00** בבוקר |
+| `decaySecretsJob` ([index.ts:205](file:///c:/Dev/hush-app/functions/src/index.ts#L205)) | הסרה בפועל של Hushhh + התראה | `"0 16 * * *"` | **16:00** אחה"צ |
 
-| שכבה | קובץ | פעולה |
-|-------|-------|-------|
-| **Functions** | `functions/src/index.ts` שורה 206 | שנה schedule ל-`"0 11 * * *"` (11:00 בוקר) |
-| **Functions** | `functions/src/index.ts` שורה 482 | שנה schedule ל-`"0 10 * * *"` (10:00 בוקר) |
+ככה האזהרה מגיעה 6 שעות לפני שהמערכת באמת מוחקת.
 
-> [!TIP]
-> **הצעה:** `onSecretExpiringSoon` (אזהרה) ב-10:00 → `decaySecretsJob` (מחיקה) ב-11:00. ככה האזהרה מגיעה שעה לפני שהמערכת באמת מוחקת.
+> [!WARNING]
+> **שינוי schedule בקוד לא משפיע עד שמבצעים deploy.** ה-Cloud Scheduler בגוגל ממשיך להריץ את ה-schedule האחרון שנפרס.
+> התקלה שנצפתה (התראת הסרה ב-02:00 למרות שהקוד מוגדר ל-16:00) נבעה מכך שהשינוי נשמר ונדחף לגיט, אך הפונקציות לא נפרסו מחדש.
+> חובה להריץ: `firebase deploy --only functions:decaySecretsJob,functions:onSecretExpiringSoon`
 
-**סיכום מאמץ:** נמוך מאוד — שינוי 2 שורות + deploy functions
+**סטטוס:** ✅ קוד מעודכן | ⚠️ דורש deploy ל-Firebase כדי להיכנס לתוקף
 
 ---
 
