@@ -31,7 +31,7 @@ class AudioService {
 
     // Try to acquire audio focus (will fail if in a call)
     final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration(
+    await session.configure(AudioSessionConfiguration(
       avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
       avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.defaultToSpeaker | AVAudioSessionCategoryOptions.allowBluetooth,
       avAudioSessionMode: AVAudioSessionMode.defaultMode,
