@@ -733,8 +733,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       curve: Curves.easeOutCubic,
       child: AnimatedOpacity(
         duration: const Duration(milliseconds: 300),
-        opacity: _canSubmit() ? 1.0 : 0.0,
-        child: _canSubmit() || _isPublishing
+        opacity: (_canSubmit() || _isPublishing) ? 1.0 : 0.0,
+        child: (_canSubmit() || _isPublishing)
             ? Padding(
                 padding: margin ?? EdgeInsets.zero,
                 child: Container(
