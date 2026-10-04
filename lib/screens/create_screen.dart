@@ -19,11 +19,12 @@ import '../services/analytics_service.dart';
 
 /// Web-aligned Create Screen
 class CreateScreen extends StatefulWidget {
-  final VoidCallback? onPublished;
+  final VoidCallback? onPublishStart;
+  final VoidCallback? onPublishComplete;
   final double? targetLat;
   final double? targetLng;
 
-  const CreateScreen({super.key, this.onPublished, this.targetLat, this.targetLng});
+  const CreateScreen({super.key, this.onPublishStart, this.onPublishComplete, this.targetLat, this.targetLng});
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -312,6 +313,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       }
     }
 
+    if (widget.onPublishStart != null) widget.onPublishStart!();
+
     // Publish in the background so the user can transition immediately
     try {
       _publishInBackground(
@@ -326,7 +329,10 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         isGroup: isGroup,
         requiredUsers: requiredU,
         timeWindowMinutes: timeWindow,
-      );
+      ).then((_) {
+        // When publish finishes in background, notify to refresh feed
+        if (mounted && widget.onPublishComplete != null) widget.onPublishComplete!();
+      });
     } catch (e) {
       debugPrint("Publish start error: $e");
     }
@@ -349,8 +355,6 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         duration: const Duration(seconds: 2),
       ),
     );
-
-    if (widget.onPublished != null) widget.onPublished!();
   }
 
   Future<void> _publishInBackground({

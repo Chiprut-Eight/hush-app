@@ -291,12 +291,16 @@ class _AppShellState extends State<AppShell> {
               children: [
                 FeedScreen(key: _feedScreenKey, scaffoldKey: _feedScaffoldKey),
                 MapScreen(scaffoldKey: _mapScaffoldKey),
-                CreateScreen(onPublished: () {
-                  setState(() => _currentIndex = 0);
-                  _updateTitle(context, 0);
-                  _feedScreenKey.currentState?.refreshFeed();
-                  _profileScreenKey.currentState?.fetchProfileData();
-                }),
+                CreateScreen(
+                  onPublishStart: () {
+                    setState(() => _currentIndex = 0);
+                    _updateTitle(context, 0);
+                  },
+                  onPublishComplete: () {
+                    _feedScreenKey.currentState?.refreshFeed();
+                    _profileScreenKey.currentState?.fetchProfileData();
+                  },
+                ),
                 FollowingScreen(isActive: _currentIndex == 3),
                 ProfileScreen(key: _profileScreenKey),
               ],
