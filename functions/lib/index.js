@@ -391,8 +391,8 @@ exports.onNewSecret = functions.firestore
     await Promise.all(promises);
 });
 // ============================================================
-// 6. EXPIRING SOON — Daily cron at MIDNIGHT (00:00)
-//    MUST run BEFORE decaySecretsJob (02:00) so warnings go out first.
+// 6. EXPIRING SOON — Daily cron at 10:00 (Asia/Jerusalem)
+//    MUST run BEFORE decaySecretsJob (16:00) so warnings go out first.
 //    Warns creators ~48 hours before their Hushhh is deleted.
 //    Covers ALL 3 decay rules (60-day, 0 views/7 days, <5 views/21 days)
 //    Uses 2-day wide windows to prevent secrets from "jumping" over
