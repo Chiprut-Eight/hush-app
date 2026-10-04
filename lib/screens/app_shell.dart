@@ -42,6 +42,7 @@ class _AppShellState extends State<AppShell> {
   final GlobalKey<ScaffoldState> _feedScaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<ScaffoldState> _mapScaffoldKey = GlobalKey<ScaffoldState>();
   final GlobalKey<FeedScreenState> _feedScreenKey = GlobalKey<FeedScreenState>();
+  final GlobalKey<ProfileScreenState> _profileScreenKey = GlobalKey<ProfileScreenState>();
 
   StreamSubscription<void>? _homeSub;
 
@@ -294,9 +295,10 @@ class _AppShellState extends State<AppShell> {
                   setState(() => _currentIndex = 0);
                   _updateTitle(context, 0);
                   _feedScreenKey.currentState?.refreshFeed();
+                  _profileScreenKey.currentState?.fetchProfileData();
                 }),
                 FollowingScreen(isActive: _currentIndex == 3),
-                const ProfileScreen(),
+                ProfileScreen(key: _profileScreenKey),
               ],
             ),
             bottomNavigationBar: Container(

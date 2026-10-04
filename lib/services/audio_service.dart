@@ -63,9 +63,10 @@ class AudioService {
     
     await _interruptionSub?.cancel();
     _interruptionSub = session.interruptionEventStream.listen((event) {
-      if (event.begin && _isRecording) {
-        onRecordingInterrupted?.call('ההקלטה הופסקה עקב שיחה נכנסת');
-      }
+      // Disabled because of false positives (triggers when no call is present)
+      // if (event.begin && _isRecording) {
+      //   onRecordingInterrupted?.call('ההקלטה הופסקה עקב שיחה נכנסת');
+      // }
     });
 
     await _recorder.start(

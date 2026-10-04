@@ -25,7 +25,7 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   final SecretService _secretService = SecretService();
   final SocialService _socialService = SocialService();
   
@@ -38,11 +38,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchProfileData();
+    fetchProfileData();
     AnalyticsService().logScreenView(widget.targetUserId == null ? 'profile' : 'user_profile');
   }
 
-  Future<void> _fetchProfileData() async {
+  Future<void> fetchProfileData() async {
     final auth = context.read<AuthProvider>();
     final currentUser = auth.hushUser;
     
@@ -119,7 +119,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         AnalyticsService().logFollow(_targetUser!.uid);
       }
       await auth.refreshProfile();
-      await _fetchProfileData();
+      await fetchProfileData();
     } catch (e) {
       if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
@@ -233,7 +233,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: RefreshIndicator(
         onRefresh: () async {
           if (isMe) await auth.refreshProfile();
-          await _fetchProfileData();
+          await fetchProfileData();
         },
         color: HushColors.textAccent,
         backgroundColor: HushColors.bgPrimary,
@@ -367,7 +367,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               builder: (context) => SavedSecretsScreen(
                                 savedSecrets: _savedSecrets,
                                 onUnsave: () {
-                                  _fetchProfileData(); // Refresh if they unsave
+                                  fetchProfileData(); // Refresh if they unsave
                                 },
                               ),
                             ),
