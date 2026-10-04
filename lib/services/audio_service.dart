@@ -97,10 +97,22 @@ class AudioService {
     final path = await _recorder.stop();
     _isRecording = false;
     
-    // Deactivate session to release focus completely
+    // Restore session for playback so audio isn't stuck on earpiece
     final session = await AudioSession.instance;
     await session.setActive(false);
-    
+    await session.configure(AudioSessionConfiguration(
+      avAudioSessionCategory: AVAudioSessionCategory.playAndRecord,
+      avAudioSessionCategoryOptions: AVAudioSessionCategoryOptions.defaultToSpeaker | AVAudioSessionCategoryOptions.allowBluetooth,
+      avAudioSessionMode: AVAudioSessionMode.defaultMode,
+      avAudioSessionRouteSharingPolicy: AVAudioSessionRouteSharingPolicy.defaultPolicy,
+      androidAudioAttributes: const AndroidAudioAttributes(
+        contentType: AndroidAudioContentType.music,
+        usage: AndroidAudioUsage.media,
+      ),
+      androidAudioFocusGainType: AndroidAudioFocusGainType.gain,
+    ));
+    await session.setActive(true);
+
     return path;
   }
 

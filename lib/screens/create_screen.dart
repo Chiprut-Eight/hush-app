@@ -312,9 +312,9 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       }
     }
 
-    // Await the publish so it's in the database before we navigate back to feed
+    // Publish in the background so the user can transition immediately
     try {
-      await _publishInBackground(
+      _publishInBackground(
         contentType: contentType,
         secretType: secretType,
         textContent: textContent,
@@ -328,12 +328,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         timeWindowMinutes: timeWindow,
       );
     } catch (e) {
-      debugPrint("Publish error: $e");
-      if (mounted) {
-        setState(() => _isPublishing = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
-      }
-      return;
+      debugPrint("Publish start error: $e");
     }
 
     if (!mounted) return;
