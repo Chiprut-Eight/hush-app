@@ -22,7 +22,7 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key, this.targetUserId});
 
   @override
-  State<ProfileScreen> createState() => _ProfileScreenState();
+  State<ProfileScreen> createState() => ProfileScreenState();
 }
 
 class ProfileScreenState extends State<ProfileScreen> {
