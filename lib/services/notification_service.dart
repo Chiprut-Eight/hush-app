@@ -249,12 +249,21 @@ class NotificationService {
       // Find navigator context
       final nav = hush_main.rootNavigatorKey.currentState;
       if (nav != null) {
+        if (SecretDetailScreen.activeSecretId == secretId) {
+          // Already on the page, don't push another one.
+          // But maybe pop any bottom sheets currently open on top of it.
+          nav.popUntil((route) => route.settings.name == 'secret_$secretId' || route.isFirst);
+          return;
+        }
+        
         nav.push(
           MaterialPageRoute(
+            settings: RouteSettings(name: 'secret_$secretId'),
             builder: (ctx) => SecretDetailScreen(
               secretId: secretId,
               openComments: type == 'comment',
               highlightCommentId: commentId,
+              bypassDistance: type == 'comment' || type == 'like',
             ),
           ),
         );

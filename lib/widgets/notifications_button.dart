@@ -111,6 +111,7 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           final type = (payloadData != null && payloadData is Map) ? payloadData['type']?.toString() : data['type']?.toString();
                           final String safeType = type ?? 'general';
                           final secretId = (payloadData != null && payloadData is Map) ? payloadData['secretId'] : null;
+                          final commentId = (payloadData != null && payloadData is Map) ? payloadData['commentId'] : null;
 
                           IconData actionIcon;
                           switch (safeType) {
@@ -128,12 +129,26 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           
                           return InkWell(
                             onTap: () {
+                              if (!ModalRoute.of(context)!.isCurrent) return;
                               rootNavigatorKey.currentState?.pop(); // Close the bottom sheet
                               AnalyticsService().logNotificationTapped(secretId: secretId);
                               if (secretId != null) {
+                                if (SecretDetailScreen.activeSecretId == secretId) {
+                                  // We are already viewing this secret!
+                                  // The bottom sheet was already popped on line 133
+                                  // Just return, no need to push another screen.
+                                  return;
+                                }
+                                
                                 rootNavigatorKey.currentState?.push(
                                   MaterialPageRoute(
-                                    builder: (context) => SecretDetailScreen(secretId: secretId),
+                                    settings: RouteSettings(name: 'secret_$secretId'),
+                                    builder: (context) => SecretDetailScreen(
+                                      secretId: secretId,
+                                      openComments: safeType == 'comment',
+                                      highlightCommentId: commentId,
+                                      bypassDistance: safeType == 'comment' || safeType == 'like',
+                                    ),
                                   ),
                                 );
                               }

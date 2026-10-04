@@ -8,15 +8,19 @@ import '../services/secret_service.dart';
 import '../widgets/secret_card.dart';
 
 class SecretDetailScreen extends StatefulWidget {
+  static String? activeSecretId;
+
   final String secretId;
   final bool openComments;
   final String? highlightCommentId;
+  final bool bypassDistance;
 
   const SecretDetailScreen({
     super.key, 
     required this.secretId,
     this.openComments = false,
     this.highlightCommentId,
+    this.bypassDistance = false,
   });
 
   @override
@@ -35,7 +39,16 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
   @override
   void initState() {
     super.initState();
+    SecretDetailScreen.activeSecretId = widget.secretId;
     _fetchSecretDetails();
+  }
+
+  @override
+  void dispose() {
+    if (SecretDetailScreen.activeSecretId == widget.secretId) {
+      SecretDetailScreen.activeSecretId = null;
+    }
+    super.dispose();
   }
 
   Future<void> _fetchSecretDetails() async {
@@ -220,6 +233,7 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
         userPosition: _userPosition,
         autoOpenComments: widget.openComments,
         highlightCommentId: widget.highlightCommentId,
+        bypassDistance: widget.bypassDistance,
         onDelete: () {
           Navigator.of(context).pop();
         },

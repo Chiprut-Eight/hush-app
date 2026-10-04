@@ -852,7 +852,7 @@ export const revealSecret = functions.https.onCall(
     if (!context.auth)
       throw new functions.https.HttpsError("unauthenticated", "Login required");
 
-    const { secretId, userLat, userLng, bypassDistance } = data;
+    const { secretId, userLat, userLng } = data;
     const uid = context.auth.uid;
 
     if (!secretId) {
@@ -907,7 +907,7 @@ export const revealSecret = functions.https.onCall(
     }
 
     // 4. Bypass distance if user participated in discussion
-    if (!allowed && bypassDistance === true) {
+    if (!allowed) {
       const commentsQuery = await secretRef.collection('comments').where('userId', '==', uid).limit(1).get();
       if (!commentsQuery.empty) {
         allowed = true;

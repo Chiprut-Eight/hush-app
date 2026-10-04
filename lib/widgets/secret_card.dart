@@ -120,7 +120,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
       _revealed = true;
       _revealedTextContent = _currentSecret.textContent;
       _revealedAudioURL = 'mock'; // Just to make it non-null for UI
-    } else if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSavedInitial) {
+    } else if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSavedInitial || widget.bypassDistance) {
       if (!_revealed && !_isRevealLoading) {
         _fetchContentFromServer();
       }
@@ -143,8 +143,8 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
         setState(() {
           _currentSecret = updatedSecret;
           bool isSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
-          // Auto-reveal for creators OR if already unlocked OR if saved
-          if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSaved) {
+          // Auto-reveal for creators OR if already unlocked OR if saved OR if bypassing distance
+          if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSaved || widget.bypassDistance) {
             if (!_revealed && !_isRevealLoading) {
               _fetchContentFromServer();
             }
@@ -686,6 +686,15 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                 final isReply = c['replyToCommentId'] != null;
                                 final commentTime = (c['createdAt'] as DateTime?) ?? DateTime.now();
                                 return GestureDetector(
+                                  onTap: () {
+                                    setSheetState(() {
+                                      editingCommentId = null;
+                                      commentController.clear();
+                                      replyingToUserId = c['userId'];
+                                      replyingToUserName = c['userName'] ?? 'Someone';
+                                      replyingToCommentId = c['replyToCommentId'] ?? c['id'];
+                                    });
+                                  },
                                   onLongPress: () {
                                     showModalBottomSheet(
                                       context: ctx,
@@ -800,18 +809,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                               const SizedBox(height: 4),
                                               Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
                                               const SizedBox(height: 4),
-                                              GestureDetector(
-                                                onTap: () {
-                                                  setSheetState(() {
-                                                    editingCommentId = null;
-                                                    commentController.clear();
-                                                    replyingToUserId = c['userId'];
-                                                    replyingToUserName = c['userName'] ?? 'Someone';
-                                                    replyingToCommentId = c['replyToCommentId'] ?? c['id'];
-                                                  });
-                                                },
-                                                child: Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
-                                              ),
+                                              Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
                                             ],
                                           ),
                                         ),
@@ -1316,7 +1314,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   }
 
   Widget _buildContent(bool isInRange, AppLocalizations l10n) {
-    if (!isInRange || !_revealed) {
+    if (!_revealed) {
       // --- DEEP SMOKY BLUR — Out-of-range Hushhh looks locked and mysterious ---
       // --- REALISTIC SMOKE OVERLAY ---
       return ClipRRect(

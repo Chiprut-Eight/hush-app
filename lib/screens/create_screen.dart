@@ -737,15 +737,27 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
         child: _canSubmit() || _isPublishing
             ? Padding(
                 padding: margin ?? EdgeInsets.zero,
-                child: SizedBox(
+                child: Container(
                   height: 60, // Let's make it 60 to comfortably fit a 50px icon with padding
                   width: double.infinity,
+                  decoration: BoxDecoration(
+                    gradient: HushColors.brandGradient,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: HushColors.tierRed.withValues(alpha: 0.2),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: ElevatedButton(
                     onPressed: _publishSecret,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF1565C0),
+                      backgroundColor: Colors.transparent,
+                      shadowColor: Colors.transparent,
                       foregroundColor: Colors.white,
-                      elevation: 2,
+                      elevation: 0,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(14),
                       ),
