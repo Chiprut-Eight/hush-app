@@ -47,6 +47,7 @@ class HushUser {
   final bool notifyGroupUnlocks;
   final bool notifyNewFollower;
   final bool notifyInteractions;
+  final bool notifyDecay;
   
   // Settings - Profile
   final DateTime? lastUsernameChange;
@@ -86,6 +87,7 @@ class HushUser {
     this.notifyGroupUnlocks = true,
     this.notifyNewFollower = true,
     this.notifyInteractions = true,
+    this.notifyDecay = true,
     this.lastUsernameChange,
     this.defaultCreateMode = 'text',
     DateTime? createdAt,
@@ -128,6 +130,7 @@ class HushUser {
       notifyGroupUnlocks: data['notifyGroupUnlocks'] ?? true,
       notifyNewFollower: data['notifyNewFollower'] ?? true,
       notifyInteractions: data['notifyInteractions'] ?? true,
+      notifyDecay: data['notifyDecay'] ?? true,
       lastUsernameChange: (data['lastUsernameChange'] as Timestamp?)?.toDate(),
       defaultCreateMode: data['defaultCreateMode'] ?? 'text',
     );
@@ -167,6 +170,7 @@ class HushUser {
     'notifyGroupUnlocks': notifyGroupUnlocks,
     'notifyNewFollower': notifyNewFollower,
     'notifyInteractions': notifyInteractions,
+    'notifyDecay': notifyDecay,
     'lastUsernameChange': lastUsernameChange != null ? Timestamp.fromDate(lastUsernameChange!) : null,
     'defaultCreateMode': defaultCreateMode,
   };

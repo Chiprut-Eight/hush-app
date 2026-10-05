@@ -1888,7 +1888,10 @@ class _StatisticsViewState extends State<_StatisticsView> {
         setState(() {
           _totalUsers = usersCount > 0 ? usersCount - 1 : 0; 
           _newUsers7Days = newUsersCount;
-          _totalSecretsCreated = secretsCreated > 0 ? secretsCreated : activeSecretsCount;
+          // Total created should be at least active + decayed. If secretsCreated is higher, use it.
+          _totalSecretsCreated = (secretsCreated > (activeSecretsCount + secretsDecayed)) 
+              ? secretsCreated 
+              : (activeSecretsCount + secretsDecayed);
           _totalSecretsDecayed = secretsDecayed;
           _activeSecrets = activeSecretsCount;
           _totalReports = reportsCount;

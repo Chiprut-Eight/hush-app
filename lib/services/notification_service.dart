@@ -250,9 +250,20 @@ class NotificationService {
       final nav = hush_main.rootNavigatorKey.currentState;
       if (nav != null) {
         if (SecretDetailScreen.activeSecretId == secretId) {
-          // Already on the page, don't push another one.
-          // But maybe pop any bottom sheets currently open on top of it.
+          // Already on the page. Pop any bottom sheets on top of it.
           nav.popUntil((route) => route.settings.name == 'secret_$secretId' || route.isFirst);
+          // Now replace the current screen with a new one to handle the new comment highlight
+          nav.pushReplacement(
+            MaterialPageRoute(
+              settings: RouteSettings(name: 'secret_$secretId'),
+              builder: (ctx) => SecretDetailScreen(
+                secretId: secretId,
+                openComments: type == 'comment',
+                highlightCommentId: commentId,
+                bypassDistance: type == 'comment' || type == 'like',
+              ),
+            ),
+          );
           return;
         }
         

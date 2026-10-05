@@ -313,5 +313,7 @@
   "networkError": "Network error, please try again.",
   "defaultCreateMode": "Default Create Mode",
   "textMode": "Text",
-  "voiceMode": "Voice"
+  "voiceMode": "Voice",
+  "notifyDecayTitle": "Decay and Removal",
+  "notifyDecaySub": "Alerts for your Hushhh that are about to expire or have been removed"
 }

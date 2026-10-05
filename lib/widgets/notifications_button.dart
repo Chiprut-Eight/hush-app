@@ -135,8 +135,18 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                               if (secretId != null) {
                                 if (SecretDetailScreen.activeSecretId == secretId) {
                                   // We are already viewing this secret!
-                                  // The bottom sheet was already popped on line 133
-                                  // Just return, no need to push another screen.
+                                  rootNavigatorKey.currentState?.popUntil((route) => route.settings.name == 'secret_$secretId' || route.isFirst);
+                                  rootNavigatorKey.currentState?.pushReplacement(
+                                    MaterialPageRoute(
+                                      settings: RouteSettings(name: 'secret_$secretId'),
+                                      builder: (context) => SecretDetailScreen(
+                                        secretId: secretId,
+                                        openComments: safeType == 'comment',
+                                        highlightCommentId: commentId,
+                                        bypassDistance: safeType == 'comment' || safeType == 'like',
+                                      ),
+                                    ),
+                                  );
                                   return;
                                 }
                                 

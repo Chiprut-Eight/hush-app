@@ -757,4 +757,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get voiceMode => 'Voice';
+
+  @override
+  String get notifyDecayTitle => 'Decay and Removal';
+
+  @override
+  String get notifyDecaySub =>
+      'Alerts for your Hushhh that are about to expire or have been removed';
 }

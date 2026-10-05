@@ -62,6 +62,7 @@ async function sendPushToUser(
   if (type === "new_secret" && userData?.notifyNewFollowerSecrets === false) return;
   if ((type === "like" || type === "comment") && userData?.notifyInteractions === false) return;
   if (type === "tier_up" && userData?.notifyGroupUnlocks === false) return;
+  if ((type === "decay" || type === "expiring") && userData?.notifyDecay === false) return;
 
   try {
     const messageId = await admin.messaging().send({

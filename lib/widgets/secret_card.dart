@@ -686,6 +686,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                 final isReply = c['replyToCommentId'] != null;
                                 final commentTime = (c['createdAt'] as DateTime?) ?? DateTime.now();
                                 return GestureDetector(
+                                  behavior: HitTestBehavior.opaque,
                                   onTap: () {
                                     setSheetState(() {
                                       editingCommentId = null;
@@ -809,7 +810,28 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                               const SizedBox(height: 4),
                                               Text(c['text'] ?? '', style: const TextStyle(color: HushColors.textSecondary, fontSize: 14)),
                                               const SizedBox(height: 4),
-                                              Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
+                                              Row(
+                                                children: [
+                                                  Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
+                                                  const SizedBox(width: 16),
+                                                  GestureDetector(
+                                                    onTap: () => _secretService.toggleCommentLike(_currentSecret.id, c['id']),
+                                                    child: Row(
+                                                      children: [
+                                                        Icon(
+                                                          c['likedBy']?.contains(currentUser?.uid) == true ? Icons.favorite : Icons.favorite_border,
+                                                          color: c['likedBy']?.contains(currentUser?.uid) == true ? Colors.red : HushColors.textMuted,
+                                                          size: 14,
+                                                        ),
+                                                        if ((c['likedBy']?.length ?? 0) > 0) ...[
+                                                          const SizedBox(width: 4),
+                                                          Text('${c['likedBy']!.length}', style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
+                                                        ],
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ],
                                           ),
                                         ),

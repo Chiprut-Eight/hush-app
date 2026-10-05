@@ -623,7 +623,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get muteAppSoundsTitle => 'השתק צלילי אפליקציה';
 
   @override
-  String get muteAppSoundsSub => 'ההשתקה חלה על צלילי ממשק, לא על האששים';
+  String get muteAppSoundsSub => 'ההשתקה חלה על צלילי ממשק, לא על Hushhh';
 
   @override
   String get notificationsSettingsTitle => 'הגדרות התראות';
@@ -754,4 +754,10 @@ class AppLocalizationsHe extends AppLocalizations {
 
   @override
   String get voiceMode => 'קול';
+
+  @override
+  String get notifyDecayTitle => 'הסרה ודעיכה';
+
+  @override
+  String get notifyDecaySub => 'התראות על Hushhh שלך שעומדים להימחק או שנמחקו';
 }

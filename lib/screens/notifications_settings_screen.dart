@@ -96,6 +96,18 @@ class NotificationsSettingsScreen extends StatelessWidget {
                                 .update({'notifyInteractions': value});
                           },
                         ),
+                        SwitchListTile(
+                          title: Text(AppLocalizations.of(context)!.notifyDecayTitle),
+                          subtitle: Text(AppLocalizations.of(context)!.notifyDecaySub, style: const TextStyle(fontSize: 12)),
+                          activeThumbColor: HushColors.textAccent,
+                          value: user.notifyDecay,
+                          onChanged: (value) {
+                            FirebaseFirestore.instance
+                                .collection('users')
+                                .doc(user.uid)
+                                .update({'notifyDecay': value});
+                          },
+                        ),
                       ],
                     ),
                   ),

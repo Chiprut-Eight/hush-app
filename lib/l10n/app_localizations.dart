@@ -1465,6 +1465,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Voice'**
   String get voiceMode;
+
+  /// No description provided for @notifyDecayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decay and Removal'**
+  String get notifyDecayTitle;
+
+  /// No description provided for @notifyDecaySub.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts for your Hushhh that are about to expire or have been removed'**
+  String get notifyDecaySub;
 }
 
 class _AppLocalizationsDelegate

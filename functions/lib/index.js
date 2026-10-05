@@ -50,6 +50,8 @@ async function sendPushToUser(userId, title, body, data) {
         return;
     if (type === "tier_up" && (userData === null || userData === void 0 ? void 0 : userData.notifyGroupUnlocks) === false)
         return;
+    if ((type === "decay" || type === "expiring") && (userData === null || userData === void 0 ? void 0 : userData.notifyDecay) === false)
+        return;
     try {
         const messageId = await admin.messaging().send({
             token: fcmToken,
