@@ -80,7 +80,11 @@ service cloud.firestore {
       match /comments/{commentId} {
         allow read: if request.auth != null;
         allow create: if request.auth != null;
-        allow update, delete: if request.auth != null && resource.data.userId == request.auth.uid;
+        allow update: if request.auth != null && (
+          resource.data.userId == request.auth.uid || 
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['likedBy'])
+        );
+        allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
       }
     }
     

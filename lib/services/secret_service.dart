@@ -603,27 +603,21 @@ class SecretService {
   }
   
   /// Toggle a like on a comment
-  Future<void> toggleCommentLike(String secretId, String commentId) async {
+  Future<void> toggleCommentLike(String secretId, String commentId, bool isCurrentlyLiked) async {
     final user = _auth.currentUser;
     if (user == null) return;
     
     final docRef = _secretsRef.doc(secretId).collection('comments').doc(commentId);
     
-    await FirebaseFirestore.instance.runTransaction((transaction) async {
-      final snapshot = await transaction.get(docRef);
-      if (!snapshot.exists) return;
-      
-      final likedBy = List<String>.from(snapshot.data()?['likedBy'] ?? []);
-      if (likedBy.contains(user.uid)) {
-        transaction.update(docRef, {
-          'likedBy': FieldValue.arrayRemove([user.uid])
-        });
-      } else {
-        transaction.update(docRef, {
-          'likedBy': FieldValue.arrayUnion([user.uid])
-        });
-      }
-    });
+    if (isCurrentlyLiked) {
+      await docRef.update({
+        'likedBy': FieldValue.arrayRemove([user.uid])
+      });
+    } else {
+      await docRef.update({
+        'likedBy': FieldValue.arrayUnion([user.uid])
+      });
+    }
   }
 
   /// Edit a comment

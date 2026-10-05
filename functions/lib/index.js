@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.onSecretCreated = exports.onUserProfileUpdate = exports.onAdminBroadcast = exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
+exports.onSecretCreated = exports.onUserProfileUpdate = exports.onAdminBroadcast = exports.resetUserTier = exports.migrateSecretContent = exports.interactWithSecret = exports.deleteSecretV2 = exports.createSecretV2 = exports.revealSecret = exports.verifyGroupUnlock = exports.onSecretExpiringSoon = exports.onNewSecret = exports.onNewFollower = exports.onNewComment = exports.onNewCommentLike = exports.onNewLike = exports.decaySecretsJob = exports.testPush = void 0;
 const functions = require("firebase-functions");
 const admin = require("firebase-admin");
 admin.initializeApp();
@@ -286,6 +286,24 @@ exports.onNewLike = functions.firestore
     if (!creatorId)
         return;
     await sendPushToUser(creatorId, { en: "Someone liked your Hushhh", he: "מישהו עשה לייק ל-Hushhh שלך" }, { en: "Your Hushhh is getting attention!", he: "ה-Hushhh שלך מקבל תשומת לב!" }, { type: "like", secretId: change.after.id });
+});
+// ============================================================
+// 2.5 NEW COMMENT LIKE — Notify comment creator
+// ============================================================
+exports.onNewCommentLike = functions.firestore
+    .document("secrets/{secretId}/comments/{commentId}")
+    .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+    const beforeLikes = before.likedBy || [];
+    const afterLikes = after.likedBy || [];
+    // Only trigger if a like was added
+    if (afterLikes.length <= beforeLikes.length)
+        return;
+    const creatorId = after.userId;
+    if (!creatorId)
+        return;
+    await sendPushToUser(creatorId, { en: "Someone liked your comment", he: "מישהו עשה לייק לתגובה שלך" }, { en: "Your comment is getting attention!", he: "התגובה שלך מקבלת תשומת לב!" }, { type: "comment", secretId: context.params.secretId, commentId: context.params.commentId });
 });
 // ============================================================
 // 3. NEW COMMENT — Notify secret creator

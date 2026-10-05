@@ -332,6 +332,32 @@ export const onNewLike = functions.firestore
   });
 
 // ============================================================
+// 2.5 NEW COMMENT LIKE — Notify comment creator
+// ============================================================
+export const onNewCommentLike = functions.firestore
+  .document("secrets/{secretId}/comments/{commentId}")
+  .onUpdate(async (change, context) => {
+    const before = change.before.data();
+    const after = change.after.data();
+
+    const beforeLikes = before.likedBy || [];
+    const afterLikes = after.likedBy || [];
+
+    // Only trigger if a like was added
+    if (afterLikes.length <= beforeLikes.length) return;
+
+    const creatorId = after.userId;
+    if (!creatorId) return;
+
+    await sendPushToUser(
+      creatorId,
+      { en: "Someone liked your comment", he: "מישהו עשה לייק לתגובה שלך" },
+      { en: "Your comment is getting attention!", he: "התגובה שלך מקבלת תשומת לב!" },
+      { type: "comment", secretId: context.params.secretId, commentId: context.params.commentId }
+    );
+  });
+
+// ============================================================
 // 3. NEW COMMENT — Notify secret creator
 // ============================================================
 export const onNewComment = functions.firestore

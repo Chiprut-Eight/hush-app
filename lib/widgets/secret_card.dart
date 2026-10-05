@@ -815,7 +815,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                                                   Text(l10n.replyComment, style: const TextStyle(color: HushColors.textMuted, fontSize: 12, fontWeight: FontWeight.w600)),
                                                   const SizedBox(width: 16),
                                                   GestureDetector(
-                                                    onTap: () => _secretService.toggleCommentLike(_currentSecret.id, c['id']),
+                                                    onTap: () => _secretService.toggleCommentLike(_currentSecret.id, c['id'], c['likedBy']?.contains(currentUser?.uid) == true),
                                                     child: Row(
                                                       children: [
                                                         Icon(
