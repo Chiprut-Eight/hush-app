@@ -21,6 +21,7 @@ class HushUser {
   final bool hasSeenTutorial;
   final bool hasSeenFollowingTutorialV6;
   final bool hasSeenFeedTutorialV1;
+  final bool hasSeenCreateTutorialV1;
   final String? firstName;
   final String? lastName;
   final DateTime? dateOfBirth;
@@ -70,6 +71,7 @@ class HushUser {
     this.hasSeenTutorial = false,
     this.hasSeenFollowingTutorialV6 = false,
     this.hasSeenFeedTutorialV1 = false,
+    this.hasSeenCreateTutorialV1 = false,
     this.firstName,
     this.lastName,
     this.dateOfBirth,
@@ -113,6 +115,7 @@ class HushUser {
       hasSeenTutorial: data['hasSeenTutorial'] ?? false,
       hasSeenFollowingTutorialV6: data['hasSeenFollowingTutorialV6'] ?? false,
       hasSeenFeedTutorialV1: data['hasSeenFeedTutorialV1'] ?? false,
+      hasSeenCreateTutorialV1: data['hasSeenCreateTutorialV1'] ?? false,
       firstName: data['firstName'],
       lastName: data['lastName'],
       dateOfBirth: (data['dateOfBirth'] as Timestamp?)?.toDate(),
@@ -153,6 +156,8 @@ class HushUser {
     'isOnboarded': isOnboarded,
     'hasSeenTutorial': hasSeenTutorial,
     'hasSeenFollowingTutorialV6': hasSeenFollowingTutorialV6,
+    'hasSeenFeedTutorialV1': hasSeenFeedTutorialV1,
+    'hasSeenCreateTutorialV1': hasSeenCreateTutorialV1,
     'firstName': firstName,
     'lastName': lastName,
     'dateOfBirth': dateOfBirth != null ? Timestamp.fromDate(dateOfBirth!) : null,

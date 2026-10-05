@@ -4,6 +4,8 @@ import 'package:geolocator/geolocator.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:provider/provider.dart';
+import 'package:tutorial_coach_mark/tutorial_coach_mark.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../services/audio_service.dart';
 import '../services/secret_service.dart';
 import '../services/geo_service.dart';
@@ -23,8 +25,9 @@ class CreateScreen extends StatefulWidget {
   final VoidCallback? onPublishComplete;
   final double? targetLat;
   final double? targetLng;
+  final bool isActive;
 
-  const CreateScreen({super.key, this.onPublishStart, this.onPublishComplete, this.targetLat, this.targetLng});
+  const CreateScreen({super.key, this.onPublishStart, this.onPublishComplete, this.targetLat, this.targetLng, this.isActive = true});
 
   @override
   State<CreateScreen> createState() => _CreateScreenState();
@@ -34,6 +37,12 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
   final AudioService _audioService = AudioService();
   final SecretService _secretService = SecretService();
   final AudioPlayer _audioPlayer = AudioPlayer();
+  
+  TutorialCoachMark? tutorialCoachMark;
+  final GlobalKey _typeSelectionKey = GlobalKey();
+  final GlobalKey _inputMethodKey = GlobalKey();
+  final GlobalKey _textFieldKey = GlobalKey();
+  bool _isTutorialActive = false;
   
   late AnimationController _pulseController;
   late Animation<double> _pulseAnimation;
@@ -66,6 +75,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
           _activeTab = 1;
         });
       }
+      
+      _checkAndShowTutorial();
     });
     _pulseController = AnimationController(
       vsync: this,
@@ -182,6 +193,192 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     _audioPlayer.dispose();
     _textController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didUpdateWidget(CreateScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      _checkAndShowTutorial();
+    }
+  }
+
+  void _checkAndShowTutorial() {
+    if (!widget.isActive) return;
+    
+    final authProvider = context.read<AuthProvider>();
+    final user = authProvider.hushUser;
+    
+    if (user != null && !user.hasSeenCreateTutorialV1) {
+      // Add a post-frame callback to ensure UI is fully built
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        _showTutorial();
+      });
+    }
+  }
+
+  void _showTutorial() {
+    if (!mounted) return;
+    
+    // Switch to text tab if not already to ensure text field is visible
+    if (_activeTab != 0) {
+      setState(() => _activeTab = 0);
+    }
+    
+    setState(() => _isTutorialActive = true);
+    
+    Future.delayed(const Duration(milliseconds: 500), () {
+      if (!mounted) return;
+      
+      final l10n = AppLocalizations.of(context)!;
+      final isHe = l10n.localeName == 'he';
+      final continueText = isHe ? 'המשך' : 'Continue';
+      final gotItText = isHe ? 'הבנתי' : 'Got it';
+      
+      final targets = <TargetFocus>[];
+      
+      if (_typeSelectionKey.currentContext != null) {
+        targets.add(
+          TargetFocus(
+            identify: "Target Type",
+            keyTarget: _typeSelectionKey,
+            shape: ShapeLightFocus.RRect,
+            radius: 12,
+            contents: [
+              TargetContent(
+                align: ContentAlign.top,
+                builder: (context, controller) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'ביחרו סוג Hushhh',
+                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => tutorialCoachMark?.next(),
+                          style: ElevatedButton.styleFrom(backgroundColor: HushColors.gradientBlue, foregroundColor: Colors.white),
+                          child: Text(continueText),
+                        ),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: () => tutorialCoachMark?.skip(),
+                          style: TextButton.styleFrom(foregroundColor: Colors.white54),
+                          child: Text(gotItText),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        );
+      }
+      
+      if (_inputMethodKey.currentContext != null) {
+        targets.add(
+          TargetFocus(
+            identify: "Target Method",
+            keyTarget: _inputMethodKey,
+            shape: ShapeLightFocus.RRect,
+            radius: 12,
+            contents: [
+              TargetContent(
+                align: ContentAlign.top,
+                builder: (context, controller) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'ביחרו אם לכתוב או להקליט Hushhh',
+                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    Row(
+                      children: [
+                        ElevatedButton(
+                          onPressed: () => tutorialCoachMark?.next(),
+                          style: ElevatedButton.styleFrom(backgroundColor: HushColors.gradientBlue, foregroundColor: Colors.white),
+                          child: Text(continueText),
+                        ),
+                        const SizedBox(width: 8),
+                        TextButton(
+                          onPressed: () => tutorialCoachMark?.skip(),
+                          style: TextButton.styleFrom(foregroundColor: Colors.white54),
+                          child: Text(gotItText),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        );
+      }
+      
+      if (_textFieldKey.currentContext != null) {
+        targets.add(
+          TargetFocus(
+            identify: "Target Text",
+            keyTarget: _textFieldKey,
+            shape: ShapeLightFocus.RRect,
+            radius: 12,
+            contents: [
+              TargetContent(
+                align: ContentAlign.bottom,
+                builder: (context, controller) => Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 20),
+                    const Text(
+                      'השאירו Hushhh סביבכם, שימו לב לרמת הדיוק',
+                      style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => tutorialCoachMark?.skip(),
+                      style: ElevatedButton.styleFrom(backgroundColor: HushColors.gradientBlue, foregroundColor: Colors.white),
+                      child: Text(gotItText),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          )
+        );
+      }
+      
+      if (targets.isEmpty) return;
+
+      tutorialCoachMark = TutorialCoachMark(
+        targets: targets,
+        colorShadow: HushColors.bgPrimary,
+        hideSkip: true,
+        paddingFocus: 10,
+        opacityShadow: 0.9,
+        onFinish: () async {
+          if (mounted) setState(() => _isTutorialActive = false);
+          final auth = context.read<AuthProvider>();
+          if (auth.firebaseUser != null) {
+            await FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenCreateTutorialV1': true});
+          }
+        },
+        onSkip: () {
+          if (mounted) setState(() => _isTutorialActive = false);
+          final auth = context.read<AuthProvider>();
+          if (auth.firebaseUser != null) {
+            FirebaseFirestore.instance.collection('users').doc(auth.firebaseUser!.uid).update({'hasSeenCreateTutorialV1': true});
+          }
+          return true;
+        },
+      )..show(context: context);
+    });
   }
 
   Future<void> _toggleRecording() async {
@@ -444,43 +641,69 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
                 if (_activeTab == 0) ...[
                   // For text tab: Submit button appears ABOVE the text field so it's not hidden by keyboard
                   _buildSubmitButton(l10n, margin: const EdgeInsets.only(bottom: 12)),
-                  _buildTextTab(l10n),
-                  const SizedBox(height: 12),
-                  _buildGpsAccuracyIndicator(l10n),
+                  Container(
+                    key: _textFieldKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildTextTab(l10n),
+                        const SizedBox(height: 12),
+                        _buildGpsAccuracyIndicator(l10n, forceHighAccuracy: _isTutorialActive),
+                      ],
+                    ),
+                  ),
                 ] else ...[
-                  _buildVoiceTab(l10n),
-                  const SizedBox(height: 16),
-                  _buildGpsAccuracyIndicator(l10n),
+                  Container(
+                    key: _textFieldKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        _buildVoiceTab(l10n),
+                        const SizedBox(height: 16),
+                        _buildGpsAccuracyIndicator(l10n, forceHighAccuracy: _isTutorialActive),
+                      ],
+                    ),
+                  ),
                   _buildSubmitButton(l10n, margin: const EdgeInsets.only(top: 12)),
                 ],
 
                 const SizedBox(height: 24),
 
                 // Tabs
-                CupertinoSlidingSegmentedControl<int>(
-                  backgroundColor: HushColors.bgCard,
-                  thumbColor: const Color(0xFF1E2638),
-                  groupValue: _activeTab,
-                  padding: const EdgeInsets.all(4),
-                  children: {
-                    0: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.textTab)),
-                    1: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.voiceTab)),
-                  },
-                  onValueChanged: (int? value) {
-                    setState(() => _activeTab = value!);
-                    AnalyticsService().logCreateTabChanged(value == 0 ? 'text' : 'voice');
-                  },
+                Container(
+                  key: _inputMethodKey,
+                  child: CupertinoSlidingSegmentedControl<int>(
+                    backgroundColor: HushColors.bgCard,
+                    thumbColor: const Color(0xFF1E2638),
+                    groupValue: _activeTab,
+                    padding: const EdgeInsets.all(4),
+                    children: {
+                      0: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.textTab)),
+                      1: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: Text(l10n.voiceTab)),
+                    },
+                    onValueChanged: (int? value) {
+                      setState(() => _activeTab = value!);
+                      AnalyticsService().logCreateTabChanged(value == 0 ? 'text' : 'voice');
+                    },
+                  ),
                 ),
                 
                 const SizedBox(height: 32),
 
                 // Secret Type
-                Text(l10n.secretType, style: const TextStyle(color: HushColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 16)),
-                const SizedBox(height: 12),
-
-                _buildTypeOption('regular', l10n.regularSecret, l10n.regularSecretDesc),
-                const SizedBox(height: 12),
-                _buildTypeOption('group', l10n.groupSecret, l10n.groupSecretDesc),
+                Container(
+                  key: _typeSelectionKey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(l10n.secretType, style: const TextStyle(color: HushColors.textSecondary, fontWeight: FontWeight.bold, fontSize: 16)),
+                      const SizedBox(height: 12),
+                      _buildTypeOption('regular', l10n.regularSecret, l10n.regularSecretDesc),
+                      const SizedBox(height: 12),
+                      _buildTypeOption('group', l10n.groupSecret, l10n.groupSecretDesc),
+                    ],
+                  ),
+                ),
 
                 if (_secretType == 'group') ...[
                   const SizedBox(height: 16),
@@ -681,8 +904,8 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
     );
   }
 
-  Widget _buildGpsAccuracyIndicator(AppLocalizations l10n) {
-    if (_gpsAccuracy == null) {
+  Widget _buildGpsAccuracyIndicator(AppLocalizations l10n, {bool forceHighAccuracy = false}) {
+    if (_gpsAccuracy == null && !forceHighAccuracy) {
       return Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -693,7 +916,7 @@ class _CreateScreenState extends State<CreateScreen> with SingleTickerProviderSt
       );
     }
 
-    final accuracy = _gpsAccuracy!;
+    final accuracy = forceHighAccuracy ? 5.0 : _gpsAccuracy!;
     Color indicatorColor;
     String label;
 

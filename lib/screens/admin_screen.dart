@@ -1367,6 +1367,7 @@ class _MaintenanceScreen extends StatelessWidget {
                   'hasSeenTutorial': false,
                   'hasSeenFollowingTutorialV6': false,
                   'hasSeenFeedTutorialV1': false,
+                  'hasSeenCreateTutorialV1': false,
                 });
                 ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(isHe ? 'המדריכים אופסו! הפעל מחדש את האפליקציה.' : "Tutorials reset! Restart app.")));
               }

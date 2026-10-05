@@ -292,6 +292,7 @@ class _AppShellState extends State<AppShell> {
                 FeedScreen(key: _feedScreenKey, scaffoldKey: _feedScaffoldKey),
                 MapScreen(scaffoldKey: _mapScaffoldKey),
                 CreateScreen(
+                  isActive: _currentIndex == 2,
                   onPublishStart: () {
                     setState(() => _currentIndex = 0);
                     _updateTitle(context, 0);
