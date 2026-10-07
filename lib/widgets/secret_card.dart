@@ -94,6 +94,8 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   void initState() {
     super.initState();
     _currentSecret = widget.secret;
+    
+
 
     if (widget.autoOpenComments) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -112,6 +114,11 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
     final authProvider = context.read<AuthProvider>();
     final currentUser = authProvider.firebaseUser;
     final hushUser = authProvider.hushUser;
+    
+    if (currentUser != null) {
+      _userLiked = _currentSecret.likedBy.contains(currentUser.uid);
+      _userDisliked = _currentSecret.dislikedBy.contains(currentUser.uid);
+    }
     
     // Auto-reveal immediately for creators OR if already unlocked OR if saved
     bool isSavedInitial = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
@@ -142,6 +149,10 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
       if (mounted) {
         setState(() {
           _currentSecret = updatedSecret;
+          if (currentUser != null) {
+            _userLiked = _currentSecret.likedBy.contains(currentUser.uid);
+            _userDisliked = _currentSecret.dislikedBy.contains(currentUser.uid);
+          }
           bool isSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
           // Auto-reveal for creators OR if already unlocked OR if saved OR if bypassing distance
           if (currentUser?.uid == _currentSecret.creatorId || _currentSecret.unlockedBy.contains(currentUser?.uid) || isSaved || widget.bypassDistance) {

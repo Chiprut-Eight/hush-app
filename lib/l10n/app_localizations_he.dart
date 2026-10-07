@@ -439,7 +439,7 @@ class AppLocalizationsHe extends AppLocalizations {
   String get addComment => 'הוסף תגובה...';
 
   @override
-  String get noComments => 'אין תגובות עדיין. היה הראשון!';
+  String get noComments => 'אין תגובות עדיין. תהיו הראשונים להגיב!';
 
   @override
   String get deleteComment => 'מחק תגובה';

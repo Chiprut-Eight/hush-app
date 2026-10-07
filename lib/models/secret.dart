@@ -25,6 +25,8 @@ class Secret {
   final int saveCount;
   final int reportCount;
   final int commentCount;
+  final List<String> likedBy;
+  final List<String> dislikedBy;
   final bool isHidden;
   final DateTime createdAt;
   final DateTime expiresAt;
@@ -53,6 +55,8 @@ class Secret {
     this.timeWindowMinutes,
     this.reportCount = 0,
     this.commentCount = 0,
+    this.likedBy = const [],
+    this.dislikedBy = const [],
     this.isHidden = false,
     this.unlockedBy = const [],
     DateTime? createdAt,
@@ -96,6 +100,8 @@ class Secret {
       unlockedBy: List<String>.from(data['unlockedBy'] ?? []),
       reportCount: data['reportCount'] ?? 0,
       commentCount: data['commentCount'] ?? 0,
+      likedBy: List<String>.from(data['likedBy'] ?? []),
+      dislikedBy: List<String>.from(data['dislikedBy'] ?? []),
       isHidden: data['isHidden'] ?? false,
       createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       expiresAt: (data['expiresAt'] as Timestamp?)?.toDate() ?? 

@@ -317,15 +317,35 @@ export const onNewLike = functions.firestore
     const before = change.before.data();
     const after = change.after.data();
 
-    // Only trigger if likes increased
-    if ((after.likes || 0) <= (before.likes || 0)) return;
+    const beforeLikes = before.likedBy || [];
+    const afterLikes = after.likedBy || [];
+
+    // Find the new liker
+    const newLikers = afterLikes.filter((uid: string) => !beforeLikes.includes(uid));
+    
+    // Fallback to checking likes count if likedBy isn't populated (legacy)
+    if (newLikers.length === 0 && (after.likes || 0) <= (before.likes || 0)) return;
 
     const creatorId = after.creatorId;
     if (!creatorId) return;
+    
+    let likerName = "Someone";
+    let likerNameHe = "מישהו";
+    
+    if (newLikers.length > 0) {
+      const likerDoc = await db.collection("users").doc(newLikers[0]).get();
+      if (likerDoc.exists) {
+        const firstName = likerDoc.data()?.firstName;
+        if (firstName) {
+          likerName = firstName;
+          likerNameHe = firstName;
+        }
+      }
+    }
 
     await sendPushToUser(
       creatorId,
-      { en: "Someone liked your Hushhh", he: "מישהו עשה לייק ל-Hushhh שלך" },
+      { en: `${likerName} liked your Hushhh`, he: `${likerNameHe} עשה/תה לייק ל-Hushhh שלך` },
       { en: "Your Hushhh is getting attention!", he: "ה-Hushhh שלך מקבל תשומת לב!" },
       { type: "like", secretId: change.after.id }
     );
@@ -343,15 +363,30 @@ export const onNewCommentLike = functions.firestore
     const beforeLikes = before.likedBy || [];
     const afterLikes = after.likedBy || [];
 
-    // Only trigger if a like was added
-    if (afterLikes.length <= beforeLikes.length) return;
+    // Find the new liker
+    const newLikers = afterLikes.filter((uid: string) => !beforeLikes.includes(uid));
+    if (newLikers.length === 0) return;
 
     const creatorId = after.userId;
     if (!creatorId) return;
+    
+    let likerName = "Someone";
+    let likerNameHe = "מישהו";
+    
+    if (newLikers.length > 0) {
+      const likerDoc = await db.collection("users").doc(newLikers[0]).get();
+      if (likerDoc.exists) {
+        const firstName = likerDoc.data()?.firstName;
+        if (firstName) {
+          likerName = firstName;
+          likerNameHe = firstName;
+        }
+      }
+    }
 
     await sendPushToUser(
       creatorId,
-      { en: "Someone liked your comment", he: "מישהו עשה לייק לתגובה שלך" },
+      { en: `${likerName} liked your comment`, he: `${likerNameHe} עשה/תה לייק לתגובה שלך` },
       { en: "Your comment is getting attention!", he: "התגובה שלך מקבלת תשומת לב!" },
       { type: "comment", secretId: context.params.secretId, commentId: context.params.commentId }
     );
@@ -1234,16 +1269,28 @@ export const interactWithSecret = functions.https.onCall(
 
     switch (action) {
       case "like":
-        await secretRef.update({ likes: admin.firestore.FieldValue.increment(1) });
+        await secretRef.update({ 
+          likes: admin.firestore.FieldValue.increment(1),
+          likedBy: admin.firestore.FieldValue.arrayUnion(uid)
+        });
         break;
       case "unlike":
-        await secretRef.update({ likes: admin.firestore.FieldValue.increment(-1) });
+        await secretRef.update({ 
+          likes: admin.firestore.FieldValue.increment(-1),
+          likedBy: admin.firestore.FieldValue.arrayRemove(uid)
+        });
         break;
       case "dislike":
-        await secretRef.update({ dislikes: admin.firestore.FieldValue.increment(1) });
+        await secretRef.update({ 
+          dislikes: admin.firestore.FieldValue.increment(1),
+          dislikedBy: admin.firestore.FieldValue.arrayUnion(uid)
+        });
         break;
       case "undislike":
-        await secretRef.update({ dislikes: admin.firestore.FieldValue.increment(-1) });
+        await secretRef.update({ 
+          dislikes: admin.firestore.FieldValue.increment(-1),
+          dislikedBy: admin.firestore.FieldValue.arrayRemove(uid)
+        });
         break;
       case "view":
         // Unique view tracking
