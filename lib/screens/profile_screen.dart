@@ -1,5 +1,9 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
@@ -7,6 +11,7 @@ import '../models/secret.dart';
 import '../services/secret_service.dart';
 import 'package:hush_app/models/hush_user.dart';
 import '../services/social_service.dart';
+import '../services/auth_service.dart';
 import '../widgets/secret_card.dart';
 import '../config/tiers.dart';
 
@@ -34,6 +39,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   List<Secret> _savedSecrets = [];
   bool _isLoading = true;
   Position? _userPosition;
+  bool _isUploadingPhoto = false;
 
   @override
   void initState() {
@@ -125,6 +131,171 @@ class ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
+  Future<void> _showPhotoOptions() async {
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: HushColors.bgPrimary,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Colors.white),
+              title: Text(l10n.photoFromGallery, style: const TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndUploadPhoto(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Colors.white),
+              title: Text(l10n.photoFromCamera, style: const TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndUploadPhoto(ImageSource.camera);
+              },
+            ),
+            if (_targetUser?.photoURL != null && _targetUser?.useGenericPhoto != true)
+              ListTile(
+                leading: const Icon(Icons.delete, color: HushColors.tierRed),
+                title: Text(l10n.photoRemove, style: const TextStyle(color: HushColors.tierRed)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  setState(() => _isUploadingPhoto = true);
+                  await AuthService().removeProfilePhoto();
+                  if (!mounted) return;
+                  await context.read<AuthProvider>().refreshProfile();
+                  await fetchProfileData();
+                  if (mounted) setState(() => _isUploadingPhoto = false);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: source);
+
+      if (image == null) return;
+      
+      if (!mounted) return;
+      final isHe = Localizations.localeOf(context).languageCode == 'he';
+      final title = isHe ? 'חיתוך תמונה' : 'Crop Photo';
+      final doneBtn = isHe ? 'אישור' : 'Done';
+      final cancelBtn = isHe ? 'ביטול' : 'Cancel';
+      
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 70,
+        maxWidth: 512,
+        maxHeight: 512,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: title,
+            toolbarColor: HushColors.bgPrimary,
+            toolbarWidgetColor: Colors.white,
+            statusBarLight: true,
+            activeControlsWidgetColor: HushColors.textAccent,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+            cropStyle: CropStyle.circle,
+          ),
+          IOSUiSettings(
+            title: title,
+            doneButtonTitle: doneBtn,
+            cancelButtonTitle: cancelBtn,
+            cropStyle: CropStyle.circle,
+          ),
+        ],
+      );
+
+      if (croppedFile == null) return;
+
+      setState(() => _isUploadingPhoto = true);
+      
+      final authService = AuthService();
+      await authService.updateProfilePhoto(File(croppedFile.path));
+      
+      if (!mounted) return;
+      await context.read<AuthProvider>().refreshProfile();
+      await fetchProfileData();
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.photoUploadFailed}: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingPhoto = false);
+    }
+  }
+
+  void _showReportPhotoDialog(HushUser targetUser) {
+    final l10n = AppLocalizations.of(context)!;
+    String? selectedReason;
+    final List<String> reasons = [
+      l10n.reportReasonSpam,
+      l10n.reportReasonInappropriateImage,
+      l10n.reportReasonHarassment,
+      l10n.reportReasonOther,
+    ];
+
+    showDialog(
+      context: context,
+      builder: (ctx) => StatefulBuilder(
+        builder: (dialogContext, setDialogState) {
+          return AlertDialog(
+            backgroundColor: HushColors.bgCard,
+            title: Text(l10n.reportPhotoTitle, style: const TextStyle(color: Colors.white)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(l10n.reportReason, style: const TextStyle(color: HushColors.textSecondary)),
+                const SizedBox(height: 16),
+                ...reasons.map((r) => 
+                  ListTile(
+                    title: Text(r, style: const TextStyle(color: Colors.white, fontSize: 14)),
+                    trailing: selectedReason == r 
+                        ? const Icon(Icons.check_circle, color: HushColors.tierRed) 
+                        : const Icon(Icons.circle_outlined, color: HushColors.textSecondary),
+                    contentPadding: EdgeInsets.zero,
+                    onTap: () => setDialogState(() => selectedReason = r),
+                  )
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(ctx),
+                child: Text(l10n.cancel, style: const TextStyle(color: HushColors.textSecondary)),
+              ),
+              ElevatedButton(
+                onPressed: selectedReason == null ? null : () async {
+                  Navigator.pop(ctx);
+                  await _socialService.reportProfilePhoto(targetUser.uid, selectedReason!);
+                  if (!mounted) return;
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text(l10n.reportSuccess)),
+                  );
+                },
+                style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
+                child: Text(l10n.reportConfirm, style: const TextStyle(color: Colors.white)),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
   String _getTierName(BuildContext context, int level) {
     final l10n = AppLocalizations.of(context)!;
     switch (level) {
@@ -144,8 +315,9 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   void _showNextTierInfo(BuildContext context, HushUser user) {
     if (user.tierLevel >= 10) {
+      final isHeMax = Localizations.localeOf(context).languageCode == 'he';
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('הגעת לדרגה הגבוהה ביותר!')),
+        SnackBar(content: Text(isHeMax ? 'הגעת לדרגה הגבוהה ביותר!' : 'You have reached the highest tier!')),
       );
       return;
     }
@@ -276,12 +448,54 @@ class ProfileScreenState extends State<ProfileScreen> {
             Center(
               child: Column(
                 children: [
-                  CircleAvatar(
-                    radius: 48,
-                    backgroundColor: HushColors.bgCard,
-                    backgroundImage: user.photoURL != null && !user.useGenericPhoto
-                        ? NetworkImage(user.photoURL!)
-                        : const AssetImage('assets/images/icon_only.png'),
+                  Stack(
+                    children: [
+                      GestureDetector(
+                        onTap: isMe ? _showPhotoOptions : null,
+                        child: CircleAvatar(
+                          key: ValueKey(user.photoURL),
+                          radius: 48,
+                          backgroundColor: HushColors.bgCard,
+                          backgroundImage: user.photoURL != null && !user.useGenericPhoto
+                              ? CachedNetworkImageProvider(user.photoURL!)
+                              : const AssetImage('assets/images/icon_only.png') as ImageProvider,
+                          child: _isUploadingPhoto ? const CircularProgressIndicator(color: HushColors.textAccent) : null,
+                        ),
+                      ),
+                      if (isMe)
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: _showPhotoOptions,
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: const BoxDecoration(
+                                color: HushColors.textAccent,
+                                shape: BoxShape.circle,
+                              ),
+                              child: const Icon(Icons.camera_alt, size: 16, color: Colors.white),
+                            ),
+                          ),
+                        ),
+                      if (!isMe && user.photoURL != null && !user.useGenericPhoto)
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () => _showReportPhotoDialog(user),
+                            child: Container(
+                              padding: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                color: HushColors.bgCard,
+                                shape: BoxShape.circle,
+                                border: Border.all(color: HushColors.borderSubtle),
+                              ),
+                              child: const Icon(Icons.flag, size: 16, color: HushColors.tierRed),
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -295,7 +509,7 @@ class ProfileScreenState extends State<ProfileScreen> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       GestureDetector(
-                        onTap: () => _showNextTierInfo(context, user),
+                        onTap: isMe ? () => _showNextTierInfo(context, user) : null,
                         child: Container(
                           padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                           decoration: BoxDecoration(

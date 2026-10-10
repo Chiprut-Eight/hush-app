@@ -58,7 +58,10 @@ service cloud.firestore {
           'likes', 'dislikes', 'views', 'viewedBy',
           'saveCount', 'commentCount', 'reportCount',
           'unlockedBy', 'isHidden'
-        ])
+        ]) ||
+        (resource.data.creatorId == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+          'creatorPhotoURL', 'creatorName', 'creatorTierLevel', 'creatorTierColor'
+        ]))
       );
       
       // Only creator or admin can delete

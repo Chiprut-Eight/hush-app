@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/hush_user.dart';
 import '../models/secret.dart';
 
@@ -114,5 +115,62 @@ class SocialService {
     });
 
     return feedItems;
+  }
+
+  /// Report a user's profile photo
+  Future<void> reportProfilePhoto(String targetUserId, String reason) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+
+    // Get reporter details
+    String? reporterEmail = user.email;
+    String? reporterName = user.displayName;
+    try {
+      final reporterDoc = await _firestore.collection('users').doc(user.uid).get();
+      if (reporterDoc.exists) {
+        final rData = reporterDoc.data();
+        if (reporterEmail == null || reporterEmail.isEmpty) {
+          reporterEmail = rData?['email'] as String?;
+        }
+        final firstName = rData?['firstName'] as String? ?? '';
+        final lastName = rData?['lastName'] as String? ?? '';
+        final fullName = '$firstName $lastName'.trim();
+        if (fullName.isNotEmpty) {
+          reporterName = fullName;
+        }
+      }
+    } catch (_) {}
+
+    // Get target user details
+    String? targetUserName;
+    String? photoURL;
+    try {
+      final targetDoc = await _firestore.collection('users').doc(targetUserId).get();
+      if (targetDoc.exists) {
+        final tData = targetDoc.data();
+        final firstName = tData?['firstName'] as String? ?? '';
+        final lastName = tData?['lastName'] as String? ?? '';
+        final fullName = '$firstName $lastName'.trim();
+        targetUserName = fullName.isNotEmpty ? fullName : tData?['displayName'] as String?;
+        photoURL = tData?['photoURL'] as String?;
+      }
+    } catch (_) {}
+
+    // Create a comprehensive report document using deterministic ID to prevent duplicates
+    final docId = 'photo_${targetUserId}_${user.uid}';
+
+    await _firestore.collection('reports').doc(docId).set({
+      'targetUserId': targetUserId,
+      'reporterId': user.uid,
+      'reporterName': reporterName ?? 'Anonymous',
+      'reporterEmail': reporterEmail ?? '',
+      'creatorId': targetUserId,
+      'creatorName': targetUserName ?? 'Unknown User',
+      'secretType': 'profile_photo',
+      'reportedContent': photoURL ?? '', // Save the photo URL at the time of reporting
+      'reason': reason,
+      'status': 'pending',
+      'createdAt': FieldValue.serverTimestamp(),
+    });
   }
 }

@@ -9,6 +9,13 @@ service firebase.storage {
       allow write: if request.auth != null;
       allow read: if request.auth != null;
     }
+
+    // Profile photos: one file per user at profile_photos/{uid}_{timestamp}.jpg.
+    // Client resizes to 512px before upload.
+    match /profile_photos/{fileName} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && fileName.matches(request.auth.uid + '.*');
+    }
     
     // General fallback: block everything by default
     match /{allPaths=**} {

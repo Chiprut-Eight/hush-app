@@ -57,6 +57,10 @@
 		<string>HUSH uses your location in the background to notify you when you are near a secret.</string>
 		<key>NSMicrophoneUsageDescription</key>
 		<string>HUSH needs microphone access for you to record voice secrets.</string>
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>HUSH needs access to your photos so you can choose a profile picture.</string>
+		<key>NSCameraUsageDescription</key>
+		<string>HUSH needs camera access so you can take a profile picture.</string>
 		<key>UIViewControllerBasedStatusBarAppearance</key>
 		<false/>
 		<key>UIBackgroundModes</key>

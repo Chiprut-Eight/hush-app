@@ -59,7 +59,7 @@ let taskIndex = 0;
 
 function runNext() {
   if (taskIndex >= tasks.length && activeCount === 0) {
-    console.log(`\n🎉 All ${completedCount} store screenshots successfully rendered at 1284x2778px!`);
+    console.log(`\n🎉 All ${completedCount} store screenshots successfully rendered at 1290x2796px!`);
     return;
   }
 
@@ -73,7 +73,7 @@ function runNext() {
       '--no-sandbox',
       '--allow-file-access-from-files',
       '--force-device-scale-factor=1',
-      '--window-size=1284,2778',
+      '--window-size=1290,2796',
       '--virtual-time-budget=2000',
       '--run-all-compositor-stages-before-draw',
       '--hide-scrollbars',

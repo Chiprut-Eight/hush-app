@@ -376,5 +376,18 @@
   "networkError": "שגיאת תקשורת, אנא נסה שוב.",
   "defaultCreateMode": "ברירת מחדל ליצירת Hushhh",
   "textMode": "טקסט",
-  "voiceMode": "קול"
+  "voiceMode": "קול",
+  "profilePhotoTitle": "תמונת פרופיל",
+  "profilePhotoSub": "בחרו תמונה שתופיע בפרופיל וב-Hushhh שלכם",
+  "addProfilePhoto": "הוספת תמונת פרופיל (לא חובה)",
+  "photoFromGallery": "בחירה מהגלריה",
+  "photoFromCamera": "צילום תמונה",
+  "photoRemove": "הסרת התמונה",
+  "photoUploading": "מעלה תמונה...",
+  "photoUpdated": "תמונת הפרופיל עודכנה",
+  "photoRemoved": "תמונת הפרופיל הוסרה",
+  "photoUploadFailed": "העלאת התמונה נכשלה, נסו שוב",
+  "reportPhotoTitle": "דיווח על תמונת פרופיל",
+  "reportReasonInappropriateImage": "תמונה לא הולמת",
+  "photoAlreadyReported": "כבר דיווחתם על התמונה הזו"
 }

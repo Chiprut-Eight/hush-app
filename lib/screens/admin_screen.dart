@@ -14,6 +14,7 @@ import 'create_screen.dart';
 import 'package:just_audio/just_audio.dart';
 import '../widgets/title_setter.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class AdminScreen extends StatefulWidget {
   const AdminScreen({super.key});
@@ -1103,6 +1104,22 @@ class _ReportCardItem extends StatelessWidget {
                         _AdminAudioPlayer(
                           audioURL: secretData?['audioURL'] as String? ?? contentData?['audioURL'] as String?,
                           isHe: isHe,
+                        ),
+                      ] else if ((secretType == 'profile_photo' || reportedText.contains('firebasestorage')) && reportedText.trim().startsWith('http')) ...[
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            color: Colors.white.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: CachedNetworkImage(
+                            imageUrl: reportedText,
+                            height: 200,
+                            fit: BoxFit.contain,
+                            placeholder: (context, url) => const Center(child: CircularProgressIndicator(color: HushColors.textAccent)),
+                            errorWidget: (context, url, error) => const Icon(Icons.error, color: HushColors.tierRed),
+                          ),
                         ),
                       ] else ...[
                         Container(

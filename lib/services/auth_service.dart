@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'dart:convert';
@@ -177,5 +181,110 @@ class AuthService {
     final bytes = utf8.encode(input);
     final digest = sha256.convert(bytes);
     return digest.toString();
+  }
+
+  /// Uploads a new profile photo and updates Firestore
+  Future<String?> updateProfilePhoto(File imageFile) async {
+    final user = _auth.currentUser;
+    if (user == null) return null;
+
+    try {
+      final oldUser = await getUserProfile(user.uid);
+      final oldUrl = oldUser?.photoURL;
+      if (oldUrl != null) {
+        await CachedNetworkImageProvider(oldUrl).evict();
+      }
+
+      final timestamp = DateTime.now().millisecondsSinceEpoch;
+      final storageRef = FirebaseStorage.instance.ref().child('profile_photos').child('${user.uid}_$timestamp.jpg');
+      await storageRef.putFile(
+        imageFile,
+        SettableMetadata(contentType: 'image/jpeg'),
+      );
+      final downloadUrl = await storageRef.getDownloadURL();
+
+      // Update Firestore user document
+      await _firestore.collection('users').doc(user.uid).update({
+        'photoURL': downloadUrl,
+        'useGenericPhoto': false,
+      });
+
+      // Batch update old secrets
+      try {
+        final secretsSnap = await _firestore.collection('secrets')
+            .where('creatorId', isEqualTo: user.uid)
+            .get();
+        if (secretsSnap.docs.isNotEmpty) {
+          final batch = _firestore.batch();
+          for (var doc in secretsSnap.docs) {
+            batch.update(doc.reference, {'creatorPhotoURL': downloadUrl});
+          }
+          await batch.commit();
+        }
+      } catch (e) {
+        debugPrint('Failed to update secrets profile photo: $e');
+      }
+
+      // Also update Auth profile
+      await user.updatePhotoURL(downloadUrl);
+      
+      // Try to delete the old photo to save space
+      if (oldUrl != null && oldUrl.contains('profile_photos')) {
+        try {
+          final oldRef = FirebaseStorage.instance.refFromURL(oldUrl);
+          await oldRef.delete();
+        } catch (_) {}
+      }
+      
+      return downloadUrl;
+    } catch (e) {
+      debugPrint('Error uploading profile photo: $e');
+      throw Exception('Upload failed: $e');
+    }
+  }
+
+  /// Removes the user's profile photo
+  Future<void> removeProfilePhoto() async {
+    final user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      final oldUser = await getUserProfile(user.uid);
+      final oldPhotoUrl = oldUser?.photoURL;
+      
+      if (oldPhotoUrl != null && oldPhotoUrl.contains('profile_photos')) {
+        try {
+          final oldRef = FirebaseStorage.instance.refFromURL(oldPhotoUrl);
+          await oldRef.delete();
+        } catch (_) {}
+      }
+
+      // Update Firestore
+      await _firestore.collection('users').doc(user.uid).update({
+        'photoURL': FieldValue.delete(),
+        'useGenericPhoto': true,
+      });
+
+      // Batch update old secrets to remove photo
+      try {
+        final secretsSnap = await _firestore.collection('secrets')
+            .where('creatorId', isEqualTo: user.uid)
+            .get();
+        if (secretsSnap.docs.isNotEmpty) {
+          final batch = _firestore.batch();
+          for (var doc in secretsSnap.docs) {
+            batch.update(doc.reference, {'creatorPhotoURL': FieldValue.delete()});
+          }
+          await batch.commit();
+        }
+      } catch (e) {
+        debugPrint('Failed to update secrets profile photo: $e');
+      }
+
+      // Update Auth profile
+      await user.updatePhotoURL(null);
+    } catch (e) {
+      debugPrint('Error removing profile photo: $e');
+    }
   }
 }

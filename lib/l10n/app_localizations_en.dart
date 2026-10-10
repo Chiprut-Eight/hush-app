@@ -764,4 +764,44 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get notifyDecaySub =>
       'Alerts for your Hushhh that are about to expire or have been removed';
+
+  @override
+  String get profilePhotoTitle => 'Profile Photo';
+
+  @override
+  String get profilePhotoSub =>
+      'Choose a photo that will appear on your profile and Hushhh';
+
+  @override
+  String get addProfilePhoto => 'Add a profile photo (optional)';
+
+  @override
+  String get photoFromGallery => 'Choose from gallery';
+
+  @override
+  String get photoFromCamera => 'Take a photo';
+
+  @override
+  String get photoRemove => 'Remove photo';
+
+  @override
+  String get photoUploading => 'Uploading photo...';
+
+  @override
+  String get photoUpdated => 'Profile photo updated';
+
+  @override
+  String get photoRemoved => 'Profile photo removed';
+
+  @override
+  String get photoUploadFailed => 'Photo upload failed, please try again';
+
+  @override
+  String get reportPhotoTitle => 'Report profile photo';
+
+  @override
+  String get reportReasonInappropriateImage => 'Inappropriate image';
+
+  @override
+  String get photoAlreadyReported => 'You have already reported this photo';
 }

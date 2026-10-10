@@ -1477,6 +1477,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Alerts for your Hushhh that are about to expire or have been removed'**
   String get notifyDecaySub;
+
+  /// No description provided for @profilePhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile Photo'**
+  String get profilePhotoTitle;
+
+  /// No description provided for @profilePhotoSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a photo that will appear on your profile and Hushhh'**
+  String get profilePhotoSub;
+
+  /// No description provided for @addProfilePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a profile photo (optional)'**
+  String get addProfilePhoto;
+
+  /// No description provided for @photoFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get photoFromGallery;
+
+  /// No description provided for @photoFromCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get photoFromCamera;
+
+  /// No description provided for @photoRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get photoRemove;
+
+  /// No description provided for @photoUploading.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading photo...'**
+  String get photoUploading;
+
+  /// No description provided for @photoUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo updated'**
+  String get photoUpdated;
+
+  /// No description provided for @photoRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo removed'**
+  String get photoRemoved;
+
+  /// No description provided for @photoUploadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo upload failed, please try again'**
+  String get photoUploadFailed;
+
+  /// No description provided for @reportPhotoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report profile photo'**
+  String get reportPhotoTitle;
+
+  /// No description provided for @reportReasonInappropriateImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Inappropriate image'**
+  String get reportReasonInappropriateImage;
+
+  /// No description provided for @photoAlreadyReported.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already reported this photo'**
+  String get photoAlreadyReported;
 }
 
 class _AppLocalizationsDelegate

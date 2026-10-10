@@ -39,8 +39,13 @@ const admin = __importStar(require("firebase-admin"));
 admin.initializeApp();
 const db = admin.firestore();
 const storage = admin.storage();
+// U+200F (Right-to-Left Mark) — forces RTL paragraph direction on Android/iOS.
+// Without it, the OS infers direction from the FIRST strong character, so a
+// Hebrew message that starts with a Latin username (e.g. "Omer השאיר/ה...")
+// is rendered LTR and appears reversed.
+const RLM = "\u200F";
 function t(texts, lang) {
-    return lang === "he" ? texts.he : texts.en;
+    return lang === "he" ? RLM + texts.he : texts.en;
 }
 // ============================================================
 // HELPER: Send push notification to a specific user
@@ -1210,11 +1215,15 @@ exports.onAdminBroadcast = functions.firestore
         console.error("Invalid broadcast data", data);
         return;
     }
+    // Apply RTL mark if the admin wrote the broadcast in Hebrew
+    const rtl = (s) => (/[\u0590-\u05FF]/.test(s) ? RLM + s : s);
+    const bTitle = rtl(data.title);
+    const bBody = rtl(data.body);
     const payload = {
         topic: "all_users",
         notification: {
-            title: data.title,
-            body: data.body,
+            title: bTitle,
+            body: bBody,
         },
         data: {
             type: "broadcast",
@@ -1233,8 +1242,8 @@ exports.onAdminBroadcast = functions.firestore
             payload: {
                 aps: {
                     alert: {
-                        title: data.title,
-                        body: data.body,
+                        title: bTitle,
+                        body: bBody,
                     },
                     sound: "shush_push.wav",
                     badge: 1,

@@ -13,8 +13,14 @@ interface LocalizedText {
   he: string;
 }
 
+// U+200F (Right-to-Left Mark) — forces RTL paragraph direction on Android/iOS.
+// Without it, the OS infers direction from the FIRST strong character, so a
+// Hebrew message that starts with a Latin username (e.g. "Omer השאיר/ה...")
+// is rendered LTR and appears reversed.
+const RLM = "\u200F";
+
 function t(texts: LocalizedText, lang: string): string {
-  return lang === "he" ? texts.he : texts.en;
+  return lang === "he" ? RLM + texts.he : texts.en;
 }
 
 // ============================================================
@@ -1435,11 +1441,16 @@ export const onAdminBroadcast = functions.firestore
       return;
     }
 
+    // Apply RTL mark if the admin wrote the broadcast in Hebrew
+    const rtl = (s: string) => (/[\u0590-\u05FF]/.test(s) ? RLM + s : s);
+    const bTitle = rtl(data.title);
+    const bBody = rtl(data.body);
+
     const payload = {
       topic: "all_users",
       notification: {
-        title: data.title,
-        body: data.body,
+        title: bTitle,
+        body: bBody,
       },
       data: {
         type: "broadcast",
@@ -1458,8 +1469,8 @@ export const onAdminBroadcast = functions.firestore
         payload: {
           aps: {
             alert: {
-              title: data.title,
-              body: data.body,
+              title: bTitle,
+              body: bBody,
             },
             sound: "shush_push.wav",
             badge: 1,
@@ -1486,8 +1497,12 @@ export const onAdminBroadcast = functions.firestore
   });
 
 // ============================================================
-// AUTO-SYNC: Update creator name/photo on all secrets when user profile changes
+// AUTO-SYNC: Update creator name/photo on all secrets & comments when the
+// user profile changes. Also cleans up the stored profile photo file when a
+// custom photo is removed (not when it is replaced — same path is overwritten).
 // ============================================================
+const PROFILE_PHOTO_MARKER = encodeURIComponent("profile_photos/"); // "profile_photos%2F" in download URLs
+
 export const onUserProfileUpdate = functions.firestore
   .document("users/{userId}")
   .onUpdate(async (change, context) => {
@@ -1495,31 +1510,62 @@ export const onUserProfileUpdate = functions.firestore
     const after = change.after.data();
     const userId = context.params.userId;
 
-    const beforeName = `${before.firstName || ""} ${before.lastName || ""}`.trim() || before.displayName || "";
-    const afterName = `${after.firstName || ""} ${after.lastName || ""}`.trim() || after.displayName || "";
-    const beforePhoto = before.profileImageURL || "";
-    const afterPhoto = after.profileImageURL || "";
+    const nameOf = (d: any): string =>
+      `${d.firstName || ""} ${d.lastName || ""}`.trim() || d.displayName || "";
+    // Must match how createSecretV2 / addComment denormalize the photo
+    const photoOf = (d: any): string | null =>
+      d.useGenericPhoto ? "generic" : (d.photoURL || null);
 
-    // Only proceed if name or photo actually changed
-    if (beforeName === afterName && beforePhoto === afterPhoto) return;
+    const beforeName = nameOf(before);
+    const afterName = nameOf(after);
+    const beforePhoto = photoOf(before);
+    const afterPhoto = photoOf(after);
 
-    const secrets = await db.collection("secrets")
-      .where("creatorId", "==", userId)
-      .get();
+    // --- Storage cleanup: custom photo removed (by user or admin) ---
+    const isCustom = (url: any) => typeof url === "string" && url.includes(PROFILE_PHOTO_MARKER);
+    if (isCustom(before.photoURL) && !isCustom(after.photoURL)) {
+      try {
+        await storage.bucket().file(`profile_photos/${userId}`).delete({ ignoreNotFound: true });
+        console.log(`Deleted profile photo file for ${userId}`);
+      } catch (err) {
+        console.error(`Failed to delete profile photo for ${userId}:`, err);
+      }
+    }
 
-    if (secrets.empty) return;
+    const nameChanged = beforeName !== afterName;
+    const photoChanged = beforePhoto !== afterPhoto;
+    if (!nameChanged && !photoChanged) return;
 
-    const batch = db.batch();
-    const updateData: Record<string, string> = {};
-    if (beforeName !== afterName) updateData.creatorName = afterName;
-    if (beforePhoto !== afterPhoto) updateData.creatorPhotoURL = afterPhoto;
+    const secretUpdate: Record<string, any> = {};
+    const commentUpdate: Record<string, any> = {};
+    if (nameChanged) {
+      secretUpdate.creatorName = afterName;
+      commentUpdate.userName = afterName;
+    }
+    if (photoChanged) {
+      secretUpdate.creatorPhotoURL = afterPhoto;
+      commentUpdate.userPhotoURL = afterPhoto;
+    }
 
-    secrets.docs.forEach((doc) => {
-      batch.update(doc.ref, updateData);
-    });
+    const [secrets, comments] = await Promise.all([
+      db.collection("secrets").where("creatorId", "==", userId).get(),
+      db.collectionGroup("comments").where("userId", "==", userId).get()
+        .catch((err) => {
+          console.error("Comments collectionGroup query failed (index missing?):", err);
+          return null;
+        }),
+    ]);
 
-    await batch.commit();
-    console.log(`Updated ${secrets.size} secrets for user ${userId} — name: "${afterName}", photo changed: ${beforePhoto !== afterPhoto}`);
+    // BulkWriter has no 500-op limit (unlike a single batch)
+    const writer = db.bulkWriter();
+    secrets.docs.forEach((doc) => writer.update(doc.ref, secretUpdate));
+    comments?.docs.forEach((doc) => writer.update(doc.ref, commentUpdate));
+    await writer.close();
+
+    console.log(
+      `Profile sync for ${userId}: ${secrets.size} secrets, ${comments?.size ?? 0} comments — ` +
+      `name changed: ${nameChanged}, photo changed: ${photoChanged}`
+    );
   });
 
 // ============================================================

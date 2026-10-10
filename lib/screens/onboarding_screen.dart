@@ -1,8 +1,13 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:image_cropper/image_cropper.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../config/theme.dart';
 import '../providers/auth_provider.dart';
+import '../services/auth_service.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../services/analytics_service.dart';
 
@@ -23,6 +28,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   bool _useGenericPhoto = false;
 
   bool _isSubmitting = false;
+  bool _isUploadingPhoto = false;
 
   Future<void> _pickDate(BuildContext context) async {
     final now = DateTime.now();
@@ -49,6 +55,114 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       setState(() {
         _dateOfBirth = picked;
       });
+    }
+  }
+
+  Future<void> _showPhotoOptions() async {
+    final l10n = AppLocalizations.of(context)!;
+    final authProvider = context.read<AuthProvider>();
+    
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: HushColors.bgPrimary,
+      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(20))),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.photo_library, color: Colors.white),
+              title: Text(l10n.photoFromGallery, style: const TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndUploadPhoto(ImageSource.gallery);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.camera_alt, color: Colors.white),
+              title: Text(l10n.photoFromCamera, style: const TextStyle(color: Colors.white)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _pickAndUploadPhoto(ImageSource.camera);
+              },
+            ),
+            if (authProvider.firebaseUser?.photoURL != null)
+              ListTile(
+                leading: const Icon(Icons.delete, color: HushColors.tierRed),
+                title: Text(l10n.photoRemove, style: const TextStyle(color: HushColors.tierRed)),
+                onTap: () async {
+                  Navigator.pop(ctx);
+                  setState(() => _isUploadingPhoto = true);
+                  await AuthService().removeProfilePhoto();
+                  if (!mounted) return;
+                  await context.read<AuthProvider>().refreshProfile();
+                  setState(() => _isUploadingPhoto = false);
+                },
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    try {
+      final ImagePicker picker = ImagePicker();
+      final XFile? image = await picker.pickImage(source: source);
+
+      if (image == null) return;
+      
+      if (!mounted) return;
+      final isHe = Localizations.localeOf(context).languageCode == 'he';
+      final title = isHe ? 'חיתוך תמונה' : 'Crop Photo';
+      final doneBtn = isHe ? 'אישור' : 'Done';
+      final cancelBtn = isHe ? 'ביטול' : 'Cancel';
+      
+      final croppedFile = await ImageCropper().cropImage(
+        sourcePath: image.path,
+        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
+        compressFormat: ImageCompressFormat.jpg,
+        compressQuality: 70,
+        maxWidth: 512,
+        maxHeight: 512,
+        uiSettings: [
+          AndroidUiSettings(
+            toolbarTitle: title,
+            toolbarColor: HushColors.bgPrimary,
+            toolbarWidgetColor: Colors.white,
+            statusBarLight: true,
+            activeControlsWidgetColor: HushColors.textAccent,
+            initAspectRatio: CropAspectRatioPreset.square,
+            lockAspectRatio: true,
+            cropStyle: CropStyle.circle,
+          ),
+          IOSUiSettings(
+            title: title,
+            doneButtonTitle: doneBtn,
+            cancelButtonTitle: cancelBtn,
+            cropStyle: CropStyle.circle,
+          ),
+        ],
+      );
+
+      if (croppedFile == null) return;
+
+      setState(() => _isUploadingPhoto = true);
+      
+      final authService = AuthService();
+      await authService.updateProfilePhoto(File(croppedFile.path));
+      
+      if (!mounted) return;
+      setState(() => _useGenericPhoto = false);
+      await context.read<AuthProvider>().refreshProfile();
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+      if (mounted) {
+        final l10n = AppLocalizations.of(context)!;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('${l10n.photoUploadFailed}: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _isUploadingPhoto = false);
     }
   }
 
@@ -102,6 +216,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final authProvider = context.watch<AuthProvider>();
+    final firebaseUser = authProvider.firebaseUser;
+    final hushUser = authProvider.hushUser;
+    
+    // Prioritize the Firestore URL (hushUser) which we know is fully fresh
+    final currentPhotoUrl = hushUser?.photoURL ?? firebaseUser?.photoURL;
     
     return Scaffold(
       backgroundColor: HushColors.bgPrimary,
@@ -109,9 +229,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         title: Text(l10n.onboardingTitle),
         automaticallyImplyLeading: false, // Prevents back button to login page blindly
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Form(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(24.0),
+          child: Form(
           key: _formKey,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -119,6 +240,53 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               Text(l10n.onboardingWelcome, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white)),
               const SizedBox(height: 8),
               Text(l10n.onboardingSub, style: const TextStyle(color: Colors.white70)),
+              const SizedBox(height: 32),
+
+              Center(
+                child: GestureDetector(
+                  onTap: _showPhotoOptions,
+                  child: Stack(
+                    children: [
+                      CircleAvatar(
+                        key: ValueKey(currentPhotoUrl),
+                        radius: 50,
+                        backgroundColor: HushColors.bgCard,
+                        backgroundImage: (currentPhotoUrl != null && !_useGenericPhoto)
+                            ? CachedNetworkImageProvider(currentPhotoUrl)
+                            : null,
+                        child: (currentPhotoUrl == null || _useGenericPhoto)
+                            ? const Icon(Icons.person, size: 50, color: HushColors.textSecondary)
+                            : null,
+                      ),
+                      if (!_useGenericPhoto)
+                        Positioned(
+                          bottom: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.all(6),
+                            decoration: const BoxDecoration(
+                              color: HushColors.textAccent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.camera_alt, color: Colors.white, size: 18),
+                          ),
+                        ),
+                      if (_isUploadingPhoto)
+                        Positioned.fill(
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              color: Colors.black54,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Center(
+                              child: CircularProgressIndicator(color: HushColors.textAccent),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),
               const SizedBox(height: 32),
 
               TextFormField(
@@ -184,6 +352,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               ),
             ],
           ),
+        ),
         ),
       ),
     );

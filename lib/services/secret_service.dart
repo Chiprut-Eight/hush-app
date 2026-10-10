@@ -556,7 +556,7 @@ class SecretService {
       'userName': '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim().isNotEmpty
           ? '${userData['firstName']} ${userData['lastName']}'.trim()
           : user.displayName,
-      'userPhotoURL': userData['useGenericPhoto'] == true ? 'generic' : user.photoURL,
+      'userPhotoURL': userData['useGenericPhoto'] == true ? 'generic' : (userData['photoURL'] ?? user.photoURL),
       'text': text,
       'createdAt': FieldValue.serverTimestamp(),
     };
