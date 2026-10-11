@@ -20,6 +20,28 @@ class NotificationsButton extends StatefulWidget {
 class _NotificationsButtonState extends State<NotificationsButton> {
   bool _isOpen = false;
 
+  Future<void> _markAllAsRead(String uid) async {
+    try {
+      final unreadQuery = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('notifications')
+          .where('read', isEqualTo: false)
+          .get();
+
+      if (unreadQuery.docs.isEmpty) return;
+
+      final batch = FirebaseFirestore.instance.batch();
+      for (final doc in unreadQuery.docs) {
+        batch.update(doc.reference, {'read': true});
+      }
+      await batch.commit();
+      debugPrint('[NotificationsButton] Successfully marked ${unreadQuery.docs.length} notifications as read');
+    } catch (e) {
+      debugPrint('[NotificationsButton] Error marking all notifications as read: $e');
+    }
+  }
+
   void _toggleNotificationsMenu(BuildContext context) {
     if (_isOpen) {
       rootNavigatorKey.currentState?.pop();
@@ -30,6 +52,9 @@ class _NotificationsButtonState extends State<NotificationsButton> {
 
     AnalyticsService().logNotificationsPanelOpened();
     
+    // Proactively mark unread notifications as read in background
+    _markAllAsRead(uid);
+
     final isDark = Theme.of(context).brightness == Brightness.dark;
     final langCode = Localizations.localeOf(context).languageCode;
 
@@ -89,10 +114,13 @@ class _NotificationsButtonState extends State<NotificationsButton> {
 
                       final docs = snapshot.data!.docs;
                       
-                      // Mark all as read silently
+                      // Mark visible unread docs as read
                       for (var doc in docs) {
-                        if (doc.data() is Map && !(doc.data() as Map)['read']) {
-                          doc.reference.update({'read': true}).catchError((_) {});
+                        final d = doc.data() as Map<String, dynamic>?;
+                        if (d != null && d['read'] != true) {
+                          doc.reference.update({'read': true}).catchError((e) {
+                            debugPrint('[NotificationsButton] Error updating doc ${doc.id}: $e');
+                          });
                         }
                       }
 
@@ -132,6 +160,7 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           
                           return InkWell(
                             onTap: () {
+                              docs[index].reference.update({'read': true}).catchError((_) {});
                               if (!ModalRoute.of(context)!.isCurrent) return;
                               rootNavigatorKey.currentState?.pop(); // Close the bottom sheet
                               AnalyticsService().logNotificationTapped(secretId: secretId);
@@ -225,6 +254,7 @@ class _NotificationsButtonState extends State<NotificationsButton> {
       },
     ).whenComplete(() {
       if (mounted) setState(() => _isOpen = false);
+      _markAllAsRead(uid);
     });
   }
 

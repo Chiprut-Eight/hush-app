@@ -1,10 +1,14 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:provider/provider.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../widgets/title_setter.dart';
 import '../config/theme.dart';
 import '../models/secret.dart';
 import '../services/secret_service.dart';
+import '../services/geo_service.dart';
+import '../providers/auth_provider.dart';
 import '../widgets/secret_card.dart';
 
 class SecretDetailScreen extends StatefulWidget {
@@ -27,7 +31,7 @@ class SecretDetailScreen extends StatefulWidget {
   State<SecretDetailScreen> createState() => _SecretDetailScreenState();
 }
 
-class _SecretDetailScreenState extends State<SecretDetailScreen> {
+class _SecretDetailScreenState extends State<SecretDetailScreen> with WidgetsBindingObserver {
   final SecretService _secretService = SecretService();
   Secret? _secret;
   bool _isLoading = true;
@@ -35,38 +39,102 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
   bool _isDeleted = false;
   bool _isNetworkError = false;
   Position? _userPosition;
+  Timer? _autoRefreshTimer;
+  StreamSubscription<Position>? _positionStreamSub;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     SecretDetailScreen.activeSecretId = widget.secretId;
     _fetchSecretDetails();
+    _startLocationTracking();
+    _startAutoRefresh();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    context.read<AuthProvider>().enableScreenProtectionForScreen();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.paused || state == AppLifecycleState.inactive) {
+      _autoRefreshTimer?.cancel();
+      _autoRefreshTimer = null;
+      _positionStreamSub?.cancel();
+      _positionStreamSub = null;
+    } else if (state == AppLifecycleState.resumed) {
+      _fetchSecretDetails(silent: true);
+      _startLocationTracking();
+      _startAutoRefresh();
+    }
+  }
+
+  void _startLocationTracking() {
+    _positionStreamSub?.cancel();
+    try {
+      _positionStreamSub = Geolocator.getPositionStream(
+        locationSettings: const LocationSettings(
+          accuracy: LocationAccuracy.high,
+          distanceFilter: 3, // Live GPS update every 3 meters moved
+        ),
+      ).listen((Position position) {
+        if (mounted) {
+          setState(() {
+            _userPosition = position;
+          });
+        }
+      }, onError: (err) {
+        debugPrint('[SecretDetailScreen] Location stream error: $err');
+      });
+    } catch (e) {
+      debugPrint('[SecretDetailScreen] Failed to start location stream: $e');
+    }
+  }
+
+  void _startAutoRefresh() {
+    _autoRefreshTimer?.cancel();
+    _autoRefreshTimer = Timer.periodic(const Duration(seconds: 25), (_) {
+      if (mounted && !_isLoading) {
+        _fetchSecretDetails(silent: true);
+      }
+    });
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _autoRefreshTimer?.cancel();
+    _positionStreamSub?.cancel();
     if (SecretDetailScreen.activeSecretId == widget.secretId) {
       SecretDetailScreen.activeSecretId = null;
     }
     super.dispose();
   }
 
-  Future<void> _fetchSecretDetails() async {
-    setState(() {
-      _isLoading = true;
-      _error = null;
-      _isDeleted = false;
-      _isNetworkError = false;
-    });
+  Future<void> _fetchSecretDetails({bool silent = false, bool isPullToRefresh = false}) async {
+    if (!silent && !isPullToRefresh && _secret == null) {
+      setState(() {
+        _isLoading = true;
+        _error = null;
+        _isDeleted = false;
+        _isNetworkError = false;
+      });
+    }
 
     try {
-      // Fetch user position (optional, but good for distance calculation)
-      bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (serviceEnabled) {
-        LocationPermission permission = await Geolocator.checkPermission();
-        if (permission == LocationPermission.whileInUse || permission == LocationPermission.always) {
-          _userPosition = await Geolocator.getCurrentPosition();
+      // Safely fetch GPS position
+      try {
+        final position = await GeoService.getCurrentPositionSafe();
+        if (mounted) {
+          setState(() {
+            _userPosition = position;
+          });
         }
+      } catch (geoError) {
+        debugPrint('[SecretDetailScreen] Location fetch failed: $geoError');
       }
 
       final secret = await _secretService.getSecret(widget.secretId);
@@ -84,10 +152,12 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
         setState(() {
           _secret = secret;
           _isLoading = false;
+          _error = null;
+          _isNetworkError = false;
         });
       }
     } catch (e) {
-      if (mounted) {
+      if (mounted && (_secret == null || isPullToRefresh)) {
         setState(() {
           final errorStr = e.toString().toLowerCase();
           if (errorStr.contains('network') || 
@@ -114,21 +184,21 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
       title: 'Hushhh',
       child: Scaffold(
         extendBodyBehindAppBar: true,
-      body: Container(
-        height: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: isDark 
-              ? [HushColors.bgPrimary, const Color(0xFF0D1320), HushColors.bgPrimary]
-              : [HushColors.bgPrimaryLight, HushColors.bgPrimaryLight, HushColors.bgPrimaryLight],
+        body: Container(
+          height: double.infinity,
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              colors: isDark 
+                ? [HushColors.bgPrimary, const Color(0xFF0D1320), HushColors.bgPrimary]
+                : [HushColors.bgPrimaryLight, HushColors.bgPrimaryLight, HushColors.bgPrimaryLight],
+            ),
+          ),
+          child: SafeArea(
+            child: _buildBody(l10n),
           ),
         ),
-        child: SafeArea(
-          child: _buildBody(l10n),
-        ),
-      ),
       ),
     );
   }
@@ -139,11 +209,22 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     }
 
     if (_isNetworkError) {
-      return _buildErrorState(
-        icon: Icons.wifi_off_rounded,
-        message: l10n.networkError,
-        buttonText: l10n.retry,
-        onButtonPressed: _fetchSecretDetails,
+      return RefreshIndicator(
+        onRefresh: () => _fetchSecretDetails(isPullToRefresh: true),
+        color: HushColors.textAccent,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: _buildErrorState(
+              icon: Icons.wifi_off_rounded,
+              message: l10n.networkError,
+              buttonText: l10n.retry,
+              onButtonPressed: _fetchSecretDetails,
+            ),
+          ),
+        ),
       );
     }
 
@@ -159,20 +240,39 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     }
 
     if (_error != null || _secret == null) {
-      return _buildErrorState(
-        icon: Icons.error_outline,
-        message: _error ?? 'Something went wrong',
-        buttonText: l10n.retry,
-        onButtonPressed: _fetchSecretDetails,
+      return RefreshIndicator(
+        onRefresh: () => _fetchSecretDetails(isPullToRefresh: true),
+        color: HushColors.textAccent,
+        backgroundColor: Theme.of(context).colorScheme.surface,
+        child: SingleChildScrollView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.7,
+            child: _buildErrorState(
+              icon: Icons.error_outline,
+              message: _error ?? 'Something went wrong',
+              buttonText: l10n.retry,
+              onButtonPressed: _fetchSecretDetails,
+            ),
+          ),
+        ),
       );
     }
 
-    return SingleChildScrollView(
-      padding: EdgeInsets.only(
-        top: MediaQuery.of(context).padding.top + 60,
-        bottom: 24,
+    return RefreshIndicator(
+      onRefresh: () async {
+        await _fetchSecretDetails(silent: false, isPullToRefresh: true);
+      },
+      color: HushColors.textAccent,
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.only(
+          top: MediaQuery.of(context).padding.top + 60,
+          bottom: 24,
+        ),
+        child: _buildContent(),
       ),
-      child: _buildContent(),
     );
   }
 
@@ -241,3 +341,4 @@ class _SecretDetailScreenState extends State<SecretDetailScreen> {
     );
   }
 }
+
