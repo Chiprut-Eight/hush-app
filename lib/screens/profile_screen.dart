@@ -45,7 +45,7 @@ class ProfileScreenState extends State<ProfileScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _authProvider ??= context.read<AuthProvider>();
-    _authProvider?.disableScreenProtectionForScreen();
+    _authProvider?.enableScreenProtectionForScreen();
   }
 
   @override
@@ -191,6 +191,9 @@ class ProfileScreenState extends State<ProfileScreen> {
   }
 
   Future<void> _pickAndUploadPhoto(ImageSource source) async {
+    final auth = context.read<AuthProvider>();
+    await auth.disableScreenProtectionForScreen();
+    if (!mounted) return;
     try {
       final croppedFile = await pickAndCropProfilePhoto(context, source);
       if (croppedFile == null || !mounted) return;
@@ -201,7 +204,7 @@ class ProfileScreenState extends State<ProfileScreen> {
       await authService.updateProfilePhoto(croppedFile);
       
       if (!mounted) return;
-      await context.read<AuthProvider>().refreshProfile();
+      await auth.refreshProfile();
       await fetchProfileData();
     } catch (e) {
       debugPrint('Error picking image: $e');
@@ -211,6 +214,11 @@ class ProfileScreenState extends State<ProfileScreen> {
       }
     } finally {
       if (mounted) setState(() => _isUploadingPhoto = false);
+      // Wait for modal dismissals and UI updates to settle before restoring protection
+      await Future.delayed(const Duration(milliseconds: 500));
+      if (mounted) {
+        await auth.enableScreenProtectionForScreen();
+      }
     }
   }
 
