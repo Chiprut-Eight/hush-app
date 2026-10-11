@@ -17,7 +17,7 @@ class ChangeUsernameScreen extends StatefulWidget {
 
 class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
   /// Max visible characters so the name isn't truncated on the Hushhh card header.
-  static const int maxNameLength = 18;
+  static const int maxNameLength = 20;
 
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
@@ -185,6 +185,33 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                 hintText: l10n.enterYourName,
               ),
             ),
+            if (canChange)
+              Padding(
+                padding: const EdgeInsets.only(top: 10.0, bottom: 4.0),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.info_outline,
+                      size: 15,
+                      color: HushColors.textSecondary.withValues(alpha: 0.6),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: Text(
+                        Localizations.localeOf(context).languageCode == 'he'
+                            ? 'לתשומת ליבך, שינוי השם הוא קבוע לחצי השנה הקרובה (180 יום).'
+                            : 'Please note: Your new username will remain fixed for at least 6 months (180 days).',
+                        style: TextStyle(
+                          color: HushColors.textSecondary.withValues(alpha: 0.75),
+                          fontSize: 12.5,
+                          height: 1.4,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             const SizedBox(height: 16),
             if (!canChange)
               Container(
