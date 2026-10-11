@@ -200,8 +200,8 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                     Expanded(
                       child: Text(
                         Localizations.localeOf(context).languageCode == 'he'
-                            ? 'לתשומת ליבך, שינוי השם הוא קבוע לחצי השנה הקרובה (180 יום).'
-                            : 'Please note: Your new username will remain fixed for at least 6 months (180 days).',
+                            ? 'לתשומת ליבך, שינוי השם הוא קבוע לחצי השנה הקרובה ליום השינוי'
+                            : 'Please note: Your new username will remain fixed for the next 6 months from the date of change.',
                         style: TextStyle(
                           color: HushColors.textSecondary.withValues(alpha: 0.75),
                           fontSize: 12.5,
