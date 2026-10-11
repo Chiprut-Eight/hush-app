@@ -6,6 +6,7 @@ import '../config/theme.dart';
 import '../core/constants/icons.dart';
 import '../widgets/hush_icon_widget.dart';
 import '../screens/secret_detail_screen.dart';
+import '../screens/profile_screen.dart';
 import '../main.dart';
 import '../services/analytics_service.dart';
 
@@ -112,12 +113,14 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                           final String safeType = type ?? 'general';
                           final secretId = (payloadData != null && payloadData is Map) ? payloadData['secretId'] : null;
                           final commentId = (payloadData != null && payloadData is Map) ? payloadData['commentId'] : null;
+                          final payloadUserId = (payloadData != null && payloadData is Map) ? payloadData['userId']?.toString() : null;
 
                           IconData actionIcon;
                           switch (safeType) {
                             case 'like': actionIcon = HushIcons.heart; break;
                             case 'comment': actionIcon = HushIcons.comment; break;
                             case 'follower': actionIcon = HushIcons.userCircle; break;
+                            case 'name_change': actionIcon = HushIcons.userCircle; break;
                             case 'new_secret': actionIcon = HushIcons.feed; break;
                             case 'expiring': actionIcon = Icons.warning_amber_rounded; break;
                             case 'decay': actionIcon = Icons.delete_outline; break;
@@ -132,6 +135,14 @@ class _NotificationsButtonState extends State<NotificationsButton> {
                               if (!ModalRoute.of(context)!.isCurrent) return;
                               rootNavigatorKey.currentState?.pop(); // Close the bottom sheet
                               AnalyticsService().logNotificationTapped(secretId: secretId);
+                              if (safeType == 'name_change' && payloadUserId != null) {
+                                rootNavigatorKey.currentState?.push(
+                                  MaterialPageRoute(
+                                    builder: (context) => ProfileScreen(targetUserId: payloadUserId),
+                                  ),
+                                );
+                                return;
+                              }
                               if (secretId != null) {
                                 if (SecretDetailScreen.activeSecretId == secretId) {
                                   // We are already viewing this secret!

@@ -65,7 +65,7 @@ async function sendPushToUser(
   }
   const type = data?.type;
   if (type === "follower" && userData?.notifyNewFollower === false) return;
-  if (type === "new_secret" && userData?.notifyNewFollowerSecrets === false) return;
+  if ((type === "new_secret" || type === "name_change") && userData?.notifyNewFollowerSecrets === false) return;
   if ((type === "like" || type === "comment") && userData?.notifyInteractions === false) return;
   if (type === "tier_up" && userData?.notifyGroupUnlocks === false) return;
   if ((type === "decay" || type === "expiring") && userData?.notifyDecay === false) return;
@@ -1566,6 +1566,37 @@ export const onUserProfileUpdate = functions.firestore
       `Profile sync for ${userId}: ${secrets.size} secrets, ${comments?.size ?? 0} comments — ` +
       `name changed: ${nameChanged}, photo changed: ${photoChanged}`
     );
+
+    // --- Notify followers about an explicit, user-initiated name change ---
+    // Only when lastUsernameChange was bumped (ChangeUsernameScreen) on an
+    // already-onboarded user, so onboarding / login name recovery won't notify.
+    const usernameChangeBumped =
+      !!after.lastUsernameChange &&
+      !(before.lastUsernameChange && before.lastUsernameChange.isEqual?.(after.lastUsernameChange));
+    if (nameChanged && usernameChangeBumped && before.isOnboarded === true && beforeName && afterName) {
+      const followerIds: string[] = (after.followerIds || []).filter((id: string) => id && id !== userId);
+      // Chunk to avoid opening too many concurrent connections
+      const CHUNK = 50;
+      for (let i = 0; i < followerIds.length; i += CHUNK) {
+        await Promise.all(
+          followerIds.slice(i, i + CHUNK).map((followerId) =>
+            sendPushToUser(
+              followerId,
+              {
+                en: `${beforeName} changed their name`,
+                he: `${beforeName} שינה/תה את השם`,
+              },
+              {
+                en: `${beforeName} is now ${afterName}`,
+                he: `השם החדש של ${beforeName}: ${afterName}`,
+              },
+              { type: "name_change", userId }
+            ).catch((err) => console.error(`Name-change notify failed for ${followerId}:`, err))
+          )
+        );
+      }
+      console.log(`Name change for ${userId}: notified ${followerIds.length} followers`);
+    }
   });
 
 // ============================================================

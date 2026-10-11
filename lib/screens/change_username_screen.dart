@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
@@ -15,6 +16,9 @@ class ChangeUsernameScreen extends StatefulWidget {
 }
 
 class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
+  /// Max visible characters so the name isn't truncated on the Hushhh card header.
+  static const int maxNameLength = 18;
+
   final TextEditingController _controller = TextEditingController();
   bool _isLoading = false;
   String? _error;
@@ -54,7 +58,10 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
     if (user == null || firebaseUser == null) return;
     
     final l10n = AppLocalizations.of(context)!;
-    final newName = _controller.text.trim();
+    final isHe = Localizations.localeOf(context).languageCode == 'he';
+    // Collapse repeated whitespace so first/last split is clean
+    final parts = _controller.text.trim().split(RegExp(r'\s+')).where((p) => p.isNotEmpty).toList();
+    final newName = parts.join(' ');
     if (newName.isEmpty) {
       setState(() => _error = l10n.usernameEmptyError);
       return;
@@ -63,6 +70,18 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
       setState(() => _error = l10n.usernameLengthError);
       return;
     }
+    if (newName.length > maxNameLength) {
+      setState(() => _error = isHe
+          ? 'השם יכול להכיל עד $maxNameLength תווים'
+          : 'Name can be up to $maxNameLength characters');
+      return;
+    }
+
+    // The backend (secrets, comments, notifications) and ensureUserProfile derive
+    // the display name from firstName + lastName, so those must be updated too —
+    // otherwise the change is not propagated and gets reverted on next login.
+    final firstName = parts.first;
+    final lastName = parts.skip(1).join(' ');
 
     setState(() {
       _isLoading = true;
@@ -73,12 +92,37 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
       // Update Firebase Auth
       await firebaseUser.updateDisplayName(newName);
       
-      // Update Firestore
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update({
+      // Update Firestore (the onUserProfileUpdate Cloud Function then syncs
+      // comments and notifies followers about the name change)
+      final firestore = FirebaseFirestore.instance;
+      await firestore.collection('users').doc(user.uid).update({
         'displayName': newName,
+        'firstName': firstName,
+        'lastName': lastName,
         'searchName': newName.toLowerCase(),
         'lastUsernameChange': FieldValue.serverTimestamp(),
       });
+
+      // Immediately update the name on all of the user's Hushhh
+      // (the Cloud Function does this too; this makes it instant on the client)
+      try {
+        final secretsSnap = await firestore
+            .collection('secrets')
+            .where('creatorId', isEqualTo: user.uid)
+            .get();
+        const chunkSize = 400;
+        for (var i = 0; i < secretsSnap.docs.length; i += chunkSize) {
+          final batch = firestore.batch();
+          for (final doc in secretsSnap.docs.skip(i).take(chunkSize)) {
+            batch.update(doc.reference, {'creatorName': newName});
+          }
+          await batch.commit();
+        }
+      } catch (e) {
+        debugPrint('Failed to update creatorName on secrets: $e');
+      }
+
+      await authProvider.refreshProfile();
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -115,6 +159,21 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
             TextField(
               controller: _controller,
               enabled: canChange,
+              maxLength: maxNameLength,
+              maxLengthEnforcement: MaxLengthEnforcement.enforced,
+              buildCounter: (context, {required currentLength, required isFocused, maxLength}) {
+                final isHe = Localizations.localeOf(context).languageCode == 'he';
+                final remaining = (maxLength ?? maxNameLength) - currentLength;
+                return Text(
+                  isHe
+                      ? 'נותרו ${remaining < 0 ? 0 : remaining} תווים ($currentLength/${maxLength ?? maxNameLength})'
+                      : '${remaining < 0 ? 0 : remaining} characters left ($currentLength/${maxLength ?? maxNameLength})',
+                  style: TextStyle(
+                    color: HushColors.textSecondary.withValues(alpha: 0.55),
+                    fontSize: 12,
+                  ),
+                );
+              },
               decoration: InputDecoration(
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),

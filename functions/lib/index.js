@@ -82,7 +82,7 @@ async function sendPushToUser(userId, title, body, data) {
     const type = data === null || data === void 0 ? void 0 : data.type;
     if (type === "follower" && (userData === null || userData === void 0 ? void 0 : userData.notifyNewFollower) === false)
         return;
-    if (type === "new_secret" && (userData === null || userData === void 0 ? void 0 : userData.notifyNewFollowerSecrets) === false)
+    if ((type === "new_secret" || type === "name_change") && (userData === null || userData === void 0 ? void 0 : userData.notifyNewFollowerSecrets) === false)
         return;
     if ((type === "like" || type === "comment") && (userData === null || userData === void 0 ? void 0 : userData.notifyInteractions) === false)
         return;
@@ -1269,37 +1269,86 @@ exports.onAdminBroadcast = functions.firestore
     }
 });
 // ============================================================
-// AUTO-SYNC: Update creator name/photo on all secrets when user profile changes
+// AUTO-SYNC: Update creator name/photo on all secrets & comments when the
+// user profile changes. Also cleans up the stored profile photo file when a
+// custom photo is removed (not when it is replaced — same path is overwritten).
 // ============================================================
+const PROFILE_PHOTO_MARKER = encodeURIComponent("profile_photos/"); // "profile_photos%2F" in download URLs
 exports.onUserProfileUpdate = functions.firestore
     .document("users/{userId}")
     .onUpdate(async (change, context) => {
+    var _a, _b;
+    var _c;
     const before = change.before.data();
     const after = change.after.data();
     const userId = context.params.userId;
-    const beforeName = `${before.firstName || ""} ${before.lastName || ""}`.trim() || before.displayName || "";
-    const afterName = `${after.firstName || ""} ${after.lastName || ""}`.trim() || after.displayName || "";
-    const beforePhoto = before.profileImageURL || "";
-    const afterPhoto = after.profileImageURL || "";
-    // Only proceed if name or photo actually changed
-    if (beforeName === afterName && beforePhoto === afterPhoto)
+    const nameOf = (d) => `${d.firstName || ""} ${d.lastName || ""}`.trim() || d.displayName || "";
+    // Must match how createSecretV2 / addComment denormalize the photo
+    const photoOf = (d) => d.useGenericPhoto ? "generic" : (d.photoURL || null);
+    const beforeName = nameOf(before);
+    const afterName = nameOf(after);
+    const beforePhoto = photoOf(before);
+    const afterPhoto = photoOf(after);
+    // --- Storage cleanup: custom photo removed (by user or admin) ---
+    const isCustom = (url) => typeof url === "string" && url.includes(PROFILE_PHOTO_MARKER);
+    if (isCustom(before.photoURL) && !isCustom(after.photoURL)) {
+        try {
+            await storage.bucket().file(`profile_photos/${userId}`).delete({ ignoreNotFound: true });
+            console.log(`Deleted profile photo file for ${userId}`);
+        }
+        catch (err) {
+            console.error(`Failed to delete profile photo for ${userId}:`, err);
+        }
+    }
+    const nameChanged = beforeName !== afterName;
+    const photoChanged = beforePhoto !== afterPhoto;
+    if (!nameChanged && !photoChanged)
         return;
-    const secrets = await db.collection("secrets")
-        .where("creatorId", "==", userId)
-        .get();
-    if (secrets.empty)
-        return;
-    const batch = db.batch();
-    const updateData = {};
-    if (beforeName !== afterName)
-        updateData.creatorName = afterName;
-    if (beforePhoto !== afterPhoto)
-        updateData.creatorPhotoURL = afterPhoto;
-    secrets.docs.forEach((doc) => {
-        batch.update(doc.ref, updateData);
-    });
-    await batch.commit();
-    console.log(`Updated ${secrets.size} secrets for user ${userId} — name: "${afterName}", photo changed: ${beforePhoto !== afterPhoto}`);
+    const secretUpdate = {};
+    const commentUpdate = {};
+    if (nameChanged) {
+        secretUpdate.creatorName = afterName;
+        commentUpdate.userName = afterName;
+    }
+    if (photoChanged) {
+        secretUpdate.creatorPhotoURL = afterPhoto;
+        commentUpdate.userPhotoURL = afterPhoto;
+    }
+    const [secrets, comments] = await Promise.all([
+        db.collection("secrets").where("creatorId", "==", userId).get(),
+        db.collectionGroup("comments").where("userId", "==", userId).get()
+            .catch((err) => {
+            console.error("Comments collectionGroup query failed (index missing?):", err);
+            return null;
+        }),
+    ]);
+    // BulkWriter has no 500-op limit (unlike a single batch)
+    const writer = db.bulkWriter();
+    secrets.docs.forEach((doc) => writer.update(doc.ref, secretUpdate));
+    comments === null || comments === void 0 ? void 0 : comments.docs.forEach((doc) => writer.update(doc.ref, commentUpdate));
+    await writer.close();
+    console.log(`Profile sync for ${userId}: ${secrets.size} secrets, ${(_c = comments === null || comments === void 0 ? void 0 : comments.size) !== null && _c !== void 0 ? _c : 0} comments — ` +
+        `name changed: ${nameChanged}, photo changed: ${photoChanged}`);
+    // --- Notify followers about an explicit, user-initiated name change ---
+    // Only when lastUsernameChange was bumped (ChangeUsernameScreen) on an
+    // already-onboarded user, so onboarding / login name recovery won't notify.
+    const usernameChangeBumped = !!after.lastUsernameChange &&
+        !(before.lastUsernameChange && ((_b = (_a = before.lastUsernameChange).isEqual) === null || _b === void 0 ? void 0 : _b.call(_a, after.lastUsernameChange)));
+    if (nameChanged && usernameChangeBumped && before.isOnboarded === true && beforeName && afterName) {
+        const followerIds = (after.followerIds || []).filter((id) => id && id !== userId);
+        // Chunk to avoid opening too many concurrent connections
+        const CHUNK = 50;
+        for (let i = 0; i < followerIds.length; i += CHUNK) {
+            await Promise.all(followerIds.slice(i, i + CHUNK).map((followerId) => sendPushToUser(followerId, {
+                en: `${beforeName} changed their name`,
+                he: `${beforeName} שינה/תה את השם`,
+            }, {
+                en: `${beforeName} is now ${afterName}`,
+                he: `השם החדש של ${beforeName}: ${afterName}`,
+            }, { type: "name_change", userId }).catch((err) => console.error(`Name-change notify failed for ${followerId}:`, err))));
+        }
+        console.log(`Name change for ${userId}: notified ${followerIds.length} followers`);
+    }
 });
 // ============================================================
 // ADMIN STATS: Track total secrets created globally

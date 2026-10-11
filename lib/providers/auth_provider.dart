@@ -27,20 +27,56 @@ class AuthProvider extends ChangeNotifier {
 
   static const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
+  /// iOS only: whether ScreenProtector is currently applied (null = unknown).
+  bool? _iosProtectionActive;
+
+  /// iOS only: number of active suspensions (native picker/cropper on screen).
+  int _protectionSuspendCount = 0;
+
   AuthProvider() {
     _authService.authStateChanges.listen(_onAuthStateChanged);
+  }
+
+  /// Temporarily disables iOS screenshot protection while a native view
+  /// controller (image picker / cropper / camera) is presented.
+  /// The secure-layer hack used by screen_protector breaks when native
+  /// controllers are presented on top of it, leaving a black screen.
+  Future<void> suspendScreenProtection() async {
+    if (!Platform.isIOS) return;
+    _protectionSuspendCount++;
+    if (_iosProtectionActive == false) return;
+    try {
+      await ScreenProtector.preventScreenshotOff();
+      _iosProtectionActive = false;
+    } catch (e) {
+      debugPrint('ScreenProtector suspend error: $e');
+    }
+  }
+
+  /// Restores iOS screenshot protection after [suspendScreenProtection].
+  Future<void> resumeScreenProtection() async {
+    if (!Platform.isIOS) return;
+    if (_protectionSuspendCount > 0) _protectionSuspendCount--;
+    if (_protectionSuspendCount > 0) return;
+    await _updateScreenshotPolicy();
   }
 
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true && _hushUser?.canScreenshot != true;
 
     if (Platform.isIOS) {
+      // Never re-apply while a native picker/cropper is on screen
+      if (_protectionSuspendCount > 0) return;
+      // Skip redundant calls — applying the secure layer twice can corrupt
+      // the view hierarchy on iOS.
+      if (_iosProtectionActive == enablePrevention) return;
       try {
         if (enablePrevention) {
           await ScreenProtector.preventScreenshotOn();
         } else {
           await ScreenProtector.preventScreenshotOff();
         }
+        _iosProtectionActive = enablePrevention;
       } catch (e) {
         debugPrint('ScreenProtector plugin error: $e');
       }

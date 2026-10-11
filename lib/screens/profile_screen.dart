@@ -1,8 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:image_cropper/image_cropper.dart';
+import '../utils/profile_photo_picker.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hush_app/l10n/app_localizations.dart';
 import '../config/theme.dart';
@@ -179,50 +178,13 @@ class ProfileScreenState extends State<ProfileScreen> {
 
   Future<void> _pickAndUploadPhoto(ImageSource source) async {
     try {
-      final ImagePicker picker = ImagePicker();
-      final XFile? image = await picker.pickImage(source: source);
-
-      if (image == null) return;
-      
-      if (!mounted) return;
-      final isHe = Localizations.localeOf(context).languageCode == 'he';
-      final title = isHe ? 'חיתוך תמונה' : 'Crop Photo';
-      final doneBtn = isHe ? 'אישור' : 'Done';
-      final cancelBtn = isHe ? 'ביטול' : 'Cancel';
-      
-      final croppedFile = await ImageCropper().cropImage(
-        sourcePath: image.path,
-        aspectRatio: const CropAspectRatio(ratioX: 1, ratioY: 1),
-        compressFormat: ImageCompressFormat.jpg,
-        compressQuality: 70,
-        maxWidth: 512,
-        maxHeight: 512,
-        uiSettings: [
-          AndroidUiSettings(
-            toolbarTitle: title,
-            toolbarColor: HushColors.bgPrimary,
-            toolbarWidgetColor: Colors.white,
-            statusBarLight: true,
-            activeControlsWidgetColor: HushColors.textAccent,
-            initAspectRatio: CropAspectRatioPreset.square,
-            lockAspectRatio: true,
-            cropStyle: CropStyle.circle,
-          ),
-          IOSUiSettings(
-            title: title,
-            doneButtonTitle: doneBtn,
-            cancelButtonTitle: cancelBtn,
-            cropStyle: CropStyle.circle,
-          ),
-        ],
-      );
-
-      if (croppedFile == null) return;
+      final croppedFile = await pickAndCropProfilePhoto(context, source);
+      if (croppedFile == null || !mounted) return;
 
       setState(() => _isUploadingPhoto = true);
       
       final authService = AuthService();
-      await authService.updateProfilePhoto(File(croppedFile.path));
+      await authService.updateProfilePhoto(croppedFile);
       
       if (!mounted) return;
       await context.read<AuthProvider>().refreshProfile();
