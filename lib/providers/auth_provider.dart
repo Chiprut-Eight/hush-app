@@ -9,6 +9,8 @@ import 'package:screen_protector/screen_protector.dart';
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
+import '../main.dart' show rootNavigatorKey;
+import '../config/theme.dart' show HushColors;
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -30,53 +32,83 @@ class AuthProvider extends ChangeNotifier {
   /// iOS only: whether ScreenProtector is currently applied (null = unknown).
   bool? _iosProtectionActive;
 
-  /// iOS only: number of active suspensions (native picker/cropper on screen).
-  int _protectionSuspendCount = 0;
+  /// Whether screenshot protection is temporarily scoped off for non-sensitive
+  /// screens (settings, profile, onboarding) where camera/gallery modals run.
+  bool _screenProtectionScopedDisabled = false;
 
   AuthProvider() {
     _authService.authStateChanges.listen(_onAuthStateChanged);
+    _setupScreenshotListener();
   }
 
-  /// Temporarily disables iOS screenshot protection while a native view
-  /// controller (image picker / cropper / camera) is presented.
-  /// The secure-layer hack used by screen_protector breaks when native
-  /// controllers are presented on top of it, leaving a black screen.
-  Future<void> suspendScreenProtection() async {
+  void _setupScreenshotListener() {
     if (!Platform.isIOS) return;
-    _protectionSuspendCount++;
-    if (_iosProtectionActive == false) return;
     try {
-      await ScreenProtector.preventScreenshotOff();
-      _iosProtectionActive = false;
+      ScreenProtector.addListener(() {
+        debugPrint('Screenshot detected on iOS');
+        final ctx = rootNavigatorKey.currentContext;
+        if (ctx != null) {
+          try {
+            final isHe = Localizations.localeOf(ctx).languageCode == 'he';
+            ScaffoldMessenger.of(ctx).showSnackBar(
+              SnackBar(
+                content: Text(
+                  isHe
+                      ? 'התוכן ב-Hushhh מוגן – צילום מסך אינו מורשה'
+                      : 'Content in Hushhh is protected – screenshots are not allowed',
+                ),
+                backgroundColor: HushColors.tierRed,
+                duration: const Duration(seconds: 3),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          } catch (_) {}
+        }
+      }, null);
     } catch (e) {
-      debugPrint('ScreenProtector suspend error: $e');
+      debugPrint('ScreenProtector addListener error: $e');
     }
   }
 
-  /// Restores iOS screenshot protection after [suspendScreenProtection].
-  Future<void> resumeScreenProtection() async {
-    if (!Platform.isIOS) return;
-    if (_protectionSuspendCount > 0) _protectionSuspendCount--;
-    if (_protectionSuspendCount > 0) return;
+  /// Temporarily disables screen protection while on non-sensitive screens
+  /// (Settings, Profile, Onboarding) where native modals (photo pickers) run.
+  Future<void> disableScreenProtectionForScreen() async {
+    _screenProtectionScopedDisabled = true;
+    if (Platform.isIOS) {
+      if (_iosProtectionActive == true) {
+        try {
+          await ScreenProtector.preventScreenshotOff();
+          _iosProtectionActive = false;
+        } catch (e) {
+          debugPrint('ScreenProtector disable error: $e');
+        }
+      }
+    }
+  }
+
+  /// Restores screen protection when returning to sensitive screens (Feed, Map).
+  Future<void> enableScreenProtectionForScreen() async {
+    _screenProtectionScopedDisabled = false;
     await _updateScreenshotPolicy();
   }
+
+  /// Deprecated aliases for backwards compatibility.
+  Future<void> suspendScreenProtection() => disableScreenProtectionForScreen();
+  Future<void> resumeScreenProtection() => enableScreenProtectionForScreen();
 
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true && _hushUser?.canScreenshot != true;
 
     if (Platform.isIOS) {
-      // Never re-apply while a native picker/cropper is on screen
-      if (_protectionSuspendCount > 0) return;
-      // Skip redundant calls — applying the secure layer twice can corrupt
-      // the view hierarchy on iOS.
-      if (_iosProtectionActive == enablePrevention) return;
+      final bool shouldEnable = enablePrevention && !_screenProtectionScopedDisabled;
+      if (_iosProtectionActive == shouldEnable) return;
       try {
-        if (enablePrevention) {
+        if (shouldEnable) {
           await ScreenProtector.preventScreenshotOn();
         } else {
           await ScreenProtector.preventScreenshotOff();
         }
-        _iosProtectionActive = enablePrevention;
+        _iosProtectionActive = shouldEnable;
       } catch (e) {
         debugPrint('ScreenProtector plugin error: $e');
       }

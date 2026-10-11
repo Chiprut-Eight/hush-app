@@ -39,6 +39,20 @@ class ProfileScreenState extends State<ProfileScreen> {
   bool _isLoading = true;
   Position? _userPosition;
   bool _isUploadingPhoto = false;
+  AuthProvider? _authProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _authProvider ??= context.read<AuthProvider>();
+    _authProvider?.disableScreenProtectionForScreen();
+  }
+
+  @override
+  void dispose() {
+    _authProvider?.enableScreenProtectionForScreen();
+    super.dispose();
+  }
 
   @override
   void initState() {

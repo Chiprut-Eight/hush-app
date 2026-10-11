@@ -20,6 +20,20 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen> {
   bool _isUploadingPhoto = false;
+  AuthProvider? _authProvider;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _authProvider ??= context.read<AuthProvider>();
+    _authProvider?.disableScreenProtectionForScreen();
+  }
+
+  @override
+  void dispose() {
+    _authProvider?.enableScreenProtectionForScreen();
+    super.dispose();
+  }
 
   Future<void> _showPhotoOptions() async {
     final l10n = AppLocalizations.of(context)!;

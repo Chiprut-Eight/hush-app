@@ -50,6 +50,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    context.read<AuthProvider>().enableScreenProtectionForScreen();
     if (!_didInit) {
       _didInit = true;
       _initWhenAuthReady();

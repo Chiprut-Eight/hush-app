@@ -81,6 +81,12 @@ class MockAuthProvider extends ChangeNotifier implements AuthProvider {
 
   @override
   Future<void> resumeScreenProtection() async {}
+
+  @override
+  Future<void> disableScreenProtectionForScreen() async {}
+
+  @override
+  Future<void> enableScreenProtectionForScreen() async {}
 }
 
 
