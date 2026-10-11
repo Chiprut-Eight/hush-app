@@ -246,13 +246,14 @@ class _ChangeUsernameScreenState extends State<ChangeUsernameScreen> {
                 onPressed: canChange && !_isLoading ? _saveUsername : null,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: HushColors.textAccent,
+                  foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
                 ),
                 child: _isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : Text(l10n.saveNewName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                    ? const CircularProgressIndicator(color: Colors.black)
+                    : Text(l10n.saveNewName, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.black)),
               ),
             ),
             const SizedBox(height: 32),
