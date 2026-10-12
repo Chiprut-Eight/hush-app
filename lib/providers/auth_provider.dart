@@ -9,6 +9,7 @@ import 'package:screen_protector/screen_protector.dart';
 import '../models/hush_user.dart';
 import '../services/auth_service.dart';
 import '../services/notification_service.dart';
+import '../services/analytics_service.dart';
 import '../main.dart' show rootNavigatorKey;
 import '../config/theme.dart' show HushColors;
 
@@ -29,8 +30,9 @@ class AuthProvider extends ChangeNotifier {
 
   static const _screenshotChannel = MethodChannel('com.chiprut.hushhh/screenshot');
 
-  /// iOS only: whether ScreenProtector is currently applied (null = unknown).
-  bool? _iosProtectionActive;
+  /// Broadcast stream to notify UI components (e.g., open secrets) when a screenshot is detected on iOS.
+  final _screenshotTakenController = StreamController<void>.broadcast();
+  Stream<void> get screenshotTakenStream => _screenshotTakenController.stream;
 
   /// Whether screenshot protection is temporarily scoped off for non-sensitive
   /// screens (settings, profile, onboarding) where camera/gallery modals run.
@@ -44,22 +46,51 @@ class AuthProvider extends ChangeNotifier {
   void _setupScreenshotListener() {
     if (!Platform.isIOS) return;
     try {
+      // Ensure any legacy UITextField overlay is permanently removed on iOS
+      ScreenProtector.preventScreenshotOff().catchError((_) {});
+
       ScreenProtector.addListener(() {
-        debugPrint('Screenshot detected on iOS');
+        debugPrint('[AuthProvider] Screenshot detected on iOS');
+
+        // Allow admins and users with explicit permission to screenshot without warnings
+        if (_hushUser?.isAdmin == true || _hushUser?.canScreenshot == true) {
+          return;
+        }
+
+        // Notify open secrets to immediately collapse/re-lock
+        _screenshotTakenController.add(null);
+
+        // Immediate tactile warning
+        HapticFeedback.heavyImpact();
+
+        // Log analytics event
+        AnalyticsService().logScreenshotDetected();
+
         final ctx = rootNavigatorKey.currentContext;
         if (ctx != null) {
           try {
             final isHe = Localizations.localeOf(ctx).languageCode == 'he';
+            ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
             ScaffoldMessenger.of(ctx).showSnackBar(
               SnackBar(
-                content: Text(
-                  isHe
-                      ? 'התוכן ב-Hushhh מוגן – צילום מסך אינו מורשה'
-                      : 'Content in Hushhh is protected – screenshots are not allowed',
+                content: Row(
+                  children: [
+                    const Icon(Icons.shield_outlined, color: Colors.white, size: 20),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        isHe
+                            ? 'התוכן ב-Hushhh מוגן – צילום מסך אינו מורשה'
+                            : 'Content in Hushhh is protected – screenshots are not allowed',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                    ),
+                  ],
                 ),
                 backgroundColor: HushColors.tierRed,
-                duration: const Duration(seconds: 3),
+                duration: const Duration(seconds: 4),
                 behavior: SnackBarBehavior.floating,
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
               ),
             );
           } catch (_) {}
@@ -74,19 +105,12 @@ class AuthProvider extends ChangeNotifier {
   /// (Settings, Profile, Onboarding) where native modals (photo pickers) run.
   Future<void> disableScreenProtectionForScreen() async {
     _screenProtectionScopedDisabled = true;
-    if (Platform.isIOS) {
-      if (_iosProtectionActive == true) {
-        try {
-          await ScreenProtector.preventScreenshotOff();
-          _iosProtectionActive = false;
-        } catch (e) {
-          debugPrint('ScreenProtector disable error: $e');
-        }
-      }
+    if (Platform.isAndroid) {
+      await _updateScreenshotPolicy();
     }
   }
 
-  /// Restores screen protection when returning to sensitive screens (Feed, Map).
+  /// Restores screen protection when returning to sensitive screens (Feed, Map, Profile).
   Future<void> enableScreenProtectionForScreen() async {
     _screenProtectionScopedDisabled = false;
     await _updateScreenshotPolicy();
@@ -99,22 +123,10 @@ class AuthProvider extends ChangeNotifier {
   Future<void> _updateScreenshotPolicy() async {
     final bool enablePrevention = _hushUser?.isAdmin != true && _hushUser?.canScreenshot != true;
 
-    if (Platform.isIOS) {
+    if (Platform.isAndroid) {
       final bool shouldEnable = enablePrevention && !_screenProtectionScopedDisabled;
-      if (_iosProtectionActive == shouldEnable) return;
       try {
         if (shouldEnable) {
-          await ScreenProtector.preventScreenshotOn();
-        } else {
-          await ScreenProtector.preventScreenshotOff();
-        }
-        _iosProtectionActive = shouldEnable;
-      } catch (e) {
-        debugPrint('ScreenProtector plugin error: $e');
-      }
-    } else if (Platform.isAndroid) {
-      try {
-        if (enablePrevention) {
           await _screenshotChannel.invokeMethod('enableScreenshotPrevention');
         } else {
           await _screenshotChannel.invokeMethod('disableScreenshotPrevention');
@@ -122,6 +134,12 @@ class AuthProvider extends ChangeNotifier {
       } catch (e) {
         debugPrint('Native screenshot channel error: $e');
       }
+    } else if (Platform.isIOS) {
+      // In iOS (Option A): We rely on the official screenshot listener (addListener)
+      // and do NOT call preventScreenshotOn() which breaks the UIKit layer causing black screen.
+      try {
+        await ScreenProtector.preventScreenshotOff();
+      } catch (_) {}
     }
   }
 
@@ -220,5 +238,12 @@ class AuthProvider extends ChangeNotifier {
       _hushUser = await _authService.getUserProfile(_firebaseUser!.uid);
       notifyListeners();
     }
+  }
+
+  @override
+  void dispose() {
+    _screenshotTakenController.close();
+    _userSubscription?.cancel();
+    super.dispose();
   }
 }

@@ -87,6 +87,9 @@ class MockAuthProvider extends ChangeNotifier implements AuthProvider {
 
   @override
   Future<void> enableScreenProtectionForScreen() async {}
+
+  @override
+  Stream<void> get screenshotTakenStream => const Stream.empty();
 }
 
 

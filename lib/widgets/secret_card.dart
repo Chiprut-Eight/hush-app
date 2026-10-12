@@ -89,6 +89,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   StreamSubscription<Secret>? _secretDocSubscription;
   int _activeParticipantsCount = 0;
   double? _deviceHeading;
+  StreamSubscription<void>? _screenshotSubscription;
 
   @override
   void initState() {
@@ -264,7 +265,25 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _screenshotSubscription ??= context.read<AuthProvider>().screenshotTakenStream.listen((_) {
+      if (mounted && _revealed) {
+        setState(() {
+          _revealed = false;
+          _revealedTextContent = null;
+        });
+        if (_isPlaying) {
+          _audioPlayer.pause();
+          setState(() => _isPlaying = false);
+        }
+      }
+    });
+  }
+
+  @override
   void dispose() {
+    _screenshotSubscription?.cancel();
     _compassSubscription?.cancel();
     _attemptsSubscription?.cancel();
     _secretDocSubscription?.cancel();

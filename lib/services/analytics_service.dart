@@ -64,4 +64,5 @@ class AnalyticsService {
   Future<void> logAdminAppealDecision({required String appealId, required bool approved}) async {}
   Future<void> logAdminReportDecision({required String reportId, required String secretId, required bool deleted}) async {}
   Future<void> logAdminMaintenanceAction(String action, {String? details}) async {}
+  Future<void> logScreenshotDetected() async {}
 }
