@@ -32,6 +32,7 @@ enum FeedTab { nearby, following, saved }
 class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   final GlobalKey _tabsRowKey = GlobalKey();
   final SecretService _secretService = SecretService();
+  final ScrollController _scrollController = ScrollController();
   List<Secret> _secrets = [];
   FeedTab _selectedTab = FeedTab.nearby;
   bool _isLoading = true;
@@ -162,6 +163,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _autoRefreshTimer?.cancel();
+    _scrollController.dispose();
     super.dispose();
   }
 
@@ -291,6 +293,17 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
   }
 
   bool handleBackPress() {
+    // 1. If feed is scrolled down, scroll smoothly back to the top
+    if (_scrollController.hasClients && _scrollController.offset > 50) {
+      _scrollController.animateTo(
+        0,
+        duration: const Duration(milliseconds: 350),
+        curve: Curves.easeOutCubic,
+      );
+      return true;
+    }
+
+    // 2. If on following or saved tab, switch to nearby feed
     if (_selectedTab != FeedTab.nearby) {
       setState(() {
         _selectedTab = FeedTab.nearby;
@@ -471,6 +484,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
       }
 
       return ListView(
+        controller: _scrollController,
         children: [
           SizedBox(
             height: MediaQuery.of(context).size.height * 0.7,
@@ -494,6 +508,7 @@ class FeedScreenState extends State<FeedScreen> with WidgetsBindingObserver {
     }
 
     return ListView.builder(
+      controller: _scrollController,
       padding: const EdgeInsets.only(bottom: 80, top: 8),
       itemCount: _secrets.length,
       itemBuilder: (context, index) {
