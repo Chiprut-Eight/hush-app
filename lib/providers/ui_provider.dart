@@ -17,6 +17,16 @@ class UIProvider with ChangeNotifier {
   bool _isAppBarCollapsed = false;
   bool get isAppBarCollapsed => _isAppBarCollapsed;
 
+  bool _isDrawerOpen = false;
+  bool get isDrawerOpen => _isDrawerOpen;
+
+  void setDrawerOpen(bool open) {
+    if (_isDrawerOpen != open) {
+      _isDrawerOpen = open;
+      notifyListeners();
+    }
+  }
+
   bool get hasPushedTitles => _titleStack.isNotEmpty;
 
   String get currentTitle {

@@ -62,6 +62,7 @@ graph TD
 ### ב. ווידג'ט מאובטח ב-Flutter (`lib/widgets/secure_secret_text.dart`)
 * ב-Android / פלטפורמות אחרות: מציג `Text` רגיל (כי אנדרואיד מוגן ע"י `FLAG_SECURE`).
 * ב-iOS: מציג `UiKitView` מסוג `hush_secure_text_view` עם חישוב מידות מדויק באמצעות `TextPainter`.
+* **בידוד שכבות מול התפריט וחלונות (Drawer / Modal Isolation):** כדי למנוע את חדירת השכבה הנייטיבית (`UiKitView`) דרך שכבת הקנבס של ה-Drawer או מודאלים בעת פתיחתם, הרכיב מאזין ל-`UIProvider.isDrawerOpen` ול-`ModalRoute.isCurrent`. בזמן שהתפריט פתוח, הוא מציג שטח חלופי מדויק (`SizedBox` במידות זהות), ומחזיר את הרכיב הנייטיבי ברגע סגירת התפריט – מה שמעניק תפריט אטום ונקי ב-100% ללא כל שקיפות.
 
 ### ג. שילוב בכרטיסיית הסוד (`lib/widgets/secret_card.dart`)
 * החלפת ה-`Text` הסטטי של הסוד הגלוי ב-`SecureSecretText`.
@@ -77,5 +78,5 @@ graph TD
 
 ## 4. בדיקות, אימות והפצה
 1. וידוא `flutter analyze` עם 0 שגיאות.
-2. עדכון גרסה ב-`pubspec.yaml` ל-`1.0.0+52`.
+2. עדכון גרסה ב-`pubspec.yaml` ל-`1.0.0+53`.
 3. ביצוע Git Commit ודחיפה ל-`origin main`.

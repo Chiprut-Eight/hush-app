@@ -106,6 +106,9 @@ class _HushAppState extends State<HushApp> {
                 backgroundColor: Colors.transparent,
                 resizeToAvoidBottomInset: false,
                 drawerEdgeDragWidth: 0,
+                onDrawerChanged: (isOpen) {
+                  context.read<UIProvider>().setDrawerOpen(isOpen);
+                },
                 drawer: const HushDrawer(),
                 body: Stack(
                   children: [

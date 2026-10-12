@@ -16,9 +16,25 @@ import '../screens/terms_of_service_screen.dart';
 import 'package:share_plus/share_plus.dart';
 import '../services/analytics_service.dart';
 import '../screens/settings_screen.dart';
+import '../providers/ui_provider.dart';
 
-class HushDrawer extends StatelessWidget {
+class HushDrawer extends StatefulWidget {
   const HushDrawer({super.key});
+
+  @override
+  State<HushDrawer> createState() => _HushDrawerState();
+}
+
+class _HushDrawerState extends State<HushDrawer> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<UIProvider>().setDrawerOpen(true);
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,16 +43,19 @@ class HushDrawer extends StatelessWidget {
     final localeProvider = context.watch<LocaleProvider>();
     final themeProvider = context.watch<ThemeProvider>();
     final user = auth.hushUser;
-    final theme = Theme.of(context);
     final isDark = themeProvider.isDarkMode;
     final isLandscape = MediaQuery.of(context).orientation == Orientation.landscape;
+    final bgColor = isDark ? HushColors.bgPrimary : HushColors.bgPrimaryLight;
 
     return Drawer(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      child: SafeArea(
-        child: Column(
-          children: [
-            // Drawer Header — adaptive height for landscape
+      backgroundColor: bgColor,
+      elevation: 16.0,
+      child: Material(
+        color: bgColor,
+        child: SafeArea(
+          child: Column(
+            children: [
+              // Drawer Header — adaptive height for landscape
             Container(
               padding: const EdgeInsets.symmetric(
                 vertical: 0,
@@ -231,6 +250,7 @@ class HushDrawer extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 }
