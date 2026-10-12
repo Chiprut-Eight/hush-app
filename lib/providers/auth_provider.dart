@@ -34,6 +34,12 @@ class AuthProvider extends ChangeNotifier {
   final _screenshotTakenController = StreamController<void>.broadcast();
   Stream<void> get screenshotTakenStream => _screenshotTakenController.stream;
 
+  /// Broadcast stream to notify UI components when screen recording status changes on iOS.
+  final _screenRecordingController = StreamController<bool>.broadcast();
+  Stream<bool> get screenRecordingStream => _screenRecordingController.stream;
+  bool _isScreenRecording = false;
+  bool get isScreenRecording => _isScreenRecording;
+
   /// Whether screenshot protection is temporarily scoped off for non-sensitive
   /// screens (settings, profile, onboarding) where camera/gallery modals run.
   bool _screenProtectionScopedDisabled = false;
@@ -95,7 +101,49 @@ class AuthProvider extends ChangeNotifier {
             );
           } catch (_) {}
         }
-      }, null);
+      }, (isRecording) {
+        final bool recording = isRecording == true;
+        debugPrint('[AuthProvider] Screen recording status changed on iOS: $recording');
+        _isScreenRecording = recording;
+        _screenRecordingController.add(recording);
+
+        if (recording) {
+          // Immediately re-lock secrets and pause audio
+          _screenshotTakenController.add(null);
+          HapticFeedback.heavyImpact();
+          AnalyticsService().logScreenshotDetected();
+
+          final ctx = rootNavigatorKey.currentContext;
+          if (ctx != null) {
+            try {
+              final isHe = Localizations.localeOf(ctx).languageCode == 'he';
+              ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
+              ScaffoldMessenger.of(ctx).showSnackBar(
+                SnackBar(
+                  content: Row(
+                    children: [
+                      const Icon(Icons.videocam_off_outlined, color: Colors.white, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          isHe
+                              ? 'הקלטת מסך פעילה – הצפייה וההאזנה להאשש חסומות'
+                              : 'Screen recording is active – Hushhh viewing and audio disabled',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ],
+                  ),
+                  backgroundColor: HushColors.tierRed,
+                  duration: const Duration(seconds: 4),
+                  behavior: SnackBarBehavior.floating,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                ),
+              );
+            } catch (_) {}
+          }
+        }
+      });
     } catch (e) {
       debugPrint('ScreenProtector addListener error: $e');
     }
@@ -242,6 +290,7 @@ class AuthProvider extends ChangeNotifier {
 
   @override
   void dispose() {
+    _screenRecordingController.close();
     _screenshotTakenController.close();
     _userSubscription?.cancel();
     super.dispose();

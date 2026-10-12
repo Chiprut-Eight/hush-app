@@ -1,12 +1,14 @@
 import 'dart:ui';
 import 'dart:math' as math;
+import 'dart:io';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:flutter_compass/flutter_compass.dart';
-import 'dart:async';
+import 'secure_secret_text.dart';
 import '../models/secret.dart';
 import '../config/theme.dart';
 import '../core/constants/icons.dart';
@@ -90,6 +92,7 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   int _activeParticipantsCount = 0;
   double? _deviceHeading;
   StreamSubscription<void>? _screenshotSubscription;
+  StreamSubscription<bool>? _screenRecordingSubscription;
 
   @override
   void initState() {
@@ -279,10 +282,26 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
         }
       }
     });
+
+    _screenRecordingSubscription ??= context.read<AuthProvider>().screenRecordingStream.listen((isRecording) {
+      if (isRecording && mounted) {
+        if (_isPlaying) {
+          _audioPlayer.pause();
+          setState(() => _isPlaying = false);
+        }
+        if (_revealed) {
+          setState(() {
+            _revealed = false;
+            _revealedTextContent = null;
+          });
+        }
+      }
+    });
   }
 
   @override
   void dispose() {
+    _screenRecordingSubscription?.cancel();
     _screenshotSubscription?.cancel();
     _compassSubscription?.cancel();
     _attemptsSubscription?.cancel();
@@ -298,6 +317,21 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
     if (_isPlaying) {
       _audioPlayer.pause();
     } else {
+      if (Platform.isIOS && context.read<AuthProvider>().isScreenRecording) {
+        final isHe = Localizations.localeOf(context).languageCode == 'he';
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              isHe
+                  ? 'הקלטת מסך פעילה – לא ניתן להאזין להאשש'
+                  : 'Screen recording is active – audio playback disabled',
+            ),
+            backgroundColor: HushColors.tierRed,
+          ),
+        );
+        return;
+      }
       AnalyticsService().logAudioPlayback(_currentSecret.id);
       // Don't count creator's own view — prevents artificial decay prevention
       final currentUid = context.read<AuthProvider>().firebaseUser?.uid;
@@ -1483,7 +1517,11 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
               onTap: () => _showCommentsSheet(context, l10n),
               child: SizedBox(
                 width: double.infinity,
-                child: Text(_revealedTextContent!, style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4)),
+                child: SecureSecretText(
+                  text: _revealedTextContent!,
+                  style: const TextStyle(color: Colors.white, fontSize: 16, height: 1.4),
+                  isRtl: Directionality.of(context) == TextDirection.rtl,
+                ),
               ),
             )
           : Directionality(

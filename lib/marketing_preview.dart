@@ -90,6 +90,12 @@ class MockAuthProvider extends ChangeNotifier implements AuthProvider {
 
   @override
   Stream<void> get screenshotTakenStream => const Stream.empty();
+
+  @override
+  Stream<bool> get screenRecordingStream => const Stream.empty();
+
+  @override
+  bool get isScreenRecording => false;
 }
 
 
