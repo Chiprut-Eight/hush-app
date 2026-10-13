@@ -1801,7 +1801,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
   String _contentTypeDistribution = 'Text: 0%, Voice: 0%';
   String _reportRate = '0%';
   String _dauWau = 'DAU: 0, WAU: 0';
-  String _avgLikesDislikes = 'Likes: 0, Dislikes: 0';
+  String _avgLikes = '0';
   
   
 
@@ -1847,7 +1847,6 @@ class _StatisticsViewState extends State<_StatisticsView> {
       int textCount = 0;
       int voiceCount = 0;
       int totalLikes = 0;
-      int totalDislikes = 0;
       Map<String, int> creatorCounts = {};
       
       for (var doc in secretsQuery.docs) {
@@ -1860,7 +1859,6 @@ class _StatisticsViewState extends State<_StatisticsView> {
           }
           
           totalLikes += (data['likes'] ?? 0) as int;
-          totalDislikes += (data['dislikes'] ?? 0) as int;
           
           final creator = data['creatorName'] ?? 'Unknown';
           creatorCounts[creator] = (creatorCounts[creator] ?? 0) + 1;
@@ -1875,7 +1873,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
       int totalDocs = secretsQuery.docs.length;
       String savedPct = totalDocs > 0 ? '${((savedCount / totalDocs) * 100).toStringAsFixed(1)}%' : '0%';
       String typeDist = totalDocs > 0 ? 'Text: ${((textCount / totalDocs) * 100).toStringAsFixed(0)}%, Voice: ${((voiceCount / totalDocs) * 100).toStringAsFixed(0)}%' : 'N/A';
-      String likesDist = totalDocs > 0 ? 'Likes: ${(totalLikes / totalDocs).toStringAsFixed(1)}, Dislikes: ${(totalDislikes / totalDocs).toStringAsFixed(1)}' : 'N/A';
+      String likesDist = totalDocs > 0 ? (totalLikes / totalDocs).toStringAsFixed(1) : '0';
       
       final dauSnap = await db.collection('users').where('lastActive', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 1)))).count().get();
       final wauSnap = await db.collection('users').where('lastActive', isGreaterThanOrEqualTo: Timestamp.fromDate(DateTime.now().subtract(const Duration(days: 7)))).count().get();
@@ -1917,7 +1915,7 @@ class _StatisticsViewState extends State<_StatisticsView> {
           _savedPercentage = savedPct;
           _topCreatorsList = topCreatorsTemp;
           _contentTypeDistribution = typeDist;
-          _avgLikesDislikes = likesDist;
+          _avgLikes = likesDist;
           _dauWau = 'DAU: ${dauSnap.count ?? 0}, WAU: ${wauSnap.count ?? 0}';
           _reportRate = activeSecretsCount > 0 ? '${((reportsCount / activeSecretsCount) * 100).toStringAsFixed(1)}%' : '0%';
           _isLoading = false;
@@ -2047,11 +2045,11 @@ class _StatisticsViewState extends State<_StatisticsView> {
           ),
           const SizedBox(height: 16),
           _StatCard(
-            title: isHe ? 'ממוצע לייקים/דיסלייקים' : 'Avg Likes/Dislikes',
+            title: isHe ? 'ממוצע לייקים' : 'Avg Likes',
             subtitle: isHe ? 'להאשש' : 'Per secret',
-            value: _avgLikesDislikes,
-            icon: Icons.thumbs_up_down,
-            infoText: isHe ? 'סנטימנט האפליקציה: האם המשתמשים נוטים יותר לפרגן או להביע חוסר הסכמה.' : 'App sentiment: Do users tend to like or dislike content more?',
+            value: _avgLikes,
+            icon: Icons.thumb_up_alt_outlined,
+            infoText: isHe ? 'ממוצע הלייקים שהאשש מקבל ממשתמשים.' : 'Average likes a Hushhh receives from users.',
           ),
         ],
       ),

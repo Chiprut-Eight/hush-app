@@ -241,26 +241,6 @@ class SecretService {
     }
   }
 
-  /// Dislike a secret
-  Future<void> dislikeSecret(String secretId) async {
-    try {
-      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
-      await callable.call({'secretId': secretId, 'action': 'dislike'});
-    } catch (e) {
-      debugPrint('dislikeSecret error: $e');
-    }
-  }
-
-  /// Remove a dislike from a secret
-  Future<void> undislikeSecret(String secretId) async {
-    try {
-      final callable = FirebaseFunctions.instance.httpsCallable('interactWithSecret');
-      await callable.call({'secretId': secretId, 'action': 'undislike'});
-    } catch (e) {
-      debugPrint('undislikeSecret error: $e');
-    }
-  }
-
   /// Increment view count uniquely per user
   Future<void> viewSecret(String secretId) async {
     try {

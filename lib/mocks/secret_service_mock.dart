@@ -22,7 +22,5 @@ class SecretService {
   
   Future<void> likeSecret(String secretId) async {}
   Future<void> unlikeSecret(String secretId) async {}
-  Future<void> dislikeSecret(String secretId) async {}
-  Future<void> undislikeSecret(String secretId) async {}
   Future<void> toggleSaveSecret(String secretId) async {}
 }

@@ -11,7 +11,7 @@ import '../services/auth_service.dart';
 import '../services/notification_service.dart';
 import '../services/analytics_service.dart';
 import '../main.dart' show rootNavigatorKey;
-import '../config/theme.dart' show HushColors;
+import '../widgets/top_banner_notification.dart';
 
 class AuthProvider extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -76,28 +76,12 @@ class AuthProvider extends ChangeNotifier {
         if (ctx != null) {
           try {
             final isHe = Localizations.localeOf(ctx).languageCode == 'he';
-            ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
-            ScaffoldMessenger.of(ctx).showSnackBar(
-              SnackBar(
-                content: Row(
-                  children: [
-                    const Icon(Icons.shield_outlined, color: Colors.white, size: 20),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: Text(
-                        isHe
-                            ? 'התוכן ב-Hushhh מוגן – צילום מסך אינו מורשה'
-                            : 'Content in Hushhh is protected – screenshots are not allowed',
-                        style: const TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ],
-                ),
-                backgroundColor: HushColors.tierRed,
-                duration: const Duration(seconds: 4),
-                behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-              ),
+            TopBannerNotification.show(
+              context: ctx,
+              message: isHe
+                  ? 'התוכן ב-Hushhh מוגן – צילום מסך אינו מורשה'
+                  : 'Content in Hushhh is protected – screenshots are not allowed',
+              icon: Icons.shield_outlined,
             );
           } catch (_) {}
         }
@@ -117,28 +101,12 @@ class AuthProvider extends ChangeNotifier {
           if (ctx != null) {
             try {
               final isHe = Localizations.localeOf(ctx).languageCode == 'he';
-              ScaffoldMessenger.of(ctx).hideCurrentSnackBar();
-              ScaffoldMessenger.of(ctx).showSnackBar(
-                SnackBar(
-                  content: Row(
-                    children: [
-                      const Icon(Icons.videocam_off_outlined, color: Colors.white, size: 20),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          isHe
-                              ? 'הקלטת מסך פעילה – הצפייה וההאזנה להאשש חסומות'
-                              : 'Screen recording is active – Hushhh viewing and audio disabled',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ],
-                  ),
-                  backgroundColor: HushColors.tierRed,
-                  duration: const Duration(seconds: 4),
-                  behavior: SnackBarBehavior.floating,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                ),
+              TopBannerNotification.show(
+                context: ctx,
+                message: isHe
+                    ? 'הקלטת מסך פעילה – הצפייה וההאזנה להאשש חסומות'
+                    : 'Screen recording is active – Hushhh viewing and audio disabled',
+                icon: Icons.videocam_off_outlined,
               );
             } catch (_) {}
           }

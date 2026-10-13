@@ -67,7 +67,6 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   late Secret _currentSecret;
   
   bool _revealed = false;
-  bool _showWarning = false;
   bool _isRevealLoading = false;
   
   // Content from server (populated by revealSecret CF)
@@ -83,7 +82,6 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   Duration _position = Duration.zero;
 
   bool _userLiked = false;
-  bool _userDisliked = false;
   bool _savingInProgress = false;
   
   StreamSubscription<CompassEvent>? _compassSubscription;
@@ -110,18 +108,12 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
       });
     }
 
-    // Default showWarning if highly downvoted or reported
-    if (_currentSecret.dislikes > 3 && _currentSecret.dislikes > _currentSecret.likes) {
-      _showWarning = true;
-    }
-    
     final authProvider = context.read<AuthProvider>();
     final currentUser = authProvider.firebaseUser;
     final hushUser = authProvider.hushUser;
     
     if (currentUser != null) {
       _userLiked = _currentSecret.likedBy.contains(currentUser.uid);
-      _userDisliked = _currentSecret.dislikedBy.contains(currentUser.uid);
     }
     
     // Auto-reveal immediately for creators OR if already unlocked OR if saved
@@ -155,7 +147,6 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
           _currentSecret = updatedSecret;
           if (currentUser != null) {
             _userLiked = _currentSecret.likedBy.contains(currentUser.uid);
-            _userDisliked = _currentSecret.dislikedBy.contains(currentUser.uid);
           }
           bool isSaved = hushUser?.savedSecretIds.contains(_currentSecret.id) ?? false;
           // Auto-reveal for creators OR if already unlocked OR if saved OR if bypassing distance
@@ -343,7 +334,6 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
   }
 
   void _handleReveal() async {
-    if (_showWarning) return; // Must accept warning first
     if (_isRevealLoading) return; // Already loading
     
     final currentUser = context.read<AuthProvider>().firebaseUser;
@@ -1230,53 +1220,26 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                               child: Row(
                                 children: [
                                   Container(
-                                key: widget.likeButtonKey,
-                                child: _InteractionButton(
-                                  icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
-                                  count: _currentSecret.likes,
-                                  isActive: _userLiked,
-                                  color: _userLiked ? Colors.pink : HushColors.textSecondary,
-                                  onTap: _revealed && !isOwner ? () {
-                                  setState(() {
-                                    if (_userDisliked) {
-                                      _userDisliked = false;
-                                      _secretService.undislikeSecret(_currentSecret.id);
-                                    }
-                                    _userLiked = !_userLiked;
-                                    if (_userLiked) {
-                                      _secretService.likeSecret(_currentSecret.id);
-                                      AnalyticsService().logSecretLiked(_currentSecret.id);
-                                    } else {
-                                      _secretService.unlikeSecret(_currentSecret.id);
-                                      AnalyticsService().logSecretUnliked(_currentSecret.id);
-                                    }
-                                  });
-                                } : () {},
-                              ),
-                              ),
-                              const SizedBox(width: 16),
-                              _InteractionButton(
-                                icon: HushIcons.thumbsDown,
-                                count: _currentSecret.dislikes,
-                                isActive: _userDisliked,
-                                color: _userDisliked ? Colors.orange : HushColors.textSecondary,
-                                onTap: _revealed && !isOwner ? () {
-                                  setState(() {
-                                    if (_userLiked) {
-                                      _userLiked = false;
-                                      _secretService.unlikeSecret(_currentSecret.id);
-                                    }
-                                    _userDisliked = !_userDisliked;
-                                    if (_userDisliked) {
-                                      _secretService.dislikeSecret(_currentSecret.id);
-                                      AnalyticsService().logSecretDisliked(_currentSecret.id);
-                                    } else {
-                                      _secretService.undislikeSecret(_currentSecret.id);
-                                      AnalyticsService().logSecretUndisliked(_currentSecret.id);
-                                    }
-                                  });
-                                } : null,
-                              ),
+                                    key: widget.likeButtonKey,
+                                    child: _InteractionButton(
+                                      icon: _userLiked ? HushIcons.heartFilled : HushIcons.heart,
+                                      count: _currentSecret.likes,
+                                      isActive: _userLiked,
+                                      color: _userLiked ? Colors.pink : HushColors.textSecondary,
+                                      onTap: _revealed && !isOwner ? () {
+                                        setState(() {
+                                          _userLiked = !_userLiked;
+                                          if (_userLiked) {
+                                            _secretService.likeSecret(_currentSecret.id);
+                                            AnalyticsService().logSecretLiked(_currentSecret.id);
+                                          } else {
+                                            _secretService.unlikeSecret(_currentSecret.id);
+                                            AnalyticsService().logSecretUnliked(_currentSecret.id);
+                                          }
+                                        });
+                                      } : () {},
+                                    ),
+                                  ),
                               const SizedBox(width: 16),
                               _InteractionButton(
                                 icon: HushIcons.comment,
@@ -1350,47 +1313,6 @@ class _SecretCardState extends State<SecretCard> with AutomaticKeepAliveClientMi
                     ],
                   ),
                 ),
-
-                // --- CONTENT WARNING OVERLAY ---
-                if (_showWarning)
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: Colors.black.withValues(alpha: 0.8),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            HushIcon(HushIcons.warning, size: 32, color: Colors.amber),
-                            const SizedBox(height: 8),
-                            Text(l10n.contentWarning, style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-                            const SizedBox(height: 4),
-                            Text(l10n.downvotedWarning, style: const TextStyle(color: HushColors.textSecondary, fontSize: 12)),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                TextButton(
-                                  onPressed: () {}, // cancel
-                                  child: Text(l10n.cancel, style: const TextStyle(color: HushColors.textSecondary)),
-                                ),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    AnalyticsService().logContentWarningDismissed(_currentSecret.id);
-                                    setState(() => _showWarning = false);
-                                  },
-                                  style: ElevatedButton.styleFrom(backgroundColor: HushColors.tierRed),
-                                  child: Text(l10n.viewAnyway, style: const TextStyle(color: Colors.white)),
-                                ),
-                              ],
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
               ],
             ),
           ),

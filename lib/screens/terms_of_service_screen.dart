@@ -69,8 +69,8 @@ class TermsOfServiceScreen extends StatelessWidget {
                 isDark, 
                 isHebrew ? "6. אכיפה ומצב רוח רפאים (Ghost Mode)" : "6. Enforcement & Ghost Mode",
                 isHebrew
-                  ? "לא אהבתי (Dislikes): תוכן עם יחסי 'לא אהבתי' גבוהים יקבל \"אזהרת תוכן\" לפני פתיחתו.\nמצב רוח רפאים (Ghost Mode): משתמשים המפרסמים תוכן פוגעני או \"טרולי\" עשויים להיות מוגבלים מלהשאיר Hushhh חדשים לתקופה מסוימת (שבוע עד חודש). במהלך זמן זה, הם עדיין יכולים לצרוך Hushhh ולהצביע.\nערעורים: משתמשים רשאים לערער על חסימות דרך מערכת סקירת המערכת הידנית שלנו."
-                  : "Dislikes: Content with high dislike ratios will receive a \"Content Warning\" before being opened.\nGhost Mode: Users who post offensive or \"trolling\" content may be restricted from leaving new Hushhh for a period (1 week to 1 month). During this time, they can still consume Hushhh and vote.\nAppeals: Users may appeal bans through our manual system review."
+                  ? "מצב רוח רפאים (Ghost Mode): משתמשים המפרסמים תוכן פוגעני או \"טרולי\" עשויים להיות מוגבלים מלהשאיר Hushhh חדשים לתקופה מסוימת (שבוע עד חודש). במהלך זמן זה, הם עדיין יכולים לצרוך Hushhh.\nערעורים: משתמשים רשאים לערער על חסימות דרך מערכת סקירת המערכת הידנית שלנו."
+                  : "Ghost Mode: Users who post offensive or \"trolling\" content may be restricted from leaving new Hushhh for a period (1 week to 1 month). During this time, they can still consume Hushhh.\nAppeals: Users may appeal bans through our manual system review."
               ),
             ],
           ),

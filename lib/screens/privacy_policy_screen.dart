@@ -48,8 +48,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 isDark, 
                 isHebrew ? "ניהול תוכן ומצב רוח רפאים (Ghost Mode)" : "Content Moderation & Ghost Mode",
                 isHebrew
-                  ? "כדי לשמור על בטיחות הקהילה, האפליקציה מנטרת מעורבות:\n• בקרת איכות: Hushhh עם יחס גבוה של 'לא אהבתי' (Dislikes) מקבלים \"אזהרת תוכן\".\n• מצב רוח רפאים: משתמשים שזוהו כפוגעניים או כ-\"טרולים\" עשויים להיות מוגבלים מלהשאיר Hushhh חדשים לפרק זמן מוגדר."
-                  : "To maintain community safety, the Application monitors engagement:\n• Quality Control: Hushhh with high dislike ratios receive a \"Content Warning\".\n• Ghost Mode: Users identified as offensive or \"trolls\" may be restricted from leaving new Hushhh for a set period."
+                  ? "כדי לשמור על בטיחות הקהילה, האפליקציה מנטרת מעורבות ודיווחים:\n• מצב רוח רפאים (Ghost Mode): משתמשים שזוהו כפוגעניים או כ-\"טרולים\" עשויים להיות מוגבלים מלהשאיר Hushhh חדשים לפרק זמן מוגדר בעקבות דיווחי קהילה."
+                  : "To maintain community safety, the Application monitors reports and engagement:\n• Ghost Mode: Users identified as offensive or \"trolls\" may be restricted from leaving new Hushhh for a set period following community reports."
               ),
               _buildSection(
                 isDark, 
@@ -77,8 +77,8 @@ class PrivacyPolicyScreen extends StatelessWidget {
                 isDark, 
                 isHebrew ? "הצהרת נגישות" : "Accessibility Statement",
                 isHebrew
-                  ? "HUSHHH מחויבת לספק חוויה חברתית מכילה.\n• תכונות שמע: האפליקציה תומכת ב-Hushhh שמע עם פקדי \"הפעלה\" ברורים לשימוש קל.\n• סממנים חזותיים: רמות משתמש (Clout Tiers) משתמשות בהילות צבע בעלות ניגודיות גבוהה כדי לעזור למשתמשים להבחין בין רמות שונות של יוצרים.\n• בטיחות: ניתנות אזהרות תוכן ל-Hushhh שקיבלו הרבה דיסלייקים כדי להגן על שלומם של המשתמשים.\n• מגבלה פיזית: שים לב שמכיוון שהאפליקציה \"מבוססת-מיקום גיאוגרפי\", ייתכן ש-Hushhh מסוימים לא יהיו נגישים פיזית למשתמשים עם מוגבלות בניידות אם הם ממוקמים באזורים שאינם נגישים."
-                  : "HUSHHH is committed to providing an inclusive social experience.\n• Audio Features: The app supports audio Hushhh with clear \"Play\" controls for ease of use.\n• Visual Indicators: Clout Tiers use high-contrast color halos to help users distinguish between different levels of creators.\n• Safety: Content warnings are provided for highly disliked Hushhh to protect user well-being.\n• Physical Limitation: Please note that because the app is \"Geo-Acoustic,\" some Hushhh may be physically inaccessible to users with mobility impairments if they are placed in non-accessible locations."
+                  ? "HUSHHH מחויבת לספק חוויה חברתית מכילה.\n• תכונות שמע: האפליקציה תומכת ב-Hushhh שמע עם פקדי \"הפעלה\" ברורים לשימוש קל.\n• סממנים חזותיים: רמות משתמש (Clout Tiers) משתמשות בהילות צבע בעלות ניגודיות גבוהה כדי לעזור למשתמשים להבחין בין רמות שונות של יוצרים.\n• בטיחות: תכנים פוגעניים ניתנים לדיווח על ידי המשתמשים ומטופלים על ידי מנהלי המערכת כדי להגן על שלומם של המשתמשים.\n• מגבלה פיזית: שים לב שמכיוון שהאפליקציה \"מבוססת-מיקום גיאוגרפי\", ייתכן ש-Hushhh מסוימים לא יהיו נגישים פיזית למשתמשים עם מוגבלות בניידות אם הם ממוקמים באזורים שאינם נגישים."
+                  : "HUSHHH is committed to providing an inclusive social experience.\n• Audio Features: The app supports audio Hushhh with clear \"Play\" controls for ease of use.\n• Visual Indicators: Clout Tiers use high-contrast color halos to help users distinguish between different levels of creators.\n• Safety: Offensive content can be reported by users and is moderated by admins to protect user well-being.\n• Physical Limitation: Please note that because the app is \"Geo-Acoustic,\" some Hushhh may be physically inaccessible to users with mobility impairments if they are placed in non-accessible locations."
               ),
             ],
           ),

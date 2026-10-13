@@ -23,8 +23,6 @@ class AnalyticsService {
   Future<void> logSecretRevealed({required String secretId, required String type, required bool isGroup}) async {}
   Future<void> logSecretLiked(String secretId) async {}
   Future<void> logSecretUnliked(String secretId) async {}
-  Future<void> logSecretDisliked(String secretId) async {}
-  Future<void> logSecretUndisliked(String secretId) async {}
   Future<void> logSecretSaved(String secretId) async {}
   Future<void> logSecretUnsaved(String secretId) async {}
   Future<void> logSecretDeleted(String secretId) async {}
@@ -32,7 +30,6 @@ class AnalyticsService {
   Future<void> logAudioPlayback(String secretId) async {}
   Future<void> logCreatorProfileTapped(String creatorId) async {}
   Future<void> logGroupUnlockAttempt({required String secretId, required bool success}) async {}
-  Future<void> logContentWarningDismissed(String secretId) async {}
   Future<void> logCommentAdded(String secretId) async {}
   Future<void> logCommentEdited(String secretId) async {}
   Future<void> logCommentDeleted(String secretId) async {}
