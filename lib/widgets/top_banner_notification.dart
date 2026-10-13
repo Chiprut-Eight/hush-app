@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../config/theme.dart';
+import '../main.dart' show rootNavigatorKey;
 
 /// Displays a sleek, native-feeling top notification banner that animates
 /// in from the top of the screen (under SafeArea / Dynamic Island / Notch)
@@ -16,12 +17,50 @@ class TopBannerNotification {
     Color backgroundColor = HushColors.tierRed,
     Duration duration = const Duration(seconds: 4),
   }) {
-    // Dismiss any existing banner immediately
-    _activeEntry?.remove();
-    _activeEntry = null;
+    // Dismiss any existing banner safely
+    try {
+      if (_activeEntry != null) {
+        if (_activeEntry!.mounted) {
+          _activeEntry!.remove();
+        }
+        _activeEntry = null;
+      }
+    } catch (_) {
+      _activeEntry = null;
+    }
 
-    final overlay = Overlay.maybeOf(context, rootOverlay: true);
-    if (overlay == null) return;
+    // Try finding overlay via rootNavigatorKey first, then context
+    final overlay = rootNavigatorKey.currentState?.overlay ??
+        Overlay.maybeOf(context, rootOverlay: true) ??
+        Overlay.maybeOf(context);
+
+    if (overlay == null) {
+      // Fallback: If overlay is unavailable, use standard ScaffoldMessenger
+      try {
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(icon, color: Colors.white, size: 20),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: backgroundColor,
+            duration: duration,
+            behavior: SnackBarBehavior.floating,
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          ),
+        );
+      } catch (_) {}
+      return;
+    }
 
     late final OverlayEntry entry;
     entry = OverlayEntry(
@@ -32,7 +71,11 @@ class TopBannerNotification {
         duration: duration,
         onDismiss: () {
           if (_activeEntry == entry) {
-            entry.remove();
+            try {
+              if (entry.mounted) {
+                entry.remove();
+              }
+            } catch (_) {}
             _activeEntry = null;
           }
         },
