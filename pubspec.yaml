@@ -1,7 +1,7 @@
 name: hush_app
 description: "HUSH - Geo-acoustic social network"
 publish_to: 'none'
-version: 1.0.0+55
+version: 1.0.0+56
 
 environment:
   sdk: ^3.10.7
@@ -13,12 +13,12 @@ dependencies:
     sdk: flutter
 
   # Firebase
-  firebase_core: ^3.12.1
-  firebase_auth: ^5.5.1
-  cloud_firestore: ^5.6.12
-  firebase_storage: ^12.4.2
-  firebase_messaging: ^15.2.2
-  cloud_functions: ^5.2.0
+  firebase_core: ^4.15.2
+  firebase_auth: ^6.7.1
+  cloud_firestore: ^6.10.2
+  firebase_storage: ^13.6.1
+  firebase_messaging: ^16.7.1
+  cloud_functions: ^6.5.1
   # firebase_analytics: ^11.4.2
 
   # Authentication
@@ -58,7 +58,8 @@ dependencies:
   screen_protector: ^1.5.1
   package_info_plus: ^8.2.1
   tutorial_coach_mark: ^1.2.11
-  firebase_database: ^11.3.10
+  firebase_database: ^12.6.1
+  in_app_update: ^4.2.5
   image_picker: ^1.2.4
   image_cropper: ^12.2.1
 

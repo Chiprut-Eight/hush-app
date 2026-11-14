@@ -16,6 +16,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'services/notification_service.dart';
 import 'services/analytics_service.dart';
 import 'services/presence_service.dart';
+import 'services/update_service.dart';
 import 'screens/login_screen.dart';
 import 'screens/app_shell.dart';
 import 'widgets/hush_drawer.dart';
@@ -63,6 +64,8 @@ class _HushAppState extends State<HushApp> {
   void initState() {
     super.initState();
     _confettiController = ConfettiController(duration: const Duration(seconds: 3));
+    // Check for mandatory store updates on startup (Android)
+    UpdateService().checkForUpdate();
     // Initialize presence service to start listening to auth state and app lifecycle
     PresenceService().initialize();
   }
