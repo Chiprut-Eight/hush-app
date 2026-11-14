@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "187237532355",
+    "firebase_url": "https://hush-7bab0-default-rtdb.firebaseio.com",
     "project_id": "hush-7bab0",
     "storage_bucket": "hush-7bab0.firebasestorage.app"
   },
@@ -13,6 +14,14 @@
         }
       },
       "oauth_client": [
+        {
+          "client_id": "187237532355-91008nqr5enaqdp702nut1fuloing3a1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.chiprut.hushhh",
+            "certificate_hash": "de5aa07a96f5dc5955c583f5ef62c09d65ab365d"
+          }
+        },
         {
           "client_id": "187237532355-fkhgg7i4rc5ho7hnm0t6cv2v6hqvcdbc.apps.googleusercontent.com",
           "client_type": 1,
@@ -50,7 +59,7 @@
               "client_id": "187237532355-5bcgc4nd6g3h88adk8i5dlaoj8ch74t2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.chiprut.hushhh"
+                "bundle_id": "com.hush.hushApp"
               }
             }
           ]
@@ -61,7 +70,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:187237532355:android:beae06757656abd0a2d876",
         "android_client_info": {
-          "package_name": "com.chiprut.hushhh"
+          "package_name": "com.hush.hush_app"
         }
       },
       "oauth_client": [
@@ -69,7 +78,7 @@
           "client_id": "187237532355-7jmse5fsofhnd2n9iu5ivss7kkmk15u4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.chiprut.hushhh",
+            "package_name": "com.hush.hush_app",
             "certificate_hash": "d100f6d8237b5808d469c17ec9318c1223769be5"
           }
         },
@@ -77,7 +86,7 @@
           "client_id": "187237532355-rqikbss7r7dcs618f50j8bveebs0tmp4.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.chiprut.hushhh",
+            "package_name": "com.hush.hush_app",
             "certificate_hash": "003b92059955efb1d1635fb80a0c4470daa0cadb"
           }
         },
@@ -102,7 +111,7 @@
               "client_id": "187237532355-5bcgc4nd6g3h88adk8i5dlaoj8ch74t2.apps.googleusercontent.com",
               "client_type": 2,
               "ios_info": {
-                "bundle_id": "com.chiprut.hushhh"
+                "bundle_id": "com.hush.hushApp"
               }
             }
           ]
