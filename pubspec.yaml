@@ -62,12 +62,12 @@ dependencies:
   in_app_update: ^4.2.5
   image_picker: ^1.2.4
   image_cropper: ^12.2.1
+  flutter_native_splash: ^2.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
-  flutter_native_splash: ^2.4.0
   flutter_launcher_icons: ^0.13.1
 
 flutter:
